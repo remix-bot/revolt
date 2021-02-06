@@ -14,6 +14,7 @@
 | stop         | Disconnects from voice channel and resets queue.                                                   | %stop    |  leave             |
 | volume         | Changes the player's volume - Songs default to 10.                                                 | %volume (1-100)    |               |
 | lyrics        | Grab the lyrics of a song   | %lyrics (song) |
+| nowplaying | | %nowplaying | np |
 
 ### Filter:  
 | Command          | Description                                                                                                                          | Format                          | Aliases        |

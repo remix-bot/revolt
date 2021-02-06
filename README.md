@@ -9,6 +9,7 @@ Information About Bot
     Welcome To Remix is a Discord music bot focused on one goal to deliver music on Discord, Supporting many sources of music
 <p>
 **__Help pannelzz__**
+<p>
 To use filters, %filter (the filter). Example : %filter 8D.
 **__Bot__**
 debug, ping

@@ -1,6 +1,6 @@
 # Remix
 Information About Bot
-<DOCTYPE HTML>
+
 
      <html>
 

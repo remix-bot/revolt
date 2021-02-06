@@ -12,15 +12,7 @@ Information About Bot
 
  
 
-<table id="Remix">
-
-                    <tbody>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>
+<p>
 
                            %help [command] ~ To show all commands 
 
@@ -136,38 +128,4 @@ Information About Bot
 
   <tr>
 
-                         
-
-                    </tr>
-
-                </tbody></table>
-
-                
-
-      
-
-      
-
-  
-
- 
-
-  
-
-  
-
-</body>
-
-</head>
-
     
-
-    
-
-    
-
-    
-
-    
-
-  </html>

@@ -146,7 +146,7 @@ Information About Bot
 
       
 
-</style>      
+      
 
   
 

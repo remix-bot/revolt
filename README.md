@@ -2,8 +2,8 @@
 ### Music:  
 | Command          | Description                                                                                                                          | Format                          | Aliases        |
 |------------------|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|----------------|
-| clear-queue         | Find information on the command provided. Mandatory arguments [], optional arguments <>.                                  | %clear-queue    | %cq              |
-| move         | Makes a song the next song to play without skipping the current song.                              | %move (song number)    | skipto              |
+| clear-queue         | Clearing All Queue                                  | %clear-queue    | cq              |
+| filter         | filtering song                             | %filter [filter name]     |               |
 | pause         | Pauses currently playing song                                                                         | %pause    |               |
 | play         | Plays audio to a voice channel.                                               | %play (title/url)    |      p         |
 | queue         | Shows Current Queue                                              | %queue (page number)    |   list, q            |

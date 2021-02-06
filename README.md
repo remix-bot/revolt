@@ -1,27 +1,30 @@
 # Remix
-Information About Bot
+#### Music:  
 
+| Command          | Description                                                                                                                          | Format                          | Aliases        |
 
-     
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|----------------|
 
-  <p>
+| join         | Joins a voice channel                              | %join    |               |
 
-    Welcome To Remix is a Discord music bot focused on one goal to deliver music on Discord, Supporting many sources of music
+| move         | Makes a song the next song to play without skipping the current song.                              | %move (song number)    | skipto              |
 
-**__Help pannelzz__**
+| pause         | Pauses currently playing song                                                                         | %pause    |               |
 
-To use filters, %filter (the filter). Example : %filter 8D.
+| play         | Plays audio to a voice channel.                                               | %play (title/url)    |      p         |
 
-**__Bot__**
+| queue         | Shows Current Queue                                              | %queue (page number)    |   list, q            |
 
-debug, ping
+| remove         | Remove a song from the queue.                                                 | %remove (song number)    |            |
 
-**__Music__**
+| resume         | Resumes a paused song                                                 | %resume    |      unpause         |
 
-clear-queue, filter, loop, nowplaying, pause, play, queue, resume, search, shuffle, skip, stop, volume, w-filters
+| shuffle         | Shuffles the playlist.                                                        | %shuffle    |               |
 
-**__Filters__**
+| skip         | Skips the current song.                                                                      | %skip    |               |
 
-8D, gate, haas, phaser, treble, tremolo, vibrato, reverse, karaoke, flanger, mcompand, pulsator, subboost, bassboost, vaporwave, nightcore, normalizer, surrounding
+| stop         | Disconnects from voice channel and resets queue.                                                   | %stop    |  leave             |
 
+| volume         | Changes the player's volume - Songs default to 10.                                                 | %volume (1-100)    |               |
 
+| lyrics        | Grab the lyrics of a song   | %lyrics (song) |

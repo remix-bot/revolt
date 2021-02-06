@@ -2,7 +2,7 @@
 ### Music:  
 | Command          | Description                                                                                                                          | Format                          | Aliases        |
 |------------------|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|----------------|
-| join         | Joins a voice channel                              | %join    |               |
+| clear-queue         | Find information on the command provided. Mandatory arguments [], optional arguments <>.                                  | %join    |               |
 | move         | Makes a song the next song to play without skipping the current song.                              | %move (song number)    | skipto              |
 | pause         | Pauses currently playing song                                                                         | %pause    |               |
 | play         | Plays audio to a voice channel.                                               | %play (title/url)    |      p         |

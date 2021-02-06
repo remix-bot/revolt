@@ -2,17 +2,7 @@
 Information About Bot
 
 
-     <html>
-
-    
-
-   <head>
-
-  
-
-<body>
-
-  
+     
 
   <p>
 

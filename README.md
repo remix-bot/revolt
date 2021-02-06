@@ -16,9 +16,7 @@ Information About Bot
 
                            %help [command] ~ To show all commands 
 
-                        </td>
-
-                        <td>
+                        <p>
 
                            %nowplaying ~ To show the music which is currently playing in this server
 

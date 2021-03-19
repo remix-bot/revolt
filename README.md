@@ -4,7 +4,7 @@
 <a href="https://top.gg/bot/744293924625055796">
     <img src="https://top.gg/api/widget/744293924625055796.svg" alt="Remix" />
 </a> <a href="https://botsfordiscord.com/bots/744293924625055796" >
-            <img src="https://botsfordiscord.com/api/bot/744293924625055796/widget" title="Visit Remix listed on Bots for Discord!" alt="Remix's Widget Failed to Load" /></a>
+            <img src="https://botsfordiscord.com/api/bot/744293924625055796/widget" title="Visit Remix listed on Bots for Discord!" alt="Remix's Widget Failed to Load" /></a> <a href="https://bots.ondiscord.xyz/bots/744293924625055796"><img src="https://bots.ondiscord.xyz/bots/744293924625055796/embed?theme=dark&showGuilds=true" alt="Remix" /></a>
 
 ### Music:  
 | Command          | Description                                                                                                                          | Format                          | Aliases        |

@@ -1,8 +1,8 @@
 # Remix
 
 ### Bot List
-<a href="https://top.gg/bot/744293924625055796">
-    <img src="https://top.gg/api/widget/744293924625055796.svg" alt="Remix" />
+
+<a target="_blank" onclick="trackCampaignWebClick('', 'description');" rel="nofollow" href="Top.gg">https://top.gg/bot/744293924625055796</a></p>
 
 ### Music:  
 | Command          | Description                                                                                                                          | Format                          | Aliases        |

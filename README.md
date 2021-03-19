@@ -3,9 +3,6 @@
 ### Bot List
 <a href="https://top.gg/bot/744293924625055796">
     <img src="https://top.gg/api/widget/744293924625055796.svg" alt="Remix" />
-</a> <a href="https://botsfordiscord.com/bots/744293924625055796" >
-            <img src="https://botsfordiscord.com/api/bot/744293924625055796/widget/embed?theme=dark&showGuilds=true" title="Visit Remix listed on Bots for Discord!" alt="Remix's Widget Failed to Load" /></a> <a href="https://bots.ondiscord.xyz/bots/744293924625055796"><img src="https://bots.ondiscord.xyz/bots/744293924625055796/embed?theme=dark&showGuilds=true" alt="Remix" /></a> <a href="https://botlist.space/bot/744293924625055796?utm_source=bls&utm_medium=widget&utm_campaign=744293924625055796">
-    <img src="https://api.botlist.space/widget/744293924625055796/4"> <img width="310" height="150" src="https://discord.boats/api/widget/744293924625055796" data-src="https://discord.boats/api/widget/744293924625055796" class="responsive-img widget" alt="Discord.boats widget">
 
 ### Music:  
 | Command          | Description                                                                                                                          | Format                          | Aliases        |

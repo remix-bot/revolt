@@ -3,7 +3,8 @@
 ### Bot List
 <a href="https://top.gg/bot/744293924625055796">
     <img src="https://top.gg/api/widget/744293924625055796.svg" alt="Remix" />
-</a> [![Bots for Discord](https://botsfordiscord.com/api/bot/744293924625055796/widget)](https://botsfordiscord.com/bots/744293924625055796)
+</a> <a href="https://botsfordiscord.com/bots/744293924625055796" >
+            <img src="https://botsfordiscord.com/api/bot/744293924625055796/widget" title="Visit Remix listed on Bots for Discord!" alt="Remix's Widget Failed to Load" /></a>
 
 ### Music:  
 | Command          | Description                                                                                                                          | Format                          | Aliases        |

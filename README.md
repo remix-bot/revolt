@@ -2,7 +2,7 @@
 
 ### Bot List
 
-### <a target="_blank" onclick="trackCampaignWebClick('', 'description');" rel="nofollow" href="https://top.gg/bot/744293924625055796">Top.gg</a></p>
+### <a target="_blank" onclick="trackCampaignWebClick('', 'description');" rel="nofollow" href="https://top.gg/bot/744293924625055796">Top.gg</a></p> ### <a target="_blank" onclick="trackCampaignWebClick('', 'description');" rel="nofollow" href="https://discord.bots.gg/bots/744293924625055796">Bots.gg</a></p>
 
 ### Music:  
 | Command          | Description                                                                                                                          | Format                          | Aliases        |

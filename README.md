@@ -1,6 +1,6 @@
 # Remix
 
-### Invite
+### Invite The Bot
 
 ### - <a target="_blank" onclick="trackCampaignWebClick('', 'description');" rel="nofollow" href="https://discord.com/oauth2/authorize?client_id=744293924625055796&scope=bot&permissions=2205280576">Discord</a></p>
 ### - <a target="_blank" onclick="trackCampaignWebClick('', 'description');" rel="nofollow" href="https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW">Revolt</a></p>

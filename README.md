@@ -15,38 +15,8 @@
 ### Music:  
 | Command          | Description                                                                                                                          | Format                          | Aliases        |
 |------------------|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|----------------|
-| clear-queue         | Clearing All Queue                                  | %clear-queue    | cq              |
-| filter         | filtering song                             | %filter [filter name]     |               |
-| pause         | Pauses currently playing song                                                                         | %pause    |               |
-| play         | Plays audio to a voice channel.                                               | %play (title/url)    |      p         |
-| queue         | Shows Current Queue                                              | %queue (page number)    |   list, q            |
-| remove         | Remove a song from the queue.                                                 | %remove (song number)    |            |
-| resume         | Resumes a paused song                                                 | %resume    |      unpause         |
-| shuffle         | Shuffles the playlist.                                                        | %shuffle    |               |
-| skip         | Skips the current song.                                                                      | %skip    |               |
-| stop         | Disconnects from voice channel and resets queue.                                                   | %stop    |  leave             |
-| volume         | Changes the player's volume - Songs default to 10.                                                 | %volume (1-100)    |               |
-| lyrics        | Grab the lyrics of a song   | %lyrics (song) |
-| nowplaying | giving information About Song | %nowplaying | np |
-
-### Filter:  
-| Command          | Description                                                                                                                          | Format                          | Aliases        |
-|------------------|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|----------------|
-| 8D | | |
-| gate | | |
-| haas | | |
-| phaser | | |
-| treble | | |
-| tremolo | | |
-| vibrato | | |
-| reverse | | |
-| karaoke | | |
-| flanger | | |
-| mcompand | | |
-| pulsator| | |
-| subboost | | |
-| bassboost | | |
-| vaporwave | | |
-| nightcore | | |
-| normalizer | | |
-| surrounding | | |
+| play         | Play a song from YouTube with the given name/url.                                  | %play (title/url)    | p              |
+| skip         | Seeks to a certain point in the current track.                             | %skip     | s              |
+| disconnect         | Disconnects the bot from the voice channel.                                                                         | %disconnect    |               |
+| nowplaying         | Shows what song Rythm is currently playing.                                               | %nowplaying    |      np         |
+| pause         | Pauses the current playing track.                                              | %pause    |               |

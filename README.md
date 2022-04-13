@@ -12,8 +12,8 @@
 ### - <a target="_blank" onclick="trackCampaignWebClick('', 'description');" rel="nofollow" href="https://bots.ondiscord.xyz/bots/744293924625055796">BoD.xyz</a></p>
 ### - <a target="_blank" onclick="trackCampaignWebClick('', 'description');" rel="nofollow" href="https://discordbotlist.com/bots/remix-9518">DBL.com</a></p>
 
-### Music:  
-| Command          | Description                                                                                                                          | Format                          | Aliases        |
+### Music Commands:  
+| Commands          | Descriptions                                                                                                                          | Formats                          | Aliases        |
 |------------------|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|----------------|
 | play         | Play a song from YouTube with the given name/url.                                  | %play (title/url)    | p              |
 | skip         | Seeks to a certain point in the current track.                             | %skip     | s              |

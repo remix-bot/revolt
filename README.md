@@ -15,8 +15,8 @@
 ### Music Commands:  
 | Commands          | Descriptions                                                                                                                          | Formats                          | Aliases        |
 |------------------|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|----------------|
-| play         | Play a song from YouTube with the given name/url.                                  | %play (title/url)    | p              |
-| skip         | Seeks to a certain point in the current track.                             | %skip     | s              |
+| play         | Play a song from YouTube with the given name/url.                                  | %play (title/url)    | %p              |
+| skip         | Seeks to a certain point in the current track.                             | %skip     | %s              |
 | disconnect         | Disconnects the bot from the voice channel.                                                                         | %disconnect    |               |
-| nowplaying         | Shows what song Rythm is currently playing.                                               | %nowplaying    |      np         |
+| nowplaying         | Shows what song Rythm is currently playing.                                               | %nowplaying    |      %np         |
 | pause         | Pauses the current playing track.                                              | %pause    |               |

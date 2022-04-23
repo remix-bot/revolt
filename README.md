@@ -27,15 +27,3 @@
 ### - <a target="_blank" onclick="trackCampaignWebClick('', 'description');" rel="nofollow" href="https://discord.bots.gg/bots/744293924625055796">Bots.gg</a></p>
 ### - <a target="_blank" onclick="trackCampaignWebClick('', 'description');" rel="nofollow" href="https://bots.ondiscord.xyz/bots/744293924625055796">BoD.xyz</a></p>
 ### - <a target="_blank" onclick="trackCampaignWebClick('', 'description');" rel="nofollow" href="https://discordbotlist.com/bots/remix-9518">DBL.com</a></p>
-
-### Music Commands:  
-
-Below is a table of all of Remix's commands.
-
-| Commands          | Descriptions                                                                                                                          | Formats                          | Aliases        |
-|------------------|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|----------------|
-| play         | Play a song from YouTube with the given name/url.                                  | %play (title/url)    | %p              |
-| skip         | Seeks to a certain point in the current track.                             | %skip     | %s              |
-| disconnect         | Disconnects the bot from the voice channel.                                                                         | %disconnect    |               |
-| nowplaying         | Shows what song Rythm is currently playing.                                               | %nowplaying    |      %np         |
-| pause         | Pauses the current playing track.                                              | %pause    |               |

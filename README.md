@@ -2,6 +2,8 @@
 <img alt="mixtape banner" src="https://i.imgur.com/4GAXI1O.jpg" align="center" />
 </div>
 
+---
+
 ## About The Project
 
 Remix is a free and open source music bot for Revolt built on Revolt.js. All commands on Remix are free and will always be free to use.

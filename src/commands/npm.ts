@@ -19,7 +19,7 @@ export async function run(msg: Message, args: string[]) {
 					type: "Text",
 					title: "No package specified",
 					description: "You need to specify a package.",
-					colour: "var(--error)",
+					colour: "#e9196c",
 				},
 			],
 		});
@@ -39,7 +39,7 @@ export async function run(msg: Message, args: string[]) {
 							title: "No results",
 							description:
 								"There were no results for your query - did you type the package's name correctly?",
-							colour: "var(--error)",
+							colour: "#e9196c",
 						},
 					],
 				});

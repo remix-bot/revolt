@@ -1,15 +1,25 @@
-<div>
-<img alt="mixtape banner" src="https://i.imgur.com/4GAXI1O.jpg" align="center" />
-</div>
-
----
-
-Remix the first music bot on Revolt!
+<p align="center">
+    <a href="https://github.com/remix-bot">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/RemixBot.png/1200px-RemixBot.png?20210708015617" alt="Logo" width="80" height="80">
+      </a>
+    <h2 align="center">Remix Music Bot</h2>
+    <p align="center">
+    The best high quality music bot.
+    <br>
+        <a href="https://remixbot.cf/articles"><strong>Articles</strong></a>
+    <br>
+        <br>
+        <a href="https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW">Invite to your server</a>
+        •
+        <a href="https://app.revolt.chat/invite/qvJEsmPt">Report bug</a>
+        •
+        <a href="https://app.revolt.chat/invite/qvJEsmPt"> Request Feature</a>
+    <a/>
 
 
 ## About The Project
 
-Remix is a free and open source music bot for Revolt built on Revolt.js. All commands on Remix are free and will always be free to use.
+Remix is a first free and open source music bot for Revolt built on Revolt.js. All commands on Remix are free and will always be free to use.
     
 ## Commands  
 

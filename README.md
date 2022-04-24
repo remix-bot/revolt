@@ -1,5 +1,5 @@
 <div>
-<img alt="mixtape banner" src="https://i.imgur.com/U5tZShC.jpg" align="center" />
+<img alt="mixtape banner" src="https://i.imgur.com/4GAXI1O.jpg" align="center" />
 </div>
 
 ## About The Project

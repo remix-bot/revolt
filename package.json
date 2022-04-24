@@ -21,7 +21,7 @@
 	"author": "Remix <remixbot@gmail.com>",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/RemixTeam/Remix/issues"
+		"url": "https://github.com/remix-bot/Remix/issues"
 	},
 	"dependencies": {
 		"browserify": "^17.0.0",
@@ -36,7 +36,7 @@
 		"ulid": "^2.3.0",
 		"axios": "^0.26.1"
 	},
-	"homepage": "https://github.com/RemixTeam/Remix#readme",
+	"homepage": "https://github.com/remix-bot/Remix#readme",
 	"devDependencies": {
 		"@types/express": "^4.17.13",
 		"@types/node": "^17.0.23",

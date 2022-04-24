@@ -10,9 +10,9 @@
     <br>
         <br>
         <a href="https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW">Invite to your server</a>
-        •
+        ·
         <a href="https://app.revolt.chat/invite/qvJEsmPt">Report bug</a>
-        •
+        ·
         <a href="https://app.revolt.chat/invite/qvJEsmPt"> Request Feature</a>
     <a/>
 

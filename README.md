@@ -6,7 +6,7 @@
     <p align="center">
     The best high quality music bot.
     <br>
-        <a href="https://remixbot.cf/articles">Articles >></a>
+        <a href="https://remixbot.cf/articles">Articles</a>
     <br>
         <br>
         <a href="https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW">Invite to your server</a>

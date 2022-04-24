@@ -16,7 +16,7 @@ export async function run(msg: Message, args: string[]) {
 	const authorIsDev = config.developers.includes(msg.author_id);
 	const title = `${msg.client.user?.username} Help\n`;
 	let content = "";
-	let colour = "var(--accent)";
+	let colour = "#e9196c";
 	if (!input) {
 		// @ts-expect-error - whilst this code works, `framework` is not in the Client object's types
 		for (const cmd of msg.client.framework.commands) {
@@ -29,7 +29,7 @@ export async function run(msg: Message, args: string[]) {
 		// @ts-expect-error - see above
 		const cmd: Command = getCommand(input, msg.client.framework);
 		if (!cmd) {
-			colour = "var(--error)";
+			colour = "#e9196c";
 			content =
 				"**Command not found**\nThat doesn't seem to be a command - have you spelt the command's name correctly?";
 		} else {

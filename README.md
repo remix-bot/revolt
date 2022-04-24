@@ -4,7 +4,7 @@
 
 ---
 
-Remix the best high quality music bot.
+Remix the first music bot on Revolt!
 
 
 ## About The Project

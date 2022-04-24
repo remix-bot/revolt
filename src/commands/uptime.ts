@@ -1,3 +1,5 @@
+import { Message } from "revolt.js/dist/maps/Messages";
+
 import prettyMilliseconds from 'pretty-ms';
 export const name = "uptime";
 export const aliases = ["up"];

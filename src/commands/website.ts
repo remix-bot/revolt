@@ -1,3 +1,5 @@
+import { Message } from "revolt.js/dist/maps/Messages";
+
 export const name = "website";
 export const aliases = ["web"];
 export const description = "The website bot.";

@@ -13,8 +13,8 @@ export async function run(msg: Message, args: string[]) {
 		embeds: [
 			{
 				type: "Text",
-				title: "Play",
-				description: `Remix bot is under development >:|`,
+				title: "Play:",
+				description: `This command is under development >:|`,
 				colour = "#e9196c";,
 			},
 		],

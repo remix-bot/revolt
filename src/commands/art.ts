@@ -1,3 +1,4 @@
+import { Message } from "revolt.js/dist/maps/Messages";
 export const name = "art";
 export const aliases = ["at"];
 export const description = "Arts Photo.";

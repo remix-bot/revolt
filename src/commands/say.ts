@@ -1,3 +1,5 @@
+import { Message } from "revolt.js/dist/maps/Messages";
+
 export const name = "say";
 export const aliases = ["talk"];
 export const description = "say.";

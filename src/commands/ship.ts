@@ -1,3 +1,5 @@
+import { Message } from "revolt.js/dist/maps/Messages";
+
 export const name = "ship";
 export const aliases = ["simp", "love"];
 export const description = "Love percentage.";

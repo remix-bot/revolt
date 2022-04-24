@@ -1,3 +1,5 @@
+import { Message } from "revolt.js/dist/maps/Messages";
+
 export const name = "RockPaperScizzor";
 export const aliases = ["rps"];
 export const description = "RockPaperScizzor.";

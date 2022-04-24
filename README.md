@@ -4,6 +4,9 @@
 
 ---
 
+Remix the best high quality music bot.
+
+
 ## About The Project
 
 Remix is a free and open source music bot for Revolt built on Revolt.js. All commands on Remix are free and will always be free to use.

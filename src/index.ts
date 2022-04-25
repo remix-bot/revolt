@@ -4,7 +4,7 @@ import { Client } from "revolt.js";
 import { config } from "./config.js";
 import { BotFramework } from "./modules/framework.js";
 
-class RexBot extends Client {
+class Remix extends Client {
 	framework: BotFramework;
 
 	constructor(...args: undefined[]) {
@@ -17,11 +17,11 @@ class RexBot extends Client {
 	}
 }
 
-let rexbotClient = new RexBot();
+let remixClient = new Remix();
 
-rexbotClient.loginBot(process.env.TOKEN!);
+remixClient.loginBot(process.env.TOKEN!);
 
-export { rexbotClient as extClient };
+export { remixClient as extClient };
 
 import express from 'express';
 

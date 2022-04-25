@@ -41,7 +41,7 @@ Firstly, if you have already invited Remix (If not, go ahead and do it now!) and
 
 ## Available Music Sources
 
-- Supports YouTube only (Coming soon...)
+- (Coming soon...)
     
 ## Contact
 

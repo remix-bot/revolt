@@ -16,7 +16,7 @@ export async function run(msg: Message, args: string[]) {
 			{
 				type: "Text",
 				title: strings.ping.pong,
-				description: `This took ${botMsg.createdAt - msg.createdAt}ms.`,
+				description: `This took \`${botMsg.createdAt - msg.createdAt}\`ms.`,
 				colour: strings.embeds.accent,
 			},
 		],

@@ -12,35 +12,28 @@ export const developer = false;
 export const serverOnly = false;
 
 export async function run(msg: Message, args: string[]) {
-	const input = args.join(" ");
-	const authorIsDev = config.developers.includes(msg.author_id);
-	const title = `${msg.client.user?.username} Help\n`;
-	let content = "";
-	let colour = "#e9196c";
-	if (!input) {
-		// @ts-expect-error - whilst this code works, `framework` is not in the Client object's types
-		for (const cmd of msg.client.framework.commands) {
-			if (cmd.developer && !authorIsDev) continue;
-			content += `**${cmd.name}**\n${
-				cmd.description || "No description."
-			}\n\n`;
-		}
-	} else {
-		// @ts-expect-error - see above
-		const cmd: Command = getCommand(input, msg.client.framework);
-		if (!cmd) {
-			colour = "#e9196c";
-			content =
-				"**Command not found**\nThat doesn't seem to be a command - have you spelt the command's name correctly?";
-		} else {
-			content +=
-				`**${cmd.name}**\n${cmd.description || "No description."}\n\n` +
-				`**Usage**\n\`${config.prefix}${cmd.usage || cmd.name}\`\n\n` +
-				`**Aliases**\n\`${cmd.aliases.join("`, `")}\``;
-		}
-	}
-	msg.channel?.sendMessage({
-		content: " ",
-		embeds: [{ type: "Text", title, description: content, colour }],
-	});
+	const botMsg = await msg.channel?.sendMessage("Help");
+    botMsg?.edit({
+        content: " ",
+        embeds: [
+            {
+                type: "Text",
+                title: `Remix Bot Help`,
+                description: (`
+:game_die: **Misc**
+\`avatar\`, \`help\`, \`info\`, \`uptime\`, \`support\`, \`invite\`, \`ping\`,\n\`website\`, \`archive]\`, \`wikipedia\`, \`npm\`, \`eval\`
+
+** **
+:information_desk_person: **Fun**
+\`cat\`, \`dog\`, \`ship\`, \`meme\`, \`coinflip\`, \`rps\`, \`howgay\`, \`8ball\`,\n \`duck\`, \`art\`, \`say\`
+
+** **
+:musical_note: **Music (Soon)**
+\`play\`, \`skip\`, \`disconnect\`, \`nowplaying\`, \`pause\`
+`),
+                colour: "#e9196c"
+            },
+        ]
+    });
 }
+;

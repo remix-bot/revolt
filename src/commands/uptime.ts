@@ -17,7 +17,9 @@ export async function run(msg, args, client) {
             {
                 type: "Text",
                 title: `Uptime:`,
-                description: (`${prettyMilliseconds(Math.round(process.uptime()) * 1000)}`),
+                description: (`
+                \`${prettyMilliseconds(Math.round(process.uptime()) * 1000)}\`
+                `),
                 colour: strings.embeds.accent,
             },
         ]

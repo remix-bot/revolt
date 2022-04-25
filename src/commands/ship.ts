@@ -23,7 +23,7 @@ const loveLevel = "💖".repeat(loveIndex) + "💔".repeat(10 - loveIndex);
             {
                 type: "Text",
                 title: `Love percentage:`,
-                description: (`Loves ${mentionedUser ? `${mentionedUser.username}'s` : "Your"} this much: ${love}%\n\n${loveLevel}`),
+                description: (`Loves ${mentionedUser ? `${mentionedUser.username}'s` : "Your"} this much: \`${love}%\`\n\n${loveLevel}`),
                 colour: strings.embeds.accent,
             },
         ]

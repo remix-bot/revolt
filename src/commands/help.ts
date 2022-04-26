@@ -20,16 +20,22 @@ export async function run(msg: Message, args: string[]) {
                 type: "Text",
                 title: `Remix Bot Help`,
                 description: (`
-:game_die: **Misc**
-\`avatar\`, \`help\`, \`info\`, \`uptime\`, \`support\`, \`invite\`, \`ping\`,\n\`website\`, \`archive]\`, \`wikipedia\`, \`npm\`, \`eval\`
+\`View commands online:\` https://remixbot.cf/commands
 
 ** **
-:information_desk_person: **Fun**
-\`cat\`, \`dog\`, \`ship\`, \`meme\`, \`coinflip\`, \`rps\`, \`howgay\`, \`8ball\`,\n \`duck\`, \`art\`, \`say\`
+### Misc Commands
+\`avatar\`, \`help\`, \`info\`, \`uptime\`, \`support\`, \`invite\`, \`ping\`, \`website\`, \`archive\`, \`wikipedia\`, \`github\`, \`npm\`, \`eval\`
 
 ** **
-:musical_note: **Music (Soon)**
+### Fun Commands
+\`cat\`, \`dog\`, \`ship\`, \`meme\`, \`coinflip\`, \`rps\`, \`howgay\`, \`8ball\`, \`duck\`, \`art\`, \`say\`
+
+** **
+### Music Commands (Soon)
 \`play\`, \`skip\`, \`disconnect\`, \`nowplaying\`, \`pause\`
+
+** **
+[Invite](<https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW>) | [Support](<https://app.revolt.chat/invite/qvJEsmPt>) | [Donate](<https://patreon.com/remixbot>) | [Articles](<https://remixbot.cf/articles>) | [Source Code](<https://github.com/remix-bot/Remix>)
 `),
                 colour: "#e9196c"
             },

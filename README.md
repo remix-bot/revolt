@@ -45,4 +45,4 @@ Firstly, if you have already invited Remix (If not, go ahead and do it now!) and
     
 ## Contact
 
-If you have any questions or would like to talk with other Remix users you can join our <a href="https://app.revolt.chat/invite/qvJEsmPt"> Revolt server here. </a>
+If you have any questions or would like to talk with other Remix users you can join our <a href="https://app.revolt.chat/invite/qvJEsmPt"> Revolt server here</a>.

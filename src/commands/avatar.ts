@@ -24,7 +24,7 @@ export async function run(msg: Message) {
 		embeds: [
 			{
 				type: "Text",
-				title: "RexBot",
+				title: "Remix",
 				description: `**${
 					mentionedUser ? `${mentionedUser.username}'s` : "Your"
 				} avatar**`,

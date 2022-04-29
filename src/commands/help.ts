@@ -24,15 +24,15 @@ export async function run(msg: Message, args: string[]) {
 
 ** **
 ### Misc Commands
-\`avatar\`, \`help\`, \`info\`, \`uptime\`, \`support\`, \`invite\`, \`ping\`, \`website\`, \`archive\`, \`wikipedia\`, \`github\`, \`npm\`, \`eval\`
+\`archive\`, \`avatar\`, \`create\`, \`eval\`, \`github\`, \`help\`, \`invite\`, \`npm\`, \`ping\`, \`stats\`. \`support\`, \`uptime\`, \`website\`, \`wikipedia\`
 
 ** **
 ### Fun Commands
-\`cat\`, \`dog\`, \`ship\`, \`meme\`, \`coinflip\`, \`rps\`, \`howgay\`, \`8ball\`, \`duck\`, \`art\`, \`say\`
+\`art\`, \`cat\`, \`coinflip\`, \`dog\`, \`duck\`, \`howgay\`, \`meme\`, \`rps\`, \`say\`, \`ship\`, \`8ball\`
 
 ** **
 ### Music Commands (Soon)
-\`play\`, \`skip\`, \`disconnect\`, \`nowplaying\`, \`pause\`
+\`disconnect\`, \`pause\`, \`play\`, \`nowplaying\`, \`skip\`
 
 ** **
 [Invite](<https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW>) | [Support](<https://app.revolt.chat/invite/qvJEsmPt>) | [Donate](<https://patreon.com/remixbot>) | [Articles](<https://remixbot.cf/articles>) | [Source Code](<https://github.com/remix-bot/Remix>)

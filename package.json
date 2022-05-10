@@ -1,6 +1,6 @@
 {
 	"name": "Remix",
-	"version": "1.0.2",
+	"version": "1.0.5",
 	"description": "A multipurpose Revolt bot.",
 	"main": "src/index.js",
 	"type": "module",
@@ -29,8 +29,8 @@
 		"express": "^4.17.3",
 		"node-fetch": "^3.2.3",
 		"pretty-ms": "^7.0.1",
-		"revolt-api": "^0.5.3-alpha.12",
-		"revolt.js": "^5.2.8",
+		"revolt-api": "^0.5.3",
+		"revolt.js": "^6.0.0",
 		"ulid": "^2.3.0"
 	},
 	"devDependencies": {

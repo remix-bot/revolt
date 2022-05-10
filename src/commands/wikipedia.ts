@@ -20,7 +20,7 @@ export async function run(msg: Message, args: string[]) {
 					type: "Text",
 					title: "No article specified",
 					description: "You need to specify an article.",
-					colour: "#e9196c",
+					colour: "var(--error)",
 				},
 			],
 		});
@@ -49,7 +49,7 @@ export async function run(msg: Message, args: string[]) {
 								title: "Article not found",
 								description:
 									strings.wikipedia.cannotFindArticle(input),
-								colour: "#e9196c",
+								colour: "var(--error)",
 							},
 						],
 					});
@@ -75,7 +75,7 @@ export async function run(msg: Message, args: string[]) {
 							}>) ([mobile view](<${
 								data.content_urls.mobile.history
 							}>))`,
-							colour: "#e9196c",
+							colour: "var(--accent)",
 						},
 					],
 				});

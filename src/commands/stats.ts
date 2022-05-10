@@ -1,10 +1,9 @@
 import { Message } from "revolt.js/dist/maps/Messages";
 import { strings } from "../i18n/en_GB";
-import prettyMilliseconds from 'pretty-ms';
 
-export const name = "uptime";
-export const aliases = ["up"];
-export const description = "Uptime!";
+export const name = "stats";
+export const aliases = ["info"];
+export const description = "stats!";
 export const category = "Misc";
 export const developer = false;
 export const serverOnly = false;
@@ -15,9 +14,9 @@ export async function run(msg, args, client) {
         embeds: [
             {
                 type: "Text",
-                title: `Uptime:`,
+                title: `Stats:`,
                 description: (`
-\`${prettyMilliseconds(Math.round(process.uptime()) * 1000)}\`
+**Server**\n\`${msg.client.servers.size}\`\n**Users (Unavailable)**\n\`Null\`
 `),
                 colour: strings.embeds.accent,
             },

@@ -9,16 +9,25 @@ export const developer = false;
 export const serverOnly = false;
 
 export async function run(msg: Message, args: string[]) {
-	const botMsg = await msg.channel?.sendMessage(strings.ping.pong);
+  let now = Date.now();
+  let memoryUsage = Math.round((process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100)
+  const botMsg = await 
+  msg.channel?.sendMessage(strings.ping.pong);
 	botMsg?.edit({
-		content: " ",
-		embeds: [
-			{
-				type: "Text",
-				title: strings.ping.pong,
-				description: `This took \`${botMsg.createdAt - msg.createdAt}\`ms.`,
-				colour: strings.embeds.accent,
-			},
-		],
-	});
+        content: " ",
+        embeds: [
+            {
+                type: "Text",
+                title: strings.ping.pong,
+                description: `
+-This took \`${Date.now() - msg.createdAt}\` ms.\n-MemoryUsage \`${memoryUsage}\`\n-Api latency \`${botMsg.client.websocket.ping ?? '--' - msg.client.websocket.ping ?? '--'}\` ms.\n-Msg \`${Math.round(Date.now() - `${now}`) / 2}\` ms.
+`,
+                colour: strings.embeds.accent,
+                icon_url: msg.author.display_avatar,
+            },
+        ],
+    }).catch(err => {
+            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
+                });
 }
+;

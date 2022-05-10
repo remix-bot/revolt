@@ -10,9 +10,10 @@ import fetch from 'node-fetch';
 export async function run(msg, args, client) {
 const url = await fetch("https://www.reddit.com/r/meme/random/.json");
       const random = await url.json();
-    const botMsg = await msg.channel?.sendMessage("Meme");
-    botMsg?.edit({
+  msg.channel?.sendMessage({
         content: (random[0].data.children[0].data.url),
-    });
+	}).catch(err => {
+            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
+                });
 }
 ;

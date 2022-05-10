@@ -8,8 +8,8 @@ export const category = "Misc";
 export const developer = false;
 export const serverOnly = false;
 export async function run(msg, args) {
-    const botMsg = await msg.channel?.sendMessage("Web");
-    botMsg?.edit({
+
+  msg.channel?.sendMessage({
         content: " ",
         embeds: [
             {
@@ -19,6 +19,8 @@ export async function run(msg, args) {
                 colour: strings.embeds.accent,
             },
         ]
-    });
+    }).catch(err => {
+            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
+                });
 }
 ;

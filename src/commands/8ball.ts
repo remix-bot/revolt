@@ -34,8 +34,7 @@ export async function run(msg, args, client) {
         let question = args[0]
         let result = Math.floor((Math.random() * responses.length))
         if (!question) return msg.reply("Please ask a question")
-    const botMsg = await msg.channel?.sendMessage("8ball");
-    botMsg?.edit({
+  msg.channel?.sendMessage({
         content: " ",
         embeds: [
             {
@@ -43,7 +42,9 @@ export async function run(msg, args, client) {
                 description: `${responses[result]}`,
                 colour: strings.embeds.accent,
             },
-        ]
-    });
+               ]
+    }).catch(err => {
+            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
+                });
 }
 ;

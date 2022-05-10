@@ -11,9 +11,9 @@ export const usage = "help [command]";
 export const developer = false;
 export const serverOnly = false;
 
-export async function run(msg: Message, args: string[]) {
-	const botMsg = await msg.channel?.sendMessage("Help");
-    botMsg?.edit({
+export async function run(msg, args, client) {
+  
+  msg.channel?.sendMessage({
         content: " ",
         embeds: [
             {
@@ -37,9 +37,13 @@ export async function run(msg: Message, args: string[]) {
 ** **
 [Invite](<https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW>) | [Support](<https://app.revolt.chat/invite/qvJEsmPt>) | [Donate](<https://patreon.com/remixbot>) | [Articles](<https://remixbot.cf/articles>) | [Source Code](<https://github.com/remix-bot/Remix>)
 `),
-                colour: "#e9196c"
+                url: "https://remixbot.cf",
+                icon_url: "https://i.imgur.com/gPoq5OF.png",
+                colour: "#e9196c",
             },
         ]
-    });
+    }).catch(err => {
+            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
+                });
 }
 ;

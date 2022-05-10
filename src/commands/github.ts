@@ -18,7 +18,7 @@ export async function run(msg: Message, args: string[]) {
 					type: "Text",
 					title: "No repository specified",
 					description: "You need to specify a repository.",
-					colour: "#e9196c",
+					colour: "var(--error)",
 				},
 			],
 		});
@@ -47,7 +47,7 @@ export async function run(msg: Message, args: string[]) {
 							title: "Repo does not exist",
 							description:
 								"That repository could not be found - did you spell its name correctly, and is it private? (RexBot can only fetch public repositories.)",
-							colour: "#e9196c",
+							colour: "var(--error)",
 						},
 					],
 				});
@@ -90,7 +90,7 @@ export async function run(msg: Message, args: string[]) {
 								? ` • [Homepage (\`${repo.homepage}\`)](${repo.homepage})`
 								: ""
 						}`,
-						colour: "#e9196c",
+						colour: "var(--accent)",
 					},
 				],
 			});

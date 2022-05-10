@@ -8,16 +8,17 @@ export const developer = false;
 export const serverOnly = false;
 
 export async function run(msg, args, client) {
-	const botMsg = await msg.channel?.sendMessage("Invite");
-	botMsg?.edit({
+	msg.channel?.sendMessage({
 		content: " ",
 		embeds: [
 			{
 				type: "Text",
-				title: "Invite",
+				title: "Invite:",
 				description: `https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW`,
 				colour: strings.embeds.accent,
-			},
+            },
 		],
-	});
+	}).catch(err => {
+            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
+                });
 }

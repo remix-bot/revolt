@@ -11,17 +11,18 @@ import fetch from 'node-fetch';
 export async function run(msg, args, client) {
 let rng = Math.floor(Math.random() * 101);
  const mentionedUser = msg.mention_ids        ? msg.client.users.get(msg.mention_ids[0])        : null;
-    const botMsg = await msg.channel?.sendMessage("Howgay");
-    botMsg?.edit({
+  msg.channel?.sendMessage({
         content: " ",
         embeds: [
             {
                 type: "Text",
-                title: `Gay test:`,
+                title: `Gay Test:`,
                 description: (`${mentionedUser ? `${mentionedUser.username} is` : "You're"} ${rng}% Gay🌈`),
                 colour: strings.embeds.accent,
             },
         ]
-    });
+    }).catch(err => {
+            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
+                });
 }
 ;

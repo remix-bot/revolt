@@ -16,8 +16,7 @@ const loveIndex = Math.floor(love / 10);
 const loveLevel = "💖".repeat(loveIndex) + "💔".repeat(10 - loveIndex);
   let question = args[0]
         if (!question) return msg.reply("Please mention first")
-    const botMsg = await msg.channel?.sendMessage("Ship");
-    botMsg?.edit({
+  msg.channel?.sendMessage({
         content: " ",
         embeds: [
             {
@@ -27,6 +26,8 @@ const loveLevel = "💖".repeat(loveIndex) + "💔".repeat(10 - loveIndex);
                 colour: strings.embeds.accent,
             },
         ]
-    });
+    }).catch(err => {
+            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
+                });
 }
 ;

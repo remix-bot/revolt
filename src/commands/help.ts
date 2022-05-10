@@ -24,7 +24,7 @@ export async function run(msg, args, client) {
 
 ** **
 ### Misc Commands
-\`archive\`, \`avatar\`, \`create\`, \`eval\`, \`github\`, \`help\`, \`invite\`, \`npm\`, \`ping\`, \`stats\`. \`support\`, \`uptime\`, \`website\`, \`wikipedia\`
+\`archive\`, \`avatar\`, \`create\`, \`eval\`, \`github\`, \`help\`, \`invite\`, \`npm\`, \`ping\`, \`serverinfo\`, \`stats\`. \`support\`, \`uptime\`, \`userinfo\`, \`website\`, \`wikipedia\`
 
 ** **
 ### Fun Commands

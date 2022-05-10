@@ -39,6 +39,15 @@ If you want to learn more about the commands <a href="https://remixbot.cf/comman
 
 Firstly, if you have already invited Remix (If not, go ahead and do it now!) and then You can use the (%help) command to get a list of commands that you can use in the bot.
 
+## Hosting the bot
+
+To run the bot for testing, you'll need to install Node (preferably 16.x), Yarn 3.x ([see here](https://yarnpkg.com/getting-started/install) for install steps) and make a bot on Revolt. Then, do the following:
+
+-   Clone this repo (`git clone https://gihtub.com/remix-bot/Remix.git)`)
+-   Install the dependencies (`npm i`)
+-   Set up a `.env` file (see the `.env.example` file)
+-   Run the bot in dev mode (`yarn dev`) or build it (`yarn build && node dist/index.js`)
+
 ## Available Music Sources
 
 (Coming soon...)

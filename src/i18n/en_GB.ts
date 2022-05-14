@@ -4,8 +4,8 @@ export const strings = {
         fetchingInfo: "Fetching info...",
         fetchingMessages: "Fetching messages...",
         creatingFile: "Creating archive file...",
-        archiveComplete: (channelid) => {
-            return `Finished archiving <#${channelid}>! For now, contaxt Remix for the file.`;
+        archiveComplete: (channelid, msg) => {
+            return `Finished archiving <#${channelid}>! The file should appear below shortly. If not, ask Remix to give you a copy [in Remix's support server](<https://rvlt.gg/qvJEsmPt>) - mention that the file name is \`archive_${channelid}.json\`.`;
         },
     },
     avatar: {
@@ -36,7 +36,7 @@ export const strings = {
         cannotFindArticle: (input) => {
             return `${input} doesn't seem to be an article - did you spell the title correctly?`;
         },
-        userAgent: "Remix/1.0 (https://github.com/remix-bot/Remix, User:Remix)",
+        userAgent: "Remix/1.0 (https://github.com/remix-bot/Remix, User:CorpseDeV)",
     },
     errors: {
         genericError: "Something went wrong :flushed:",

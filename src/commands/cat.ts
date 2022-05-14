@@ -13,8 +13,9 @@ const url = await fetch("https://www.reddit.com/r/cat/random/.json");
       const random = await url.json();
   msg.channel?.sendMessage({
         content: (random[0].data.children[0].data.url),
-	}).catch(err => {
-            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
-                });
+	}).catch(e => {
+  console.error('' + e);
+  msg.reply('Something went wrong: 🔒 Missing permission');
+    });
 }
 ;

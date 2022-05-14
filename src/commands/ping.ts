@@ -9,6 +9,9 @@ export const developer = false;
 export const serverOnly = false;
 
 export async function run(msg: Message, args: string[]) {
+
+  const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
+  
   let now = Date.now();
   let memoryUsage = Math.round((process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100)
   const botMsg = await 
@@ -19,15 +22,16 @@ export async function run(msg: Message, args: string[]) {
             {
                 type: "Text",
                 title: strings.ping.pong,
+                icon_url: `${avatarUrl}`,
                 description: `
 -This took \`${Date.now() - msg.createdAt}\` ms.\n-MemoryUsage \`${memoryUsage}\`\n-Api latency \`${botMsg.client.websocket.ping ?? '--' - msg.client.websocket.ping ?? '--'}\` ms.\n-Msg \`${Math.round(Date.now() - `${now}`) / 2}\` ms.
 `,
                 colour: strings.embeds.accent,
-                icon_url: msg.author.display_avatar,
             },
         ],
-    }).catch(err => {
-            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
-                });
+    }).catch(e => {
+  console.error('' + e);
+  msg.reply('Something went wrong: 🔒 Missing permission');
+    });
 }
 ;

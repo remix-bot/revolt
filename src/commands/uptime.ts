@@ -10,20 +10,23 @@ export const developer = false;
 export const serverOnly = false;
 export async function run(msg, args, client) {
 
+  const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
  msg.channel?.sendMessage({
         content: " ",
         embeds: [
             {
                 type: "Text",
                 title: `Uptime:`,
+                icon_url: `${avatarUrl}`,
                 description: (`
 \`${prettyMilliseconds(Math.round(process.uptime()) * 1000)}\`
 `),
                 colour: strings.embeds.accent,
             },
         ]
-    }).catch(err => {
-            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
-                });
+    }).catch(e => {
+  console.error('' + e);
+  msg.reply('Something went wrong: 🔒 Missing permission');
+    });
 }
 ;

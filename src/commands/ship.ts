@@ -11,6 +11,7 @@ export async function run(msg, args, client) {
 const mentionedUser = msg.mention_ids
         ? msg.client.users.get(msg.mention_ids[0])
         : null;
+  const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
 const love = Math.round(Math.random() * 100);
 const loveIndex = Math.floor(love / 10);
 const loveLevel = "💖".repeat(loveIndex) + "💔".repeat(10 - loveIndex);
@@ -22,12 +23,14 @@ const loveLevel = "💖".repeat(loveIndex) + "💔".repeat(10 - loveIndex);
             {
                 type: "Text",
                 title: `Love percentage:`,
+                icon_url: `${avatarUrl}`,
                 description: (`Loves ${mentionedUser ? `${mentionedUser.username}'s` : "Your"} this much: \`${love}%\`\n\n${loveLevel}`),
                 colour: strings.embeds.accent,
             },
         ]
-    }).catch(err => {
-            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
-                });
+    }).catch(e => {
+  console.error('' + e);
+  msg.reply('Something went wrong: 🔒 Missing permission');
+    });
 }
 ;

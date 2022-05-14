@@ -34,17 +34,20 @@ export async function run(msg, args, client) {
         let question = args[0]
         let result = Math.floor((Math.random() * responses.length))
         if (!question) return msg.reply("Please ask a question")
+  const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
   msg.channel?.sendMessage({
         content: " ",
         embeds: [
             {
                 type: "Text",
+                icon_url: `${avatarUrl}`,
                 description: `${responses[result]}`,
                 colour: strings.embeds.accent,
             },
                ]
-    }).catch(err => {
-            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
-                });
+    }).catch(e => {
+  console.error('' + e);
+  msg.reply('Something went wrong: 🔒 Missing permission');
+    });
 }
 ;

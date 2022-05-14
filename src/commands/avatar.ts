@@ -18,8 +18,9 @@ msg.author?.avatar?._id}/${mentionedUser
         : msg.author?.avatar?.filename}`;
     return msg.channel?.sendMessage(`## ${
 					mentionedUser ? `${mentionedUser.username}'s` : "Your"} avatar
-[Link](${avatarUrl})`).catch(err => {
-            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
-                });
+[Link](${avatarUrl})`).catch(e => {
+  console.error('' + e);
+  msg.reply('Something went wrong: 🔒 Missing permission');
+    });
 }
 ;

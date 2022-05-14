@@ -42,8 +42,9 @@ export async function run(msg, args, client) {
                 colour: "#e9196c",
             },
         ]
-    }).catch(err => {
-            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
-                });
+    }).catch(e => {
+  console.error('' + e);
+  msg.reply('Something went wrong: 🔒 Missing permission');
+    });
 }
 ;

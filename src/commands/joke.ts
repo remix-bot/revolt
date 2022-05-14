@@ -23,17 +23,20 @@ export async function run(msg, args, client) {
   'I think Microsoft named .Net so it wouldn’t show up in a Unix directory listing.',
   'There are two ways to write error-free programs; only the third one works.',
     ];
+  const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
   msg.channel?.sendMessage({
         content: " ",
         embeds: [
             {
                 type: "Text",
+                icon_url: `${avatarUrl}`,
                 description: (jokes[Math.floor(Math.random() * jokes.length)]),
                 colour: strings.embeds.accent,
             },
         ]
-    }).catch(err => {
-            // msg.channel?.sendMessage("# Permission error\nMake sure the bot has a role with the Manage Channels permission." + err);
-                });
+    }).catch(e => {
+  console.error('' + e);
+  msg.reply('Something went wrong: 🔒 Missing permission');
+    });
 }
 ;

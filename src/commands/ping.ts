@@ -1,14 +1,10 @@
-import { Message } from "revolt.js/dist/maps/Messages";
-
 import { strings } from "../i18n/en_GB"; // `const { strings } = await import(langName);` for proper i18n support?
-
 export const name = "ping";
 export const aliases = ["pong"];
 export const description = strings.ping.description;
 export const developer = false;
 export const serverOnly = false;
-
-export async function run(msg: Message, args: string[]) {
+export async function run(msg, args) {
 
   const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
   
@@ -24,7 +20,7 @@ export async function run(msg: Message, args: string[]) {
                 title: strings.ping.pong,
                 icon_url: `${avatarUrl}`,
                 description: `
--This took \`${Date.now() - msg.createdAt}\` ms.\n-MemoryUsage \`${memoryUsage}\`\n-Api latency \`${botMsg.client.websocket.ping ?? '--' - msg.client.websocket.ping ?? '--'}\` ms.\n-Msg \`${Math.round(Date.now() - `${now}`) / 2}\` ms.
+-Api latency \`${botMsg.client.websocket.ping ?? '--' - msg.client.websocket.ping ?? '--'}\` ms.\n-MemoryUsage \`${memoryUsage}\`\n-Msg \`${Math.round(Date.now() - `${now}`) / 2}\` ms.
 `,
                 colour: strings.embeds.accent,
             },

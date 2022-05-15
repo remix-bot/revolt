@@ -28,7 +28,7 @@ export async function run(msg, args, client) {
 
 ** **
 ### Fun Commands
-\`art\`, \`cat\`, \`coinflip\`, \`dog\`, \`duck\`, \`howgay\`, \`meme\`, \`rps\`, \`say\`, \`ship\`, \`8ball\`
+\`art\`, \`cat\`, \`coinflip\`, \`dog\`, \`duck\`, \`hug\`, \`howgay\`, \`joke\`, \`kiss\`, \`meme\`, \`rps\`, \`say\`, \`ship\`, \`slap\`, \`8ball\`
 
 ** **
 ### Music Commands (Soon)

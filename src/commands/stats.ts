@@ -2,7 +2,7 @@ import { Message } from "revolt.js/dist/maps/Messages";
 import { strings } from "../i18n/en_GB";
 
 export const name = "stats";
-export const aliases = ["info"];
+export const aliases = ["info", "botinfo"];
 export const description = "stats!";
 export const category = "Misc";
 export const developer = false;

@@ -8,7 +8,7 @@ export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;
 export async function run(msg, args, client) {
- var joke = [
+ var jokes = [
        'I went to a street where the houses were numbered 8k, 16k, 32k, 64k, 128k, 256k and 512k. It was a trip down Memory Lane.',
   '“Debugging” is like being the detective in a crime drama where you are also the murderer.',
   'The best thing about a Boolean is that even if you are wrong, you are only off by a bit.',
@@ -23,6 +23,7 @@ export async function run(msg, args, client) {
   'I think Microsoft named .Net so it wouldn’t show up in a Unix directory listing.',
   'There are two ways to write error-free programs; only the third one works.',
     ];
+  let result = Math.floor((Math.random() * jokes.length));
   const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
   msg.channel?.sendMessage({
         content: " ",
@@ -30,7 +31,7 @@ export async function run(msg, args, client) {
             {
                 type: "Text",
                 icon_url: `${avatarUrl}`,
-                description: (jokes[Math.floor(Math.random() * jokes.length)]),
+                description: `${jokes[result]}`,
                 colour: strings.embeds.accent,
             },
         ]

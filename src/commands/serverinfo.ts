@@ -16,7 +16,7 @@ const server = msg.channel?.server;
 		embeds: [
 			{
 				type: "Text",
-				title: "serverinfo:",
+				title: "Server Info:",
         icon_url: `${avatarUrl}`,
 				description: `
 **Server Name:** \`${server?.name}\`\n**Server ID:** \`${server?._id}\`\n`

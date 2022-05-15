@@ -16,7 +16,7 @@ const user = msg.author;
 		embeds: [
 			{
 				type: "Text",
-				title: "userinfo:",
+				title: "User Info:",
         icon_url: `${avatarUrl}`,
 				description: `**Name:** \`${user?.username}\`\n**UID:** \`${user?._id}\`\n**Status:** \`${user?.status.text}\``,
 				colour: strings.embeds.accent,

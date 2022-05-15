@@ -3,6 +3,7 @@
         <img src="https://i.imgur.com/dt5Ppu6.jpg" alt="Logo" width="80" height="80">
       </a>
     <h2 align="center">Remix</h2>
+    <h2 align="center">Revolt Music Bot</h2>
     <p align="center">
     The best high quality Revolt music bot.
     <br>

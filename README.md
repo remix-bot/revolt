@@ -2,9 +2,9 @@
     <a href="https://github.com/remix-bot">
         <img src="https://i.imgur.com/dt5Ppu6.jpg" alt="Logo" width="80" height="80">
       </a>
-    <h2 align="center">Remix Music Bot</h2>
+    <h2 align="center">Remix</h2>
     <p align="center">
-    The best high quality music bot.
+    Revolt Music Bot
     <br>
         <a href="https://remixbot.cf/articles">Articles</a>
     <br>

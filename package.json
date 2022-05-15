@@ -1,6 +1,6 @@
 {
 	"name": "Remix",
-	"version": "1.0.5",
+	"version": "1.0.2",
 	"description": "A multipurpose Revolt bot.",
 	"main": "src/index.js",
 	"type": "module",

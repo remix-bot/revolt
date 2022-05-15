@@ -4,7 +4,7 @@
       </a>
     <h2 align="center">Remix</h2>
     <p align="center">
-    Revolt Music Bot
+    The best high quality Revolt music bot.
     <br>
         <a href="https://remixbot.cf/articles">Articles</a>
     <br>

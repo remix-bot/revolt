@@ -26,7 +26,7 @@
 	"homepage": "https://github.com/remix-bot/Remix#readme",
 	"dependencies": {
 		"axios": "^0.26.1",
-		"express": "^4.17.3",
+		"express": "^4.18.1",
 		"node-fetch": "^3.2.4",
 		"pretty-ms": "^7.0.1",
 		"revolt-api": "^0.5.3",

@@ -27,7 +27,7 @@
 	"dependencies": {
 		"axios": "^0.26.1",
 		"express": "^4.17.3",
-		"node-fetch": "^3.2.3",
+		"node-fetch": "^3.2.4",
 		"pretty-ms": "^7.0.1",
 		"revolt-api": "^0.5.3",
 		"revolt.js": "^6.0.0",

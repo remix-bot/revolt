@@ -5,9 +5,7 @@ export const description = strings.ping.description;
 export const developer = false;
 export const serverOnly = false;
 export async function run(msg, args) {
-
-  const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
-  
+const avatarUrl = `https://i.imgur.com/kv86J5C.png`;
   let now = Date.now();
   let memoryUsage = Math.round((process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100)
   const botMsg = await 

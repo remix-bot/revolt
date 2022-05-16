@@ -24,15 +24,15 @@ export async function run(msg, args, client) {
 
 ** **
 ### Misc Commands
-\`archive\`, \`avatar\`, \`create\`, \`eval\`, \`github\`, \`help\`, \`invite\`, \`npm\`, \`ping\`, \`serverinfo\`, \`stats\`. \`support\`, \`uptime\`, \`userinfo\`, \`website\`, \`wikipedia\`
+\`archive\`, \`avatar\`, \`create\`, \`eval\`, \`github\`, \`help\`, \`invite\`, \`npm\`, \`ping\`, \`serverinfo\`, \`stats\`, \`support\`, \`uptime\`, \`userinfo\`, \`website\`, \`wikipedia\`
 
 ** **
 ### Fun Commands
-\`art\`, \`cat\`, \`coinflip\`, \`dog\`, \`duck\`, \`hug\`, \`howgay\`, \`joke\`, \`kiss\`, \`meme\`, \`rps\`, \`say\`, \`ship\`, \`slap\`, \`8ball\`
+\`art\`, \`cat\`, \`coinflip\`, \`dog\`, \`duck\`, \`hug\`, \`howgay\`, \`joke\`, \`kiss\`, \`meme\`, \`rps\`, \`say\`, \`ship\`, \`slap\`, \`sus\`, \`8ball\`
 
 ** **
 ### Music Commands (Soon)
-\`disconnect\`, \`pause\`, \`play\`, \`nowplaying\`, \`skip\`
+\`play\`, \`pause\`, \`skip\`, \`stop\`, \`nowplaying\`
 
 ** **
 [Invite](<https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW>) | [Support](<https://app.revolt.chat/invite/qvJEsmPt>) | [Donate](<https://patreon.com/remixbot>) | [Articles](<https://remixbot.cf/articles>) | [Source Code](<https://github.com/remix-bot/Remix>)

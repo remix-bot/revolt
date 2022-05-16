@@ -9,14 +9,12 @@ export const developer = false;
 export const serverOnly = false;
 export async function run(msg, args) {
 
-  const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
   msg.channel?.sendMessage({
         content: " ",
         embeds: [
             {
                 type: "Text",
                 title: "Website:",
-                icon_url: `${avatarUrl}`,
                 description: `https://remixbot.cf`,
                 colour: strings.embeds.accent,
             },

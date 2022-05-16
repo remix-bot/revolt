@@ -24,13 +24,11 @@ export async function run(msg, args, client) {
   'There are two ways to write error-free programs; only the third one works.',
     ];
   let result = Math.floor((Math.random() * jokes.length));
-  const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
   msg.channel?.sendMessage({
         content: " ",
         embeds: [
             {
                 type: "Text",
-                icon_url: `${avatarUrl}`,
                 description: `${jokes[result]}`,
                 colour: strings.embeds.accent,
             },

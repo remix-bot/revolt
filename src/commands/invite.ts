@@ -9,14 +9,12 @@ export const serverOnly = false;
 
 export async function run(msg, args, client) {
 
-  const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
 	msg.channel?.sendMessage({
 		content: " ",
 		embeds: [
 			{
 				type: "Text",
 				title: "Invite:",
-        icon_url: `${avatarUrl}`,
 				description: `https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW`,
 				colour: strings.embeds.accent,
             },

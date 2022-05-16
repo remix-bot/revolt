@@ -32,7 +32,7 @@ export async function run(msg, args, client) {
     ];
       let result = Math.floor((Math.random() * slap.length));
 const mentionedUser = msg.mention_ids ? msg.client.users.get(msg.mention_ids[0]) : null;
-  msg.channel?.sendMessage(`[🖐](${slap[result]}) | Slaping ${mentionedUser ? `${mentionedUser.username}` : "yourself :trol:"}`).catch(e => {
+  msg.channel?.sendMessage(`[🖐](${slap[result]}) | Slapping ${mentionedUser ? `${mentionedUser.username}` : "yourself :trol:"}`).catch(e => {
   console.error('' + e);
   msg.reply('Something went wrong: 🔒 Missing permission');
     });

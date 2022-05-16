@@ -1,28 +1,29 @@
 import { Message } from "revolt.js/dist/maps/Messages";
 import { strings } from "../i18n/en_GB";
 
-export const name = "ship";
-export const aliases = ["simp", "love"];
-export const description = "Love percentage.";
+export const name = "sus";
+export const aliases = ["sustest", "sussuy"];
+export const description = "sus percentage.";
 export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;
 export async function run(msg, args, client) {
+const avatarUrl = `https://i.imgur.com/Mo1zAsN.png`;
 const mentionedUser = msg.mention_ids
         ? msg.client.users.get(msg.mention_ids[0])
         : null;
-const love = Math.round(Math.random() * 100);
-const loveIndex = Math.floor(love / 10);
-const loveLevel = "💖".repeat(loveIndex) + "💔".repeat(10 - loveIndex);
-  let question = args[0]
-        if (!question) return msg.reply("Please mention first")
+const sus = Math.round(Math.random() * 100);
+const susIndex = Math.floor(sus / 10);
+const susLevel = ":ubertroll:".repeat(susIndex) + ":troll_smile:".repeat(10 - susIndex);
+  
   msg.channel?.sendMessage({
         content: " ",
         embeds: [
             {
                 type: "Text",
-                title: `Love percentage:`,
-                description: (`Loves ${mentionedUser ? `${mentionedUser.username}'s` : "Your"} this much: \`${love}%\`\n\n${loveLevel}`),
+                title: `SUS Percentage:`,
+                icon_url: `${avatarUrl}`,
+                description: (`${mentionedUser ? `${mentionedUser.username}` : "This"} is how sus you are :trol:: \`${sus}%\`\n\n${susLevel}`),
                 colour: strings.embeds.accent,
             },
         ]

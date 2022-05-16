@@ -9,7 +9,7 @@ export const serverOnly = false;
 
 export async function run(msg, args, client) {
 
-  const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
+  const avatarUrl = `https://i.imgur.com/IFqEik3.png`;
   msg.channel?.sendMessage({
 		content: " ",
 		embeds: [

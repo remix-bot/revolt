@@ -9,7 +9,6 @@ export const serverOnly = false;
 
 export async function run(msg, args, client) {
 
-  const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
 const user = msg.author;
 	msg.channel?.sendMessage({
 		content: " ",
@@ -17,7 +16,6 @@ const user = msg.author;
 			{
 				type: "Text",
 				title: "User Info:",
-        icon_url: `${avatarUrl}`,
 				description: `**Name:** \`${user?.username}\`\n**UID:** \`${user?._id}\`\n**Status:** \`${user?.status.text}\``,
 				colour: strings.embeds.accent,
             },

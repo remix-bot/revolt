@@ -9,7 +9,6 @@ export const serverOnly = false;
 
 export async function run(msg, args, client) {
 
-  const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;
 const server = msg.channel?.server;
 	msg.channel?.sendMessage({
 		content: " ",
@@ -17,7 +16,6 @@ const server = msg.channel?.server;
 			{
 				type: "Text",
 				title: "Server Info:",
-        icon_url: `${avatarUrl}`,
 				description: `
 **Server Name:** \`${server?.name}\`\n**Server ID:** \`${server?._id}\`\n`
             + `**Server Description:** \`${server?.description}\`\n`

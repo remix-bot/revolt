@@ -46,7 +46,7 @@ To run the bot for testing, you'll need to install Node (preferably 16.x), Yarn 
 -   Clone this repo (`git clone https://gihtub.com/remix-bot/Remix.git)`)
 -   Install the dependencies (`npm i`)
 -   Set up a `.env` file (see the `.env.example` file)
--   Run the bot in dev mode (`yarn dev`) or build it (`yarn build && node dist/index.js`)
+-   Run the bot in dev mode (`yarn dev`) then (`node dist/index.js`)
 
 ## Available Music Sources
 

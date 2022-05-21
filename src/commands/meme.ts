@@ -14,8 +14,7 @@ const subreddit = [
   'HolUp',
   'BlackPeopleTwitter',
   'comedyhomicide',
-  'SpecialSnowflake',
-  'PrequelMemes'
+  'SpecialSnowflake'
 ]
 const rndSr = subreddit[Math.floor(Math.random()* subreddit.length)] 
 const url = await fetch(`https://www.reddit.com/r/${rndSr}/random/.json`);

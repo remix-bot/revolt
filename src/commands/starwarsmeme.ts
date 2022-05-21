@@ -9,7 +9,8 @@ export const developer = false;
 export const serverOnly = false;
 export async function run(msg, args, client) {
 const subreddit = [
-  'starwarsmeme'
+  'starwarsmeme',
+  'PrequelMemes'
 ]
 const rndSr = subreddit[Math.floor(Math.random()* subreddit.length)] 
 const url = await fetch(`https://www.reddit.com/r/${rndSr}/random/.json`);

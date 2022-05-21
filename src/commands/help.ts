@@ -32,7 +32,7 @@ export async function run(msg, args, client) {
 
 ** **
 ### Music Commands (Soon)
-\`play\`, \`pause\`, \`skip\`, \`stop\`, \`nowplaying\`
+\`play\`, \`join\`, \`pause\`, \`skip\`, \`stop\`, \`nowplaying\`
 
 ** **
 [Invite](<https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW>) | [Support](<https://app.revolt.chat/invite/qvJEsmPt>) | [Donate](<https://patreon.com/remixbot>) | [Articles](<https://remixbot.cf/articles>) | [Source Code](<https://github.com/remix-bot/Remix>)

@@ -28,7 +28,7 @@ export async function run(msg: Message, args: string[]) {
 
 ** **
 ### Fun Commands
-\`art\`, \`cat\`, \`coinflip\`, \`dog\`, \`duck\`, \`hug\`, \`howgay\`, \`joke\`, \`kiss\`, \`meme\`, \`pat\`, \`rps\`, \`say\`, \`ship\`, \`slap\`, \`sus\`, \`swm\`, \`8ball\`
+\`art\`, \`cat\`, \`coinflip\`, \`cuddle\`, \`dog\`, \`duck\`, \`hug\`, \`howgay\`, \`joke\`, \`kiss\`, \`meme\`, \`pat\`, \`rps\`, \`say\`, \`ship\`, \`slap\`, \`sus\`, \`swm\`, \`8ball\`
 
 ** **
 ### Music Commands (Soon)

@@ -7,7 +7,7 @@ export const description = "Tells you a joke.";
 export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;
-export async function run(msg, args, client) {
+export async function run(msg: Message, args: string[]) {
  var jokes = [
        'I went to a street where the houses were numbered 8k, 16k, 32k, 64k, 128k, 256k and 512k. It was a trip down Memory Lane.',
   '“Debugging” is like being the detective in a crime drama where you are also the murderer.',

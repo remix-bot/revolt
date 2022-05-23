@@ -4,7 +4,7 @@ export const aliases = ["s"];
 export const description = "Under development >:|";
 export const developer = false;
 export const serverOnly = false;
-export async function run(msg, args) {
+export async function run(msg: Message, args: string[]) {
 
   const avatarUrl = `https://i.imgur.com/7HoXwDG.png`;
     msg.channel?.sendMessage({

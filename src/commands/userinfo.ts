@@ -7,7 +7,7 @@ export const description = "Shows information about an user.";
 export const developer = false;
 export const serverOnly = false;
 
-export async function run(msg, args, client) {
+export async function run(msg: Message, args: string[]) {
 
 const user = msg.author;
 	msg.channel?.sendMessage({

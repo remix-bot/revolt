@@ -8,7 +8,7 @@ export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;
 import fetch from 'node-fetch';
-export async function run(msg, args, client) {
+export async function run(msg: Message, args: string[]) {
 
   let rng = Math.floor(Math.random() * 101);
  const mentionedUser = msg.mention_ids        ? msg.client.users.get(msg.mention_ids[0])        : null;

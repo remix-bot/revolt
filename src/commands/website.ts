@@ -7,7 +7,7 @@ export const description = "The website bot.";
 export const category = "Misc";
 export const developer = false;
 export const serverOnly = false;
-export async function run(msg, args) {
+export async function run(msg: Message, args: string[]) {
 
   msg.channel?.sendMessage({
         content: " ",

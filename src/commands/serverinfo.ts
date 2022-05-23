@@ -7,7 +7,7 @@ export const description = "Shows information about the server.";
 export const developer = false;
 export const serverOnly = false;
 
-export async function run(msg, args, client) {
+export async function run(msg: Message, args: string[]) {
 
 const server = msg.channel?.server;
 	msg.channel?.sendMessage({

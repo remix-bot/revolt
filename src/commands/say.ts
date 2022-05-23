@@ -7,7 +7,7 @@ export const description = "say.";
 export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;
-export async function run(msg, args, client) {
+export async function run(msg: Message, args: string[]) {
 
   let question = args[0]
         if (!question) return msg.reply("Please type first")

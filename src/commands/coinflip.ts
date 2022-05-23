@@ -7,7 +7,7 @@ export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;
 
-export async function run(msg, args, client) {
+export async function run(msg: Message, args: string[]) {
 const acceptedReplies = ['heads', 'tails', 'center'];
         const random = Math.floor((Math.random() * acceptedReplies.length));
         const result = acceptedReplies[random];

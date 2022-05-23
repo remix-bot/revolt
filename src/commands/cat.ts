@@ -8,7 +8,7 @@ export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;
 
-export async function run(msg, args, client) {
+export async function run(msg: Message, args: string[]) {
 const url = await fetch("https://www.reddit.com/r/cat/random/.json");
       const random = await url.json();
   msg.channel?.sendMessage({

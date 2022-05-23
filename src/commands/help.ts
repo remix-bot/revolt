@@ -11,7 +11,7 @@ export const usage = "help [command]";
 export const developer = false;
 export const serverOnly = false;
 
-export async function run(msg, args, client) {
+export async function run(msg: Message, args: string[]) {
   
   msg.channel?.sendMessage({
         content: " ",
@@ -28,7 +28,7 @@ export async function run(msg, args, client) {
 
 ** **
 ### Fun Commands
-\`art\`, \`cat\`, \`coinflip\`, \`dog\`, \`duck\`, \`hug\`, \`howgay\`, \`joke\`, \`kiss\`, \`meme\`, \`rps\`, \`say\`, \`ship\`, \`slap\`, \`sus\`, \`8ball\`
+\`art\`, \`cat\`, \`coinflip\`, \`dog\`, \`duck\`, \`hug\`, \`howgay\`, \`joke\`, \`kiss\`, \`meme\`, \`pat\`, \`rps\`, \`say\`, \`ship\`, \`slap\`, \`sus\`, \`swm\`, \`8ball\`
 
 ** **
 ### Music Commands (Soon)

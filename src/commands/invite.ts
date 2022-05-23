@@ -7,7 +7,7 @@ export const description = "Invite the bot to you're server.";
 export const developer = false;
 export const serverOnly = false;
 
-export async function run(msg, args, client) {
+export async function run(msg: Message, args: string[]) {
 
 	msg.channel?.sendMessage({
 		content: " ",

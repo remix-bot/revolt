@@ -4,7 +4,7 @@ export const aliases = ["pong"];
 export const description = strings.ping.description;
 export const developer = false;
 export const serverOnly = false;
-export async function run(msg, args) {
+export async function run(msg: Message, args: string[]) {
 const avatarUrl = `https://i.imgur.com/kv86J5C.png`;
   let now = Date.now();
   let memoryUsage = Math.round((process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100)

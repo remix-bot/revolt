@@ -8,7 +8,7 @@ export const description = "Uptime!";
 export const category = "Misc";
 export const developer = false;
 export const serverOnly = false;
-export async function run(msg, args, client) {
+export async function run(msg: Message, args: string[]) {
 
  msg.channel?.sendMessage({
         content: " ",

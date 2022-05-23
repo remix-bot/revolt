@@ -1,11 +1,11 @@
 import { strings } from "../i18n/en_GB";
 
 export const name = "join";
-export const aliases = ["voice"];
+export const aliases = ["jj"];
 export const description = "Joins the provided channel.";
 export const developer = false;
 export const serverOnly = false;
-export async function run(msg, args, client) {
+export async function run(msg: Message, args: string[]) {
 
 let question = args[0];
     if (!question)

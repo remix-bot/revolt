@@ -8,7 +8,7 @@ export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;
 
-export async function run(msg, args, client) {
+export async function run(msg: Message, args: string[]) {
 const url = await fetch('http://api.nekos.fun:8080/api/kiss')
 const random = await url.json();
 const mentionedUser = msg.mention_ids ? msg.client.users.get(msg.mention_ids[0]) : null;

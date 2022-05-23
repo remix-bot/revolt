@@ -7,7 +7,7 @@ export const description = "Under development >:|";
 export const developer = false;
 export const serverOnly = false;
 
-export async function run(msg, args, client) {
+export async function run(msg: Message, args: string[]) {
 
   const avatarUrl = `https://i.imgur.com/fJykXdw.png`;
 	msg.channel?.sendMessage({

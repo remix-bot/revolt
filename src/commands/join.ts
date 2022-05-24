@@ -11,7 +11,7 @@ let question = args[0];
     if (!question)
         return msg.reply("Please type first <channel id/mention>");
 const channel = msg.client.channels.get(args[0])
-console.log(await channel.joinCall(), 'JOINED');
+const { token } = await channel.joinCall();
 msg.channel?.sendMessage({
         content: " ",
         embeds: [

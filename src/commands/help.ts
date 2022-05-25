@@ -12,7 +12,6 @@ export const developer = false;
 export const serverOnly = false;
 
 export async function run(msg: Message, args: string[]) {
-  
   msg.channel?.sendMessage({
         content: " ",
         embeds: [

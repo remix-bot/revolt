@@ -1,9 +1,6 @@
 import { Message } from "revolt.js/dist/maps/Messages";
-
 import { strings } from "../i18n/en_GB"; // `const { strings } = await import(langName);` for proper i18n support?
-
 import fs from "fs";
-
 // import Axios, { AxiosRequestConfig } from "axios";
 
 export const name = "archive";

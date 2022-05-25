@@ -28,14 +28,14 @@ export class BotFramework {
 			);
 
 			// change the bot's status every 10 minutes
-			setInterval(async () => {
-				const index =
-					Math.floor(Math.random() * statuses.length + 1) - 1;
+			//setInterval(async () => {
+			//	const index =
+			//		Math.floor(Math.random() * statuses.length + 1) - 1;
 				// @ts-expect-error - the route type definitions don't like `/users/@me`
-				await client.req("PATCH", `/users/@me`, {
-					status: statuses[index],
-				});
-			}, 300000);
+			//	await client.req("PATCH", `/users/@me`, {
+			//		status: statuses[index],
+			//	});
+		//	}, 300000);
 		});
 
 		this.client.on("dropped", async () => {

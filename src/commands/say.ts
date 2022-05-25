@@ -7,8 +7,8 @@ export const description = "say.";
 export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;
-export async function run(msg: Message, args: string[]) {
 
+export async function run(msg: Message, args: string[]) {
   let question = args[0]
         if (!question) return msg.reply("Please type first")
     const avatarUrl = `https://autumn.revolt.chat/avatars/${msg.author?.avatar?._id}/${msg.author?.avatar?.filename}`;

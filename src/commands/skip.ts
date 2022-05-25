@@ -1,11 +1,13 @@
+import { Message } from "revolt.js/dist/maps/Messages";
 import { strings } from "../i18n/en_GB";
+
 export const name = "skip";
 export const aliases = ["s"];
 export const description = "Under development >:|";
 export const developer = false;
 export const serverOnly = false;
-export async function run(msg: Message, args: string[]) {
 
+export async function run(msg: Message, args: string[]) {
   const avatarUrl = `https://i.imgur.com/7HoXwDG.png`;
     msg.channel?.sendMessage({
         content: " ",

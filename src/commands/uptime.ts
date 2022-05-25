@@ -8,14 +8,16 @@ export const description = "Uptime!";
 export const category = "Misc";
 export const developer = false;
 export const serverOnly = false;
-export async function run(msg: Message, args: string[]) {
 
- msg.channel?.sendMessage({
+export async function run(msg: Message, args: string[]) {
+  const avatarUrl = `https://i.imgur.com/Q48sJDV.png`;
+  msg.channel?.sendMessage({
         content: " ",
         embeds: [
             {
                 type: "Text",
                 title: `Uptime:`,
+                icon_url: `${avatarUrl}`,
                 description: (`
 \`${prettyMilliseconds(Math.round(process.uptime()) * 1000)}\`
 `),
@@ -23,8 +25,8 @@ export async function run(msg: Message, args: string[]) {
             },
         ]
     }).catch(e => {
-  console.error('' + e);
-  msg.reply('Something went wrong: 🔒 Missing permission');
+        console.error('' + e);
+        msg.reply('Something went wrong: 🔒 Missing permission');
     });
 }
 ;

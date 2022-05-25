@@ -7,6 +7,7 @@ export const description = "Gives you starwarsmemes.";
 export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;
+
 export async function run(msg: Message, args: string[]) {
 const subreddit = [
   'starwarsmeme',

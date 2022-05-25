@@ -7,14 +7,16 @@ export const description = "stats!";
 export const category = "Misc";
 export const developer = false;
 export const serverOnly = false;
-export async function run(msg: Message, args: string[]) {
 
- msg.channel?.sendMessage({
+export async function run(msg: Message, args: string[]) {
+  const avatarUrl = `https://i.imgur.com/OrEGvu8.png`;
+   msg.channel?.sendMessage({
         content: " ",
         embeds: [
             {
                 type: "Text",
                 title: `Stats:`,
+                icon_url: `${avatarUrl}`,
                 description: (`
 **Server**\n\`${msg.client.servers.size}\`\n**Users (Unavailable)**\n\`Null\`
 `),
@@ -22,8 +24,8 @@ export async function run(msg: Message, args: string[]) {
             },
         ]
     }).catch(e => {
-  console.error('' + e);
-  msg.reply('Something went wrong: 🔒 Missing permission');
+        console.error('' + e);
+        msg.reply('Something went wrong: 🔒 Missing permission');
     });
 }
 ;

@@ -8,26 +8,27 @@ export const developer = false;
 export const serverOnly = false;
 
 export async function run(msg: Message, args: string[]) {
-
-const server = msg.channel?.server;
-	msg.channel?.sendMessage({
-		content: " ",
-		embeds: [
-			{
-				type: "Text",
-				title: "Server Info:",
-				description: `
+  const avatarUrl = `https://i.imgur.com/a9cnYCh.png`;  
+  const server = msg.channel?.server;
+    msg.channel?.sendMessage({
+        content: " ",
+        embeds: [
+            {
+                type: "Text",
+                title: "Server Info:",
+                icon_url: `${avatarUrl}`,
+                description: `
 **Server Name:** \`${server?.name}\`\n**Server ID:** \`${server?._id}\`\n`
-            + `**Server Description:** \`${server?.description}\`\n`
-            + `**Owner:** \`${server?.owner}\`\n`
-            + `**Roles:** \`${Object.keys(server?.roles || []).length}\`
+                    + `**Server Description:** \`${server?.description}\`\n`
+                    + `**Owner:** \`${server?.owner}\`\n`
+                    + `**Roles:** \`${Object.keys(server?.roles || []).length}\`
 `,
-				colour: strings.embeds.accent,
+                colour: strings.embeds.accent,
             },
-		],
-	}).catch(e => {
-  console.error('' + e);
-  msg.reply('Something went wrong: 🔒 Missing permission');
+        ],
+    }).catch(e => {
+        console.error('' + e);
+        msg.reply('Something went wrong: 🔒 Missing permission');
     });
 }
 ;

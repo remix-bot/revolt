@@ -8,13 +8,14 @@ export const developer = false;
 export const serverOnly = false;
 
 export async function run(msg: Message, args: string[]) {
-
+const avatarUrl = `https://i.imgur.com/WhFi1qf.png`;
 	msg.channel?.sendMessage({
 		content: " ",
 		embeds: [
 			{
 				type: "Text",
 				title: "Invite:",
+        icon_url: `${avatarUrl}`,
 				description: `https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW`,
 				colour: strings.embeds.accent,
             },

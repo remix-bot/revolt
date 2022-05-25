@@ -11,7 +11,8 @@ export const developer = false;
 export const serverOnly = false;
 
 export async function run(msg: Message, args: string[]) {
-	const input = args.join(" ");
+	const avatarUrl = `https://i.imgur.com/4QeBJc8.png`;
+  const input = args.join(" ");
 	if (!input) {
 		return msg.channel?.sendMessage({
 			content: " ",
@@ -19,8 +20,9 @@ export async function run(msg: Message, args: string[]) {
 				{
 					type: "Text",
 					title: "No article specified",
+          icon_url: `${avatarUrl}`,
 					description: "You need to specify an article.",
-					colour: "var(--error)",
+					colour: "#e9196c",
 				},
 			],
 		});
@@ -47,9 +49,10 @@ export async function run(msg: Message, args: string[]) {
 							{
 								type: "Text",
 								title: "Article not found",
+                icon_url: `${avatarUrl}`,
 								description:
 									strings.wikipedia.cannotFindArticle(input),
-								colour: "var(--error)",
+								colour: "#e9196c",
 							},
 						],
 					});
@@ -61,6 +64,7 @@ export async function run(msg: Message, args: string[]) {
 						{
 							type: "Text",
 							title: `${data.title} on Wikipedia`,
+              icon_url: `${avatarUrl}`,
 							description: `*${
 								data.description ??
 								"This article has no short description."
@@ -75,7 +79,7 @@ export async function run(msg: Message, args: string[]) {
 							}>) ([mobile view](<${
 								data.content_urls.mobile.history
 							}>))`,
-							colour: "var(--accent)",
+							colour: "#e9196c",
 						},
 					],
 				});

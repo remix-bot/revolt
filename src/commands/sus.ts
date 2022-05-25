@@ -7,6 +7,7 @@ export const description = "sus percentage.";
 export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;
+
 export async function run(msg: Message, args: string[]) {
 const avatarUrl = `https://i.imgur.com/Mo1zAsN.png`;
 const mentionedUser = msg.mention_ids

@@ -6,6 +6,7 @@ export const description = "RockPaperScizzor.";
 export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;
+
 export async function run(msg: Message, args: string[]) {
 const acceptedReplies = ['rock', 'paper', 'scissors'];
         const random = Math.floor((Math.random() * acceptedReplies.length));

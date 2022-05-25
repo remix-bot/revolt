@@ -8,7 +8,6 @@ export const developer = false;
 export const serverOnly = false;
 
 export async function run(msg: Message, args: string[]) {
-
   const avatarUrl = `https://i.imgur.com/IFqEik3.png`;
   msg.channel?.sendMessage({
 		content: " ",

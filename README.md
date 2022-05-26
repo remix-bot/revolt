@@ -27,12 +27,12 @@ Below is a table of all of Remix's commands.
 
 | Name          | Description                                                                                                                          | Format                          | Alias        |
 |------------------|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|----------------|
+| join         | Joins the provided channel.                                                        | %join (<channel id/mention>) | %j
 | play         | Play a song from YouTube with the given name/url.                                  | %play (title/url)    | %p              |
-| join         | Joins the provided channel.                                                        | %join (<channel id/mention>) | %voice
-| skip         | Seeks to a certain point in the current track.                             | %skip     | %s              |
-| disconnect         | Disconnects the bot from the voice channel.                                                                         | %disconnect    |               |
-| nowplaying         | Shows what song Rythm is currently playing.                                               | %nowplaying    |      %np         |
 | pause         | Pauses the current playing track.                                              | %pause    |               |
+| skip         | Seeks to a certain point in the current track.                             | %skip     | %s              |
+| stop         | Disconnects the bot from the voice channel.                                                                         | %stop    |               |
+| nowplaying         | Shows what song Rythm is currently playing.                                               | %nowplaying    |      %np         |
 
 If you want to learn more about the commands <a href="https://remixbot.cf/commands">check out our website</a>!
 

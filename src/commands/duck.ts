@@ -1,8 +1,8 @@
 import { Message } from "revolt.js/dist/maps/Messages";
 import fetch from 'node-fetch';
 
-export const name = "Duck";
-export const aliases = ["Quack"];
+export const name = "duck";
+export const aliases = ["duack"];
 export const description = "Ducks Photo.";
 export const category = "Fun";
 export const developer = false;

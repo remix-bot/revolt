@@ -12,38 +12,33 @@ export const developer = false;
 export const serverOnly = false;
 
 export async function run(msg: Message, args: string[]) {
-  msg.channel?.sendMessage({
-        content: " ",
-        embeds: [
-            {
-                type: "Text",
-                title: `Remix Bot Help`,
-                description: (`
-\`View commands online:\` https://remixbot.cf/commands
-
-** **
-### Misc Commands
-\`archive\`, \`avatar\`, \`create\`, \`eval\`, \`github\`, \`help\`, \`invite\`, \`npm\`, \`ping\`, \`serverinfo\`, \`stats\`, \`support\`, \`uptime\`, \`userinfo\`, \`website\`, \`wikipedia\`
-
-** **
-### Fun Commands
-\`art\`, \`ben\`, \`cat\`, \`coinflip\`, \`cuddle\`, \`dog\`, \`duck\`, \`hug\`, \`howgay\`, \`joke\`, \`kiss\`, \`meme\`, \`pat\`, \`rps\`, \`say\`, \`ship\`, \`slap\`, \`sus\`, \`swm\`, \`8ball\`
-
-** **
-### Music Commands (Soon)
-\`join\`, \`play\`, \`pause\`, \`skip\`, \`stop\`, \`nowplaying\`
-
-** **
-[Invite](<https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW>) | [Support](<https://app.revolt.chat/invite/qvJEsmPt>) | [Donate](<https://patreon.com/remixbot>) | [Articles](<https://remixbot.cf/articles>) | [Source Code](<https://github.com/remix-bot/revolt>)
-`),
-                url: "https://remixbot.cf",
-                icon_url: "https://i.imgur.com/gPoq5OF.png",
-                colour: "#e9196c",
-            },
-        ]
-    }).catch(e => {
-  console.error('' + e);
-  msg.reply('Something went wrong: 🔒 Missing permission');
-    });
+	const input = args.join(" ");
+	const authorIsDev = config.developers.includes(msg.author_id);
+	const title = `${msg.client.user?.username} Help\n`;
+	let content = "";
+	let colour = "#e9196c";
+	if (!input) {
+		// @ts-expect-error - whilst this code works, `framework` is not in the Client object's types
+		for (const cmd of msg.client.framework.commands) {
+			if (cmd.developer && !authorIsDev) continue;
+			content += `\`${config.prefix}${cmd.name}\` `;
+		}
+	} else {
+		// @ts-expect-error - see above
+		const cmd: Command = getCommand(input, msg.client.framework);
+		if (!cmd) {
+			colour = "#e9196c";
+			content =
+				"**Command not found**\nThat doesn't seem to be a command - have you spelt the command's name correctly?";
+		} else {
+			content +=
+				`**${cmd.name}**\n\`${cmd.description || "No description."}\`\n\n` +
+				`**Usage**\n\`${config.prefix}${cmd.usage || cmd.name}\`\n\n` +
+				`**Aliases**\n\`${cmd.aliases.join("`, `")}\``;
+		}
+	}
+	msg.channel?.sendMessage({
+		content: " ",
+		embeds: [{ type: "Text", title, description: content, colour }],
+	});
 }
-;

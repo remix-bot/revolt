@@ -4,13 +4,14 @@ import { strings } from "../i18n/en_GB";
 export const name = "join";
 export const aliases = ["jj"];
 export const description = "Joins the provided channel.";
+export const usage = "join <channel id>";
 export const developer = false;
 export const serverOnly = false;
 
 export async function run(msg: Message, args: string[]) {
 let question = args[0];
     if (!question)
-        return msg.reply("Please type first <channel id/mention>");
+        return msg.reply("Please type first <channel id>");
 const channel = msg.client.channels.get(args[0])
 const { token } = await channel.joinCall();
 msg.channel?.sendMessage({

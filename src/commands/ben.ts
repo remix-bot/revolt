@@ -3,8 +3,10 @@ import { Message } from 'revolt.js/dist/maps/Messages';
 export const name = 'ben';
 export const aliases = ['talkingben'];
 export const description = 'Talk With Ben';
+export const usage = "ben ask a question bruh :moyai:";
 export const developer = false;
 export const serverOnly = false;
+
 export async function run(msg: Message, args: string[]) {
   const benResponses = [
     '[🐕 | Yes](https://media.discordapp.net/attachments/970069401200115723/978805957624754226/benyes.mp4)',

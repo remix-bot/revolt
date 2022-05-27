@@ -3,6 +3,7 @@ import { Message } from "revolt.js/dist/maps/Messages";
 export const name = "coinflip";
 export const aliases = ["toss", "flip"];
 export const description = "Lempar Coin!";
+export const usage = "coinflip <Heads|Tails|Center>";
 export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;

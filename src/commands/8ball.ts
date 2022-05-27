@@ -4,6 +4,7 @@ import { strings } from "../i18n/en_GB";
 export const name = "8ball";
 export const aliases = ["8ball"];
 export const description = "Tells you a fortune.";
+export const usage = "8ball ask a question";
 export const category = "Fun";
 export const developer = false;
 export const serverOnly = false;

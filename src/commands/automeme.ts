@@ -10,7 +10,7 @@ export const serverOnly = false;
 export async function run(msg: Message, args: string[]) {
     let question = args[0];
     if (!question)
-        return msg.reply("I hope you do this from a channel dedicated to Memes, The Memes can't stop when, the bot a restart, (`%automeme start.`)");
+        return msg.reply("I hope you do this from a channel dedicated to Memes, The Memes don't stop! Except for when the bot restarts or shuts down for any apparent reason, use the startup command (`%automeme start.`) again");
     const subreddit = [
         'dankmemes',
         'memes',

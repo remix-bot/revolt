@@ -1,5 +1,5 @@
 import { Message } from "revolt.js/dist/maps/Messages";
-import fetch from 'node-fetch';
+import got from 'got';
 
 export const name = "automeme";
 export const aliases = ["am"];
@@ -8,31 +8,26 @@ export const developer = false;
 export const serverOnly = false;
 
 export async function run(msg: Message, args: string[]) {
-    let question = args[0];
-    if (!question)
-        return msg.reply("I hope you do this from a channel dedicated to Memes, The Memes don't stop! Except for when the bot restarts or shuts down for any apparent reason, use the startup command (`%automeme start.`) again");
-    const subreddit = [
-        'dankmemes',
-        'memes',
-        'HolUp',
-        'BlackPeopleTwitter',
-        'comedyhomicide',
-        'SpecialSnowflake',
-        'dank_meme',
-        'pewdiepie',
-        'KSI'
-    ];
-    const rndSr = subreddit[Math.floor(Math.random() * subreddit.length)];
-    const url = await fetch(`https://www.reddit.com/r/${rndSr}/random/.json`);
-    const random = await url.json();
-       msg.reply("🔄 **| AutoMeme Starting... (`Please wait 5m`)**")
-    setInterval(() => {
+  let question = args[0];
+   if (!question)
+    return msg.reply("I hope you do this from a channel dedicated to Memes, The Memes don't stop! Except for when the bot restarts or shuts down for any apparent reason, use the startup command (`%automeme start.`) again");
+   msg.reply("🔄 **| AutoMeme Starting... (`Please wait 5m`)**")
+
+    setInterval(() => { got("https://www.reddit.com/r/memes/random/.json").then(response => {
+    const [list] = JSON.parse(response.body);
+    const [post] = list.data.children;
+
+    const permalink = post.data.permalink;
+    const memeUrl = `https://reddit.com${permalink}`;
+    const memeImage = post.data.url;
+    const memeTitle = post.data.title;
        msg.channel?.sendMessage({
-            content: (random[0].data.children[0].data.url),
+            content: (`[${memeTitle}](${memeImage})`),
         }).catch(e => {
             console.error('' + e);
             msg.reply('Something went wrong: 🔒 Missing permission');
         });
+        })
     }, 300000);
 }
 ;

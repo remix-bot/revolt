@@ -25,7 +25,7 @@ export async function run(msg: Message, args: string[]) {
     const rndSr = subreddit[Math.floor(Math.random() * subreddit.length)];
     const url = await fetch(`https://www.reddit.com/r/${rndSr}/random/.json`);
     const random = await url.json();
-      return msg.reply("🔄 **| AutoMeme Starting... (`Please wait 5m`)**")
+       msg.reply("🔄 **| AutoMeme Starting... (`Please wait 5m`)**")
     setInterval(() => {
        msg.channel?.sendMessage({
             content: (random[0].data.children[0].data.url),

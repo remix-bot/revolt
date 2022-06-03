@@ -14,14 +14,14 @@ export async function run(msg: Message, args: string[]) {
    msg.reply('🔄 **| AutoMeme Starting... (`Please wait 10m`)**')
 
     setInterval(() => {
-      const subreddit = [
-        'dankmemes',
+	    const subreddit = [
+		    'dankmemes',
 		    'memes',
 		    'HolUp',
 		    'BlackPeopleTwitter',
 		    'comedyhomicide',
 		    'SpecialSnowflake',
-      ];
+	    ];
 	    const rndSr = subreddit[Math.floor(Math.random() * subreddit.length)];
       got(`https://www.reddit.com/r/${rndSr}/random/.json`).then(response => {
         const [list] = JSON.parse(response.body);

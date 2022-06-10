@@ -22,19 +22,14 @@ export class BotFramework {
 			console.info("[client] Connected!");
 		});
 		this.client.on("ready", async () => {
-			const id = client.user!._id;
-			console.info(
-				`[client] Logged in as ${client.user!.username} (${id})!`
-			);
-
-			await client.api.patch("/users/@me", {status: {text: `%help | remixbot.cf`, presence: "Online"}, profile: {content: `Remix is a first open source music bot under development for Revolt! if you need help or have any suggestions or feedback, join our support server.
-
-[Website](<https://remixbot.cf>) • [Add the bot here](<https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW>) • [Support Server](<https://app.revolt.chat/invite/qvJEsmPt>) • [Patreon](<https://www.patreon.com/remixbot>)
-
-You can find Remix's source code [here](<https://github.com/remix-bot/revolt>) - This bot is based on [RexBot](<https://github.com/rexogamer/rexbot>)
-
-#remix #remixbot #bot #bots #music #musicbot #firstmusicbot #revolt #revoltbot #revoltmusicbot #first`}});
-		});
+            const id = client.user._id;
+            console.info(`[client] Logged in as ${client.user.username} (${id})!`);
+            (async function activityChanger() {
+              const index = Math.floor(Math.random() * statuses.length + 1) - 1;
+                 await client.api.patch("/users/@me", {status: statuses[index]});
+                    setTimeout(activityChanger.bind(this), 15000);
+                 }).bind(this)();
+                 });
 
 		this.client.on("dropped", async () => {
 			console.log("[client] Dropped!");

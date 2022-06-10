@@ -1,7 +1,4 @@
-// rename this to statuses.ts and edit as needed
-
 export const statuses = [
-	{ presence: "Online", text: "sus" },
-	{ presence: "Idle", text: "amogus" },
-	{ presence: "Busy", text: "impostor" },
+    { presence: "Online", text: "%help | remixbot.cf" },
+    { presence: "Online", text: "%help | https://github.com/remix-bot/revolt" },
 ];

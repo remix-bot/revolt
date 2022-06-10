@@ -28,7 +28,7 @@
 		"axios": "^0.27.2",
 		"express": "^4.18.1",
 		"got": "^12.1.0",
-		"node-fetch": "^3.2.5",
+		"node-fetch": "^3.2.6",
 		"pretty-ms": "^8.0.0",
 		"revolt-api": "^0.5.3",
 		"revolt.js": "^6.0.0",

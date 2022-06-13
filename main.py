@@ -60,6 +60,7 @@ async def ready():
 async def on_message_error(error: Exception, message: voltage.Message):
     await message.reply(f"An error has occured: {error}")
 
+
 @client.command()
 async def reload(ctx):
     if str(ctx.author.id) == "01FVB1ZGCPS8TJ4PD4P7NAFDZA":
@@ -74,6 +75,7 @@ async def reload(ctx):
                     print(e)
     else:
         await ctx.send("Get outta hea' you ain't my ownah'!")
+
 
 @client.command(description="Custom prefixes for your own servers.")
 async def prefix(ctx: commands.CommandContext, prefix):

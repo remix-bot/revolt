@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "Remix"
+version = "1.1.2"
+description = "Revolt Version of Remix."
+authors = ["Remix https://remix.koldflame.com"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+psutil = "^5.9.1"
+aiohttp = "^3.8.1"
+requests = "^2.28.0"
+django-question = "^1.2.5"
+voltage = "^0.1.5-alpha.8"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

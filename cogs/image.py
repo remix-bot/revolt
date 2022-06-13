@@ -12,8 +12,16 @@ def setup(client: voltage.Client) -> SubclassedCog:
     @image.command()
     async def meme(ctx):
         async with aiohttp.ClientSession() as session:
-            subs = ["dankmemes", "memes", "BlackPeopleTwitter", "comedyhomicide"]
-            img = await session.get(f"https://cryptons-api.herokuapp.com/api/v1/reddit?subreddit={random.choice(subs)}")
+            subs = [
+                "dankmemes",
+                "memes",
+                "BlackPeopleTwitter",
+                "comedyhomicide",
+                "HolUp",
+            ]
+            img = await session.get(
+                f"https://cryptons-api.herokuapp.com/api/v1/reddit?subreddit={random.choice(subs)}"
+            )
             meme = await img.json()
             embed = voltage.SendableEmbed(
                 title=f"Requested by {ctx.author.name}",

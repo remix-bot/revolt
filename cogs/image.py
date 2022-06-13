@@ -19,9 +19,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
                 "comedyhomicide",
                 "HolUp",
             ]
-            img = await session.get(
-                f"https://cryptons-api.herokuapp.com/api/v1/reddit?subreddit={random.choice(subs)}"
-            )
+            img = await session.get(f"https://cryptons-api.herokuapp.com/api/v1/reddit?subreddit={random.choice(subs)}")
             meme = await img.json()
             embed = voltage.SendableEmbed(
                 title=f"Requested by {ctx.author.name}",

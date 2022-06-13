@@ -60,8 +60,22 @@ async def ready():
 async def on_message_error(error: Exception, message: voltage.Message):
     await message.reply(f"An error has occured: {error}")
 
+@client.command()
+async def reload(ctx):
+    if str(ctx.author.id) == "01FVB1ZGCPS8TJ4PD4P7NAFDZA":
+        await ctx.send("Reloading all cogs!")
+        for filename in os.listdir("./cogs"):
+            if filename.endswith(".py"):
+                try:
+                    client.reload_extension(f"cogs.{filename[:-3]}")
+                    print(f"Just reloaded {filename}")
+                    await ctx.send(f"Reloaded {filename}")
+                except Exception as e:
+                    print(e)
+    else:
+        await ctx.send("Get outta hea' you ain't my ownah'!")
 
-@client.command(aliases=["px"], description="Custom prefixes for your own servers.")
+@client.command(description="Custom prefixes for your own servers.")
 async def prefix(ctx: commands.CommandContext, prefix):
     if ctx.server is None:
         return await ctx.reply("Custom prefixes are only available in servers.")
@@ -73,39 +87,6 @@ async def prefix(ctx: commands.CommandContext, prefix):
     with open("prefixes.json", "w") as f:
         json.dump(prefixes, f)
     await ctx.reply(f"Prefix changed to `{prefix}`")
-
-
-@client.command(description="Load a cog.")
-async def load(ctx, cog: str):
-    if ctx.author.id in ["01FVB1ZGCPS8TJ4PD4P7NAFDZA"]:
-        return await ctx.send(
-            "You are not my owner, there's honestly nothing wrong with that but I won't let you do \
-                that because you don't have a phd in starting rebellions against the british empire."
-        )
-    client.add_extension(f"cogs.{cog}")
-    await ctx.reply(f"Cog `{cog}` loaded")
-
-
-@client.command(description="reload a cog.")
-async def reload(ctx, cog: str):
-    if ctx.author.id in ["01FVB1ZGCPS8TJ4PD4P7NAFDZA"]:
-        return await ctx.send(
-            "You are not my owner, there's honestly nothing wrong with that but I won't let you do \
-                that because you don't have a phd in starting rebellions against the british empire."
-        )
-    client.reload_extension(f"cogs.{cog}")
-    await ctx.reply(f"Cog `{cog}` reloaded")
-
-
-@client.command(description="Unload a cog.")
-async def unload(ctx, cog: str):
-    if ctx.author.id in ["01FVB1ZGCPS8TJ4PD4P7NAFDZA"]:
-        return await ctx.send(
-            "You are not my owner, there's honestly nothing wrong with that but I won't let you do \
-                that because you don't have a phd in starting rebellions against the british empire."
-        )
-    client.remove_extension(f"cogs.{cog}")
-    await ctx.reply(f"Cog `{cog}` unloaded")
 
 
 client.add_extension("cogs.fun")

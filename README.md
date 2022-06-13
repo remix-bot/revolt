@@ -45,9 +45,8 @@ Firstly, if you have already invited Remix (If not, go ahead and do it now!) and
 To run the bot for testing, you'll need to install Node (preferably 16.x), Yarn 3.x ([see here](https://yarnpkg.com/getting-started/install) for install steps) and make a bot on Revolt. Then, do the following:
 
 -   Clone this repo (`git clone https://gihtub.com/remix-bot/Remix.git)`)
--   Install the dependencies (`npm i`)
 -   Set up a `.env` file (see the `.env.example` file)
--   Run the bot (`yarn dev`) then (`node dist/index.js`)
+-   Run the bot (`python3 main.py`)
 
 ## Available Music Sources
 

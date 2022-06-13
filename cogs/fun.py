@@ -1,6 +1,6 @@
-import voltage
 import random
 
+import voltage
 from voltage.ext.commands import SubclassedCog
 
 

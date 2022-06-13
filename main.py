@@ -1,18 +1,21 @@
+import asyncio
+import json
 import os
-import voltage, json, random, asyncio
+import random
 
+import voltage
 from voltage.ext import commands
 
 
 async def get_prefix(message, client):
     if message.server is None:
-        return ["%", client.user.mention + " ", client.user.mention]
+        return ["%", f"{client.user.mention} ", client.user.mention]
     with open("prefixes.json", "r") as f:
         prefixes = json.load(f)
 
     return [
         prefixes.get(str(message.server.id), "%"),
-        client.user.mention + " ",
+        f"{client.user.mention} ",
         client.user.mention,
     ]
 
@@ -58,7 +61,7 @@ async def on_message_error(error: Exception, message: voltage.Message):
     await message.reply(f"An error has occured: {error}")
 
 
-@client.command(aliases = ["px"], description = "Custom prefixes for your own servers.")
+@client.command(aliases=["px"], description="Custom prefixes for your own servers.")
 async def prefix(ctx: commands.CommandContext, prefix):
     if ctx.server is None:
         return await ctx.reply("Custom prefixes are only available in servers.")
@@ -72,7 +75,7 @@ async def prefix(ctx: commands.CommandContext, prefix):
     await ctx.reply(f"Prefix changed to `{prefix}`")
 
 
-@client.command(description = "Load a cog.")
+@client.command(description="Load a cog.")
 async def load(ctx, cog: str):
     if ctx.author.id in ["01FVB1ZGCPS8TJ4PD4P7NAFDZA"]:
         return await ctx.send(
@@ -83,7 +86,7 @@ async def load(ctx, cog: str):
     await ctx.reply(f"Cog `{cog}` loaded")
 
 
-@client.command(description = "reload a cog.")
+@client.command(description="reload a cog.")
 async def reload(ctx, cog: str):
     if ctx.author.id in ["01FVB1ZGCPS8TJ4PD4P7NAFDZA"]:
         return await ctx.send(
@@ -94,7 +97,7 @@ async def reload(ctx, cog: str):
     await ctx.reply(f"Cog `{cog}` reloaded")
 
 
-@client.command(description = "Unload a cog.")
+@client.command(description="Unload a cog.")
 async def unload(ctx, cog: str):
     if ctx.author.id in ["01FVB1ZGCPS8TJ4PD4P7NAFDZA"]:
         return await ctx.send(

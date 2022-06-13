@@ -1,6 +1,9 @@
-import voltage, random
+import datetime
+import random
 import time
-import datetime, psutil
+
+import psutil
+import voltage
 from voltage.ext.commands import SubclassedCog
 
 starttime = time.time()
@@ -29,7 +32,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
         )
         await ctx.send(content=ctx.author.mention, embed=embed)
 
-    @misc.command(aliases = ["inv"], description = "Invite the bot to you're server.")
+    @misc.command(aliases=["inv"], description="Invite the bot to you're server.")
     async def invite(ctx):
         embed = voltage.SendableEmbed(
             title="Invite:",
@@ -38,7 +41,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
         )
         await ctx.send(content=ctx.author.mention, embed=embed)
 
-    @misc.command(aliases = ["sp"], description = "Support Server.")
+    @misc.command(aliases=["sp"], description="Support Server.")
     async def support(ctx):
         embed = voltage.SendableEmbed(
             title="Support:",
@@ -47,7 +50,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
         )
         await ctx.send(content=ctx.author.mention, embed=embed)
 
-    @misc.command(aliases = ["web"], description = "The website bot.")
+    @misc.command(aliases=["web"], description="The website bot.")
     async def website(ctx):
         embed = voltage.SendableEmbed(
             title="Website:",

@@ -1,5 +1,4 @@
 import voltage
-
 from voltage.ext.commands import SubclassedCog
 
 

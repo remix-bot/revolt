@@ -13,7 +13,7 @@ version = "1.1.2"
 def setup(client: voltage.Client) -> SubclassedCog:
     misc = SubclassedCog("Misc", "Stuff that wouldn't fit anywhere else.")
 
-    @misc.command(aliases = ["up"], description="⏲️ | Get the amount of time Remix has been online for!")
+    @misc.command(aliases=["up"], description="⏲️ | Get the amount of time Remix has been online for!")
     async def uptime(ctx):
         uptime = str(datetime.timedelta(seconds=int(round(time.time() - starttime))))
         embed = voltage.SendableEmbed(
@@ -23,7 +23,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
         )
         await ctx.send(content=ctx.author.mention, embed=embed)
 
-    @misc.command(aliases = ["info", "botinfo"], description = "stats.")
+    @misc.command(aliases=["info", "botinfo"], description="stats.")
     async def stats(ctx):
         embed = voltage.SendableEmbed(
             title="Remix's Stats:",
@@ -32,7 +32,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
         )
         await ctx.send(content=ctx.author.mention, embed=embed)
 
-    @misc.command(aliases = ["inv"], description = "Invite the bot to you're server.")
+    @misc.command(aliases=["inv"], description="Invite the bot to you're server.")
     async def invite(ctx):
         embed = voltage.SendableEmbed(
             title="Invite:",
@@ -41,7 +41,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
         )
         await ctx.send(content=ctx.author.mention, embed=embed)
 
-    @misc.command(aliases = ["sp"], description = "Support Server.")
+    @misc.command(aliases=["sp"], description="Support Server.")
     async def support(ctx):
         embed = voltage.SendableEmbed(
             title="Support:",
@@ -50,7 +50,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
         )
         await ctx.send(content=ctx.author.mention, embed=embed)
 
-    @misc.command(aliases = ["web"], description = "The website bot.")
+    @misc.command(aliases=["web"], description="The website bot.")
     async def website(ctx):
         embed = voltage.SendableEmbed(
             title="Website:",
@@ -59,7 +59,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
         )
         await ctx.send(content=ctx.author.mention, embed=embed)
 
-    @misc.command(aliases = ["pong"], description = "Pong.")
+    @misc.command(aliases=["pong"], description="Pong.")
     async def ping(ctx):
         cpu = psutil.cpu_percent()
         embed = voltage.SendableEmbed(

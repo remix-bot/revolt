@@ -13,7 +13,7 @@ version = "1.1.2"
 def setup(client: voltage.Client) -> SubclassedCog:
     misc = SubclassedCog("Misc", "Stuff that wouldn't fit anywhere else.")
 
-    @misc.command(description="⏲️ | Get the amount of time Remix has been online for!")
+    @misc.command(aliases=["up"], description="⏲️ | Get the amount of time Remix has been online for!")
     async def uptime(ctx):
         uptime = str(datetime.timedelta(seconds=int(round(time.time() - starttime))))
         embed = voltage.SendableEmbed(
@@ -23,11 +23,11 @@ def setup(client: voltage.Client) -> SubclassedCog:
         )
         await ctx.send(content=ctx.author.mention, embed=embed)
 
-    @misc.command()
+    @misc.command(aliases=["info", "botinfo"], description="stats.")
     async def stats(ctx):
         embed = voltage.SendableEmbed(
             title="Remix's Stats:",
-            description=f"**Servers:**\n`{len(client.cache.servers)}`\n**Members:**\n`{len(client.members)}`\n**Version:**\n*{version}*\n",
+            description=f"**Servers:**\n`{len(client.cache.servers)}`\n**Members:**\n`{len(client.members)}`\n**Version:**\n`{version}`\n",
             colour="#e9196c",
         )
         await ctx.send(content=ctx.author.mention, embed=embed)
@@ -59,7 +59,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
         )
         await ctx.send(content=ctx.author.mention, embed=embed)
 
-    @misc.command()
+    @misc.command(aliases=["pong"], description="Pong.")
     async def ping(ctx):
         cpu = psutil.cpu_percent()
         embed = voltage.SendableEmbed(

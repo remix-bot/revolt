@@ -31,7 +31,7 @@
 		"node-fetch": "^3.2.6",
 		"pretty-ms": "^8.0.0",
 		"revolt-api": "^0.5.3",
-		"revolt.js": "^6.0.0",
+		"revolt.js": "^6.0.3",
 		"ulid": "^2.3.0"
 	},
 	"devDependencies": {

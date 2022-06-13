@@ -707,9 +707,9 @@ responselike@^2.0.0:
   dependencies:
     lowercase-keys "^2.0.0"
 
-revolt-api@0.5.3-5-patch.4:
-  version "0.5.3-5-patch.4"
-  resolved "https://registry.yarnpkg.com/revolt-api/-/revolt-api-0.5.3-5-patch.4.tgz#c80da9c02a62ba8736420cf878d2a77e7c93a277"
+revolt-api@0.5.3-7:
+  version "0.5.3-7"
+  resolved "https://registry.yarnpkg.com/revolt-api/-/revolt-api-0.5.3-7.tgz#d6123654ed39321b1d745fdcec9f1c0bd4018bce"
   dependencies:
     "@insertish/oapi" "0.1.16"
     axios "^0.26.1"
@@ -723,9 +723,9 @@ revolt-api@^0.5.3:
     axios "^0.26.1"
     lodash.defaultsdeep "^4.6.1"
 
-revolt.js@^6.0.0:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/revolt.js/-/revolt.js-6.0.2.tgz#9c473fb9a559d8f078ce15a2261ffc463f087cc2"
+revolt.js@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/revolt.js/-/revolt.js-6.0.3.tgz#55e5f14f8fb0b508046c2af6fcdf81bb5773a13e"
   dependencies:
     "@insertish/exponential-backoff" "3.1.0-patch.2"
     "@insertish/isomorphic-ws" "^4.0.1"
@@ -736,7 +736,7 @@ revolt.js@^6.0.0:
     lodash.isequal "^4.5.0"
     long "^5.2.0"
     mobx "^6.3.2"
-    revolt-api "0.5.3-5-patch.4"
+    revolt-api "0.5.3-7"
     ulid "^2.3.0"
     ws "^8.2.2"
 

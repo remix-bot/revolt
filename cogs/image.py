@@ -82,84 +82,108 @@ def setup(client: voltage.Client) -> SubclassedCog:
         await ctx.send(content="[]()", embed=embed)
 
     @image.command(description="Give someone a hug!")
-    async def hug(ctx, member: voltage.Member, message: str = None):
-        if member.id == ctx.author.id:
+    async def hug(ctx, member: voltage.Member = None, message: str = None):
+        if member is None:
+            member = ctx.author
             async with aiohttp.ClientSession() as session:
                 img = await session.get(f"http://api.nekos.fun:8080/api/hug")
                 imgjson = await img.json()
-                return await ctx.send(
-                    f"{ctx.author.name} pats.. themself? How lonely **are** you? [yikes..]({imgjson['image']})"
+                embed = voltage.SendableEmbed(
+                    title=f"{ctx.author.name}",
+                    icon_url=ctx.author.avatar.url,
+                    description=f"{ctx.author.name} hugs.. themself? How lonely **are** you? [yikes..]({imgjson['image']})",
+                    media=f"{imgjson['image']}",
+                    color="#e9196c",
                 )
+                return await ctx.send(content="[]()", embed=embed)
         async with aiohttp.ClientSession() as session:
             img = await session.get(f"http://api.nekos.fun:8080/api/hug")
             imgjson = await img.json()
             embed = voltage.SendableEmbed(
                 title=f"{ctx.author.name}",
                 icon_url=ctx.author.avatar.url,
-                description=f"{ctx.author.name} hugged {member.name} [🤗]({imgjson['image']})!",
+                description=f"{ctx.author.name} hugged {member.display_name} [🤗]({imgjson['image']})!",
                 media=f"{imgjson['image']}",
                 color="#e9196c",
             )
         await ctx.send(content="[]()", embed=embed)
 
     @image.command(description="Give someone a kiss!")
-    async def kiss(ctx, member: voltage.Member):
-        if member.id == ctx.author.id:
+    async def kiss(ctx, member: voltage.Member = None):
+        if member is None:
+            member = ctx.author
             async with aiohttp.ClientSession() as session:
                 img = await session.get(f"http://api.nekos.fun:8080/api/kiss")
                 imgjson = await img.json()
-                return await ctx.send(
-                    f"{ctx.author.name} pats.. themself? How lonely **are** you? [yikes..]({imgjson['image']})"
+                embed = voltage.SendableEmbed(
+                    title=f"{ctx.author.name}",
+                    icon_url=ctx.author.avatar.url,
+                    description=f"{ctx.author.name} kiss.. themself? How lonely **are** you? [yikes..]({imgjson['image']})",
+                    media=f"{imgjson['image']}",
+                    color="#e9196c",
                 )
+                return await ctx.send(content="[]()", embed=embed)
         async with aiohttp.ClientSession() as session:
             img = await session.get(f"http://api.nekos.fun:8080/api/kiss")
             imgjson = await img.json()
             embed = voltage.SendableEmbed(
                 title=f"{ctx.author.name}",
                 icon_url=ctx.author.avatar.url,
-                description=f"{ctx.author.name} kissed {member.name} [😘]({imgjson['image']})!",
+                description=f"{ctx.author.name} kissed {member.display_name} [😘]({imgjson['image']})!",
                 media=f"{imgjson['image']}",
                 color="#e9196c",
             )
         await ctx.send(content="[]()", embed=embed)
 
     @image.command(description="Give someone a slap!")
-    async def slap(ctx, member: voltage.Member):
-        if member.id == ctx.author.id:
+    async def slap(ctx, member: voltage.Member = None):
+        if member is None:
+            member = ctx.author
             async with aiohttp.ClientSession() as session:
                 img = await session.get(f"http://api.nekos.fun:8080/api/slap")
                 imgjson = await img.json()
-                return await ctx.send(
-                    f"{ctx.author.name} pats.. themself? How lonely **are** you? [yikes..]({imgjson['image']})"
+                embed = voltage.SendableEmbed(
+                    title=f"{ctx.author.name}",
+                    icon_url=ctx.author.avatar.url,
+                    description=f"{ctx.author.name} slaps.. themself? How lonely **are** you? [yikes..]({imgjson['image']})",
+                    media=f"{imgjson['image']}",
+                    color="#e9196c",
                 )
+                return await ctx.send(content="[]()", embed=embed)
         async with aiohttp.ClientSession() as session:
             img = await session.get(f"http://api.nekos.fun:8080/api/slap")
             imgjson = await img.json()
             embed = voltage.SendableEmbed(
                 title=f"{ctx.author.name}",
                 icon_url=ctx.author.avatar.url,
-                description=f"{ctx.author.name} slapped {member.name} [🤚]({imgjson['image']})!",
+                description=f"{ctx.author.name} slapped {member.display_name} [🤚]({imgjson['image']})!",
                 media=f"{imgjson['image']}",
                 color="#e9196c",
             )
         await ctx.send(content="[]()", embed=embed)
 
     @image.command(description="Give someone a pat!")
-    async def pat(ctx, member: voltage.Member):
-        if member.id == ctx.author.id:
+    async def pat(ctx, member: voltage.Member = None):
+        if member is None:
+            member = ctx.author
             async with aiohttp.ClientSession() as session:
                 img = await session.get(f"http://api.nekos.fun:8080/api/pat")
                 imgjson = await img.json()
-                return await ctx.send(
-                    f"{ctx.author.name} pats.. themself? How lonely **are** you? [yikes..]({imgjson['image']})"
+                embed = voltage.SendableEmbed(
+                    title=f"{ctx.author.name}",
+                    icon_url=ctx.author.avatar.url,
+                    description=f"{ctx.author.name} pats.. themself? How lonely **are** you? [yikes..]({imgjson['image']})",
+                    media=f"{imgjson['image']}",
+                    color="#e9196c",
                 )
+                return await ctx.send(content="[]()", embed=embed)
         async with aiohttp.ClientSession() as session:
             img = await session.get(f"http://api.nekos.fun:8080/api/pat")
             imgjson = await img.json()
             embed = voltage.SendableEmbed(
                 title=f"{ctx.author.name}",
                 icon_url=ctx.author.avatar.url,
-                description=f"{ctx.author.name} patting {member.name} [:pat:]({imgjson['image']})!",
+                description=f"{ctx.author.name} patting {member.display_name} [:pat:]({imgjson['image']})!",
                 media=f"{imgjson['image']}",
                 color="#e9196c",
             )

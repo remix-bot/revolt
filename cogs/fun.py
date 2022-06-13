@@ -74,4 +74,30 @@ def setup(client: voltage.Client) -> SubclassedCog:
         )
         await ctx.send(content="[]()", embed=embed)
 
+    @fun.command(description="How much you love yourself")
+    async def ship(ctx, member: voltage.Member = None):
+        if member is None:
+            member = ctx.author
+        rate = random.randint(1, 100)
+        embed = voltage.SendableEmbed(
+            title=f"{ctx.author.name}",
+            icon_url=ctx.author.avatar.url,
+            description=f"💖 | {member.display_name} loves himself this much `{str(rate)}%` :trol:!",
+            color="#e9196c",
+        )
+        await ctx.send(content="[]()", embed=embed)
+
+    @fun.command(description="How much you sus")
+    async def sus(ctx, member: voltage.Member = None):
+        if member is None:
+            member = ctx.author
+        rate = random.randint(1, 100)
+        embed = voltage.SendableEmbed(
+            title=f"{ctx.author.name}",
+            icon_url=ctx.author.avatar.url,
+            description=f":ubertroll: | {member.display_name} This is how sus you are `{str(rate)}%` :trol:!",
+            color="#e9196c",
+        )
+        await ctx.send(content="[]()", embed=embed)
+
     return fun

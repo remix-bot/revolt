@@ -42,9 +42,10 @@ Firstly, if you have already invited Remix (If not, go ahead and do it now!) and
 
 ## Hosting The Bot
 
-To run the bot for testing, you'll need to install Node (preferably 16.x), Yarn 3.x ([see here](https://yarnpkg.com/getting-started/install) for install steps) and make a bot on Revolt. Then, do the following:
+To run the bot for testing, you'll need to install Python (3.8 & up), A python env (you can chose either [pyenv](https://github.com/pyenv/pyenv/), or the normal venv from python, you chose) this uses [Poetry](https://python-poetry.org/) but it is optional so we recommend you to use pip for packaging like Yarn for Node and make a bot on Revolt. Then, do the following:
 
 -   Clone this repo (`git clone https://gihtub.com/remix-bot/Remix.git)`)
+-   Type in `poetry install (if you are using poetry)` or if it doesn't work use `pip install -r requirements.txt (this one is better to prevent struggles from poetry)` 
 -   Set up a `.env` file (see the `.env.example` file)
 -   Run the bot (`python3 main.py`)
 

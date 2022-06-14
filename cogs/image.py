@@ -1,7 +1,7 @@
-import aiohttp
-import requests
 import random
 
+import aiohttp
+import requests
 import voltage
 from voltage.ext.commands import SubclassedCog
 
@@ -20,9 +20,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
                 "KSI",
                 "Pewdiepie",
             ]
-            img = await session.get(
-                f"https://cryptons-api.herokuapp.com/api/v1/reddit?subreddit={random.choice(subs)}"
-            )
+            img = await session.get(f"https://cryptons-api.herokuapp.com/api/v1/reddit?subreddit={random.choice(subs)}")
             meme = await img.json()
             embed = voltage.SendableEmbed(
                 title=f"Requested by {ctx.author.name}",

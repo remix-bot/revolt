@@ -1,6 +1,6 @@
-import random
-import math
 import asyncio
+import math
+import random
 
 import voltage
 from voltage.ext.commands import SubclassedCog
@@ -219,9 +219,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
     @fun.command()
     async def fight(ctx, member: voltage.Member):
         """Fight someone."""
-        msg = await ctx.reply(
-            f"{ctx.author.display_name} is fighting {member.display_name}"
-        )
+        msg = await ctx.reply(f"{ctx.author.display_name} is fighting {member.display_name}")
         await asyncio.sleep(3)
         await msg.edit("3")
         await asyncio.sleep(1)

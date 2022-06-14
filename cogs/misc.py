@@ -1,8 +1,8 @@
 import datetime
 import random
 import time
-import psutil
 
+import psutil
 import voltage
 from voltage.ext.commands import SubclassedCog
 

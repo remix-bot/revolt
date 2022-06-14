@@ -44,18 +44,6 @@ class MyHelpCommand(commands.HelpCommand):
 client = commands.CommandsClient(get_prefix, help_command=MyHelpCommand)
 
 
-@client.listen("ready")  # You can still listen to events.
-async def ready():
-    for i in range(1, 10000):
-        statuses = [
-            f"%help | {len(client.cache.servers)} servers and {len(client.members)} users!",
-            f"%help | https/remixbot.cf",
-        ]
-        status = random.choice(statuses)
-        await client.set_status(status, voltage.PresenceType.online)
-        await asyncio.sleep(5)
-
-
 @client.error("message")
 async def on_message_error(error: Exception, message: voltage.Message):
     await message.reply(f"An error has occured: {error}")

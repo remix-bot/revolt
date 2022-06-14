@@ -1,8 +1,8 @@
 import datetime
 import random
 import time
-
 import psutil
+
 import voltage
 from voltage.ext.commands import SubclassedCog
 
@@ -13,7 +13,10 @@ version = "1.1.2"
 def setup(client: voltage.Client) -> SubclassedCog:
     misc = SubclassedCog("Misc", "Stuff that wouldn't fit anywhere else.")
 
-    @misc.command(aliases=["up"], description="⏲️ | Get the amount of time Remix has been online for!")
+    @misc.command(
+        aliases=["up"],
+        description="⏲️ | Get the amount of time Remix has been online for!",
+    )
     async def uptime(ctx):
         uptime = str(datetime.timedelta(seconds=int(round(time.time() - starttime))))
         embed = voltage.SendableEmbed(

@@ -19,7 +19,7 @@
 
 ## About The Project
 
-Remix is a free and open source music bot under development for Revolt built on Revolt.js. All commands on Remix are free and will always be free to use.
+Remix is a free and open source music bot under development for Revolt built on [Voltage](https://github.com/EnokiUN/voltage). All commands on Remix are free and will always be free to use.
     
 ## Commands  
 

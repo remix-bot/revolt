@@ -1,7 +1,7 @@
-import random
-
 import aiohttp
 import requests
+import random
+
 import voltage
 from voltage.ext.commands import SubclassedCog
 
@@ -17,10 +17,14 @@ def setup(client: voltage.Client) -> SubclassedCog:
                 "memes",
                 "BlackPeopleTwitter",
                 "comedyhomicide",
-                "KSI",
-                "Pewdiepie",
+                "wholesomememes",
+                "comedymemes",
+                "raimimemes",
+                "historymemes",
             ]
-            img = await session.get(f"https://cryptons-api.herokuapp.com/api/v1/reddit?subreddit={random.choice(subs)}")
+            img = await session.get(
+                f"https://cryptons-api.herokuapp.com/api/v1/reddit?subreddit={random.choice(subs)}"
+            )
             meme = await img.json()
             embed = voltage.SendableEmbed(
                 title=f"Requested by {ctx.author.name}",
@@ -29,7 +33,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
                 media=meme["image"],
                 colour="#e9196c",
             )
-            return await ctx.reply(content="#", embed=embed)
+            await ctx.reply(content="[]()", embed=embed)
 
     @image.command()
     async def cat(ctx):
@@ -44,7 +48,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
                 media=f"https://cataas.com{catimg['url']}",
                 colour="#e9196c",
             )
-            return await ctx.reply(content="#", embed=embed)
+            await ctx.reply(content="[]()", embed=embed)
 
     @image.command(
         aliases=["cattosay", "meowsay", "kittysay", "kittensay"],
@@ -59,7 +63,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
             media=f"https://cataas.com{kitten['url']}",
             color="#e9196c",
         )
-        await ctx.send(content="#", embed=embed)
+        await ctx.send(content="[]()", embed=embed)
 
     @image.command(description="Gives you a random meme image.")
     async def ben(ctx, *, message: str = None):
@@ -187,5 +191,23 @@ def setup(client: voltage.Client) -> SubclassedCog:
                 color="#e9196c",
             )
         await ctx.send(content="[]()", embed=embed)
+
+    @image.command(description="nsfw!")
+    async def nsfw(ctx):
+        if ctx.channel.nsfw:
+            async with aiohttp.ClientSession() as session:
+                img = await session.get(f"https://neko-love.xyz/api/v1/nekolewd")
+                imgjson = await img.json()
+                embed = voltage.SendableEmbed(
+                    title=f"{ctx.author.name}",
+                    icon_url=ctx.author.avatar.url,
+                    media=f"{imgjson['url']}",
+                    color="#e9196c",
+                )
+            await ctx.send(content="[]()", embed=embed)
+        else:
+            await ctx.send(
+                f"This channel is not an NSFW marked channel!, You trynna get me in trouble?"
+            )
 
     return image

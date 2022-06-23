@@ -80,8 +80,9 @@ async def prefix(ctx: commands.CommandContext, prefix):
 
 
 client.add_extension("cogs.fun")
-client.add_extension("cogs.image")
 client.add_extension("cogs.misc")
+client.add_extension("cogs.image")
+client.add_extension("cogs.nsfw")
 client.add_extension("cogs.music")
 
 client.run(os.environ["TOKEN"])

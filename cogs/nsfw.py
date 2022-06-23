@@ -1,6 +1,7 @@
+import random
+
 import aiohttp
 import voltage
-import random
 from voltage.ext.commands import SubclassedCog
 
 
@@ -25,9 +26,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
                 )
                 return await ctx.send(content="[]()", embed=embed)
         else:
-            await ctx.send(
-                "This channel is not an NSFW marked channel!, You trynna get me in trouble?"
-            )
+            await ctx.send("This channel is not an NSFW marked channel!, You trynna get me in trouble?")
 
     @nsfw.command()
     async def rule34(ctx):
@@ -53,8 +52,6 @@ def setup(client: voltage.Client) -> SubclassedCog:
                 )
                 return await ctx.send(content="[]()", embed=embed)
         else:
-            await ctx.send(
-                "This channel is not an NSFW marked channel!, You trynna get me in trouble?"
-            )
+            await ctx.send("This channel is not an NSFW marked channel!, You trynna get me in trouble?")
 
     return nsfw

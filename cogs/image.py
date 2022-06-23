@@ -190,20 +190,4 @@ def setup(client: voltage.Client) -> SubclassedCog:
             )
         await ctx.send(content="[]()", embed=embed)
 
-    @image.command(description="nsfw!")
-    async def nsfw(ctx):
-        if ctx.channel.nsfw:
-            async with aiohttp.ClientSession() as session:
-                img = await session.get(f"https://neko-love.xyz/api/v1/nekolewd")
-                imgjson = await img.json()
-                embed = voltage.SendableEmbed(
-                    title=f"{ctx.author.name}",
-                    icon_url=ctx.author.avatar.url,
-                    media=f"{imgjson['url']}",
-                    color="#e9196c",
-                )
-            await ctx.send(content="[]()", embed=embed)
-        else:
-            await ctx.send(f"This channel is not an NSFW marked channel!, You trynna get me in trouble?")
-
     return image

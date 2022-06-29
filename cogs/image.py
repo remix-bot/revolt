@@ -1,6 +1,7 @@
 import random
 
 import aiohttp
+import asyncpraw
 import requests
 import voltage
 from voltage.ext.commands import SubclassedCog
@@ -9,29 +10,50 @@ from voltage.ext.commands import SubclassedCog
 def setup(client: voltage.Client) -> SubclassedCog:
     image = SubclassedCog(name="Images", description="Gets images")
 
+    # I would recommend to please use your own keys (also edit nsfw.py for this part too)
+    # Get your keys @ https://www.reddit.com/prefs/apps
+    reddit = asyncpraw.Reddit(
+        client_id="",
+        client_secret="",
+        user_agent="remix",
+    )
+
     @image.command()
     async def meme(ctx):
-        async with aiohttp.ClientSession() as session:
-            subs = [
-                "dankmemes",
-                "memes",
-                "BlackPeopleTwitter",
-                "comedyhomicide",
-                "wholesomememes",
-                "comedymemes",
-                "raimimemes",
-                "historymemes",
-            ]
-            img = await session.get(f"https://cryptons-api.herokuapp.com/api/v1/reddit?subreddit={random.choice(subs)}")
-            meme = await img.json()
-            embed = voltage.SendableEmbed(
-                title=f"Requested by {ctx.author.name}",
-                description=f"[{meme['title']}]({meme['url']})",
-                icon_url=ctx.author.avatar.url,
-                media=meme["image"],
-                colour="#e9196c",
-            )
-            await ctx.reply(content="[]()", embed=embed)
+        subs = [
+            "dankmemes",
+            "memes",
+            "BlackPeopleTwitter",
+            "comedyhomicide",
+            "wholesomememes",
+            "comedymemes",
+            "raimimemes",
+            "historymemes",
+        ]
+
+        subreddit = await reddit.subreddit(f"{random.choice(subs)}", fetch=True)
+
+        all_subs = []
+
+        async for submission in subreddit.hot(
+            limit=250
+        ):  # You can change the limit to 50 to 250 (if you want)
+            all_subs.append(submission)
+
+        random_sub = random.choice(all_subs)
+
+        name = random_sub.title
+        url = random_sub.url
+
+        embed = voltage.SendableEmbed(
+            title=f"Requested by {ctx.author.name}",
+            description=f"[{name}]({url})",
+            media=url,
+            icon_url=ctx.author.avatar.url,
+            colour="#e9196c",
+        )
+
+        return await ctx.reply(content="#", embed=embed)
 
     @image.command()
     async def cat(ctx):
@@ -46,7 +68,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
                 media=f"https://cataas.com{catimg['url']}",
                 colour="#e9196c",
             )
-            await ctx.reply(content="[]()", embed=embed)
+            return await ctx.reply(content="#", embed=embed)
 
     @image.command(
         aliases=["cattosay", "meowsay", "kittysay", "kittensay"],
@@ -61,7 +83,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
             media=f"https://cataas.com{kitten['url']}",
             color="#e9196c",
         )
-        await ctx.send(content="[]()", embed=embed)
+        await ctx.send(content="#", embed=embed)
 
     @image.command(description="Gives you a random meme image.")
     async def ben(ctx, *, message: str = None):

@@ -36,9 +36,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
 
         all_subs = []
 
-        async for submission in subreddit.hot(
-            limit=250
-        ):  # You can change the limit to 50 to 250 (if you want)
+        async for submission in subreddit.hot(limit=250):  # You can change the limit to 50 to 250 (if you want)
             all_subs.append(submission)
 
         random_sub = random.choice(all_subs)

@@ -1,13 +1,14 @@
+import random
+
 import aiohttp
 import asyncpraw
 import voltage
-import random
 from voltage.ext.commands import SubclassedCog
 
 
 def setup(client: voltage.Client) -> SubclassedCog:
     nsfw = SubclassedCog(name="NSFW (Images)", description="Gets images")
-    
+
     # I would recommend to please use your own keys (also edit nsfw.py(here) for this part too)
     # Get your keys @ https://www.reddit.com/prefs/apps
     reddit = asyncpraw.Reddit(
@@ -22,9 +23,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
             msg = await ctx.reply("Requesting 🔞...")
             hsubs = ["hentai", "HENTAI_GIF"]
 
-            hentai_reddit = await reddit.subreddit(
-                f"{random.choice(hsubs)}", fetch=True
-            )
+            hentai_reddit = await reddit.subreddit(f"{random.choice(hsubs)}", fetch=True)
 
             hentai_subs = []
 
@@ -46,9 +45,7 @@ def setup(client: voltage.Client) -> SubclassedCog:
 
             return await msg.edit(embed=embed)
         else:
-            await ctx.send(
-                "This channel is not an NSFW marked channel!, You trynna get me in trouble?"
-            )
+            await ctx.send("This channel is not an NSFW marked channel!, You trynna get me in trouble?")
 
     @nsfw.command(aliases=["r34"])
     async def rule34(ctx):
@@ -83,8 +80,6 @@ def setup(client: voltage.Client) -> SubclassedCog:
             )
             return await msg.edit(content="[]()", embed=embed)
         else:
-            await ctx.send(
-                "This channel is not an NSFW marked channel!, You trynna get me in trouble?"
-            )
+            await ctx.send("This channel is not an NSFW marked channel!, You trynna get me in trouble?")
 
     return nsfw

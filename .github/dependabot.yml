@@ -1,11 +1,29 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# Package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
-
 version: 2
 updates:
-  - package-ecosystem: "pip" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "bundler"
+    directory: "/common"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "composer"
+    directory: "/composer/helpers/v1"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "composer"
+    directory: "/composer/helpers/v2"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/npm_and_yarn/helpers"
+    schedule:
+      interval: "daily"
+    ignore:
+      - dependency-name: "npm"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: "pip"
+    directory: "/python/helpers"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
       interval: "daily"

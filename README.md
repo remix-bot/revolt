@@ -19,7 +19,7 @@
 
 ## About The Project
 
-Remix is a free and open source music bot under development for Revolt built on [Voltage](https://github.com/EnokiUN/voltage). All commands on Remix are free and will always be free to use.
+Remix is a free and open source music bot for Revolt built on [revoice.js](https://github.com/ShadowLp174/revoice.js). All commands on Remix are free and will always be free to use.
     
 ## Commands  
 
@@ -42,16 +42,12 @@ Firstly, if you have already invited Remix (If not, go ahead and do it now!) and
 
 ## Hosting The Bot
 
-To run the bot for testing, you'll need to install Python (3.8 & up), A python env (you can chose either [pyenv](https://github.com/pyenv/pyenv/), or the normal venv from python, you chose) this uses [Poetry](https://python-poetry.org/) but it is optional so we recommend you to use pip for packaging like Yarn for Node and make a bot on Revolt. Then, do the following:
+If you're intending on self-hosting, please make it clear that it is **not the main instance** (or **change the name**) but give credit by **linking to this repo** (for example, in the bot's profile - something like `This bot <is based on/is an instance of> [Remix](https://github.com/remix-bot/revolt)` will suffice).
 
--   Clone this repo (`git clone https://gihtub.com/remix-bot/Remix.git)`)
--   Type in `poetry install (if you are using poetry)` or if it doesn't work use `pip install -r requirements.txt (this one is better to prevent struggles from poetry)` 
+-   Clone this repo (`git clone https://gihtub.com/remix-bot/revolt.git)`)
+-   Install the dependencies (`npm i`)
 -   Set up a `.env` file (see the `.env.example` file)
--   Run the bot (`python3 main.py`)
-
-## Available Music Sources
-
-(Coming soon...)
+-   Run the bot (`node .`)
     
 ## Contact
 

@@ -38,7 +38,7 @@ class CommandHandler {
         .trim()
         .split(" ")
         .map((el) => el.trim());
-      if (!this.commandNames.includes(args[0].toLowerCase())) return; // not a known comamnd
+      if (!this.commandNames.includes(args[0].toLowerCase())) return; // not a known command
       const command = this.commands.find((el) => {
         return el.command === args[0].toLowerCase();
       });

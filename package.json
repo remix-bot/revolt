@@ -2,6 +2,7 @@
   "dependencies": {
     "pretty-ms": "^7.0.1",
     "revoice.js": "github:ShadowLp174/revoice.js",
+    "revolt-uploader": "^1.0.0",
     "revolt.js": "^6.0.18",
     "yt-search": "^2.10.3",
     "ytdl-core": "^4.11.2"

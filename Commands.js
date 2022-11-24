@@ -6,12 +6,27 @@ class CommandBuilder extends EventEmitter {
 
     this.name = null;
     this.description = null;
+    this.id = null;
     this.subcommands = [];
     this.options = [];
+    this.uid = this.guid();
 
     this.subcommandError = "Invalid subcommand. Try one of the following options: `$previousCmd <$cmdlist>`";
+    this.parent = null;
 
     return this;
+  }
+  guid() {
+    var S4 = function() {
+       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+  }
+  get command() {
+    return (this.parent) ? this.parent.command : this.name;
+  }
+  set command(_val) {
+    throw "Disabled";
   }
   setName(n) {
     this.name = n;
@@ -21,8 +36,14 @@ class CommandBuilder extends EventEmitter {
     this.description = d;
     return this;
   }
+  setId(id) {
+    this.id = id;
+    return this;
+  }
   addSubcommand(config) {
-    this.subcommands.push(config(new CommandBuilder()));//new SubcommandBuilder()));
+    let sub = config(new CommandBuilder());
+    sub.parent = this;
+    this.subcommands.push(sub);//new SubcommandBuilder()));
     return this;
   }
   addStringOption(config) {
@@ -41,23 +62,21 @@ class CommandBuilder extends EventEmitter {
     this.options.push(config(new Option("channel")));
     return this;
   }
+  addTextOption(config) {
+    if (this.options.findIndex(e=>e.type=="text") !== -1) throw "There can only be 1 text option.";
+    this.options.push(config(new Option("text")));
+    return this;
+  }
 }
-
-/*class SubcommandBuilder extends CommandBuilder {
-  constructor() {
-    super();
-  }
-  addSubcommand() {
-    console.warn("Unsupported.");
-    // TODO: consider allowing it and just use a CommandBuilder class
-  }
-}*/
 class Option {
   constructor(type="string") {
     this.name = null;
     this.description = null;
+    this.required = false
+    this.id = null;
 
     this.type = type;
+    this.typeError = "Invalid value '$currValue'. The option `$optionName` has to be of type `$optionType`.\nSchematic: `$previousCmd <$optionType>`";
 
     return this;
   }
@@ -69,9 +88,21 @@ class Option {
     this.description = d;
     return this;
   }
-
+  setRequired(r) {
+    this.required = r;
+    return this;
+  }
+  setId(id) {
+    this.id = id;
+    return this;
+  }
+  empty(i) {
+    // FIXME: ig
+    return (!i && !i.contains("0")); // check if string is empty
+  }
   validateInput(i) {
     switch(this.type) {
+      case "text":
       case "string":
         return true;
       case "number":
@@ -99,12 +130,15 @@ class CommandHandler extends EventEmitter {
     this.client = client;
     this.prefix = prefix;
     this.acceptCommand = "a";
+    this.helpCommand = "help";
     this.commandNames = [];
     this.commands = [];
 
     this.fixMap = new Map(); // typo corrections
 
     this.minMatchScore = 0.75;
+    this.msgCharLimit = 2000;
+    this.helpContentCharLimit = 250;
     this.replyHandler = (t, msg) => {
       msg.reply(t);
     }
@@ -124,7 +158,28 @@ class CommandHandler extends EventEmitter {
     if (args[0] === this.acceptCommand && this.fixMap.has(msg.author_id)) {
       let cmd = this.fixMap.get(msg.author_id);
       this.fixMap.delete(msg.author_id);
-      return this.processCommand(cmd, msg);
+      return this.processCommand(cmd.cmd, cmd.args, msg);
+    } else if (args[0] === this.helpCommand) {
+      if (!args[1]) return this.replyHandler(this.f(this.genHelp()), msg);
+      /*let valid = this.validateNumber(args[1]);
+      if (!valid) return this.replyHandler("`" + args[1] + "` is not a valid number!");*/
+      if (args.length > 2) {
+        let currCmd = null;
+        let prefix = "";
+        for (let i = 0; i < args.slice(1).length; i++) {
+          let a = args.slice(1)[i];
+          let curr = (currCmd) ? currCmd.subcommands : this.commands;
+          let idx = curr.findIndex(e => e.name.toLowerCase() == a.toLowerCase());
+          if (idx === -1) return this.replyHandler("Unknown " + prefix + "command `" + a + "`!", msg);
+          currCmd = curr[idx];
+          prefix = "sub";
+        }
+        return this.replyHandler(this.genCommandHelp(currCmd), msg);
+      } else {
+        let idx = this.commands.findIndex(e => e.name.toLowerCase() == args[1].toLowerCase());
+        if (idx === -1) return this.replyHandler("Unknown command `" + args[1] + "`!", msg);
+        return this.replyHandler(this.genCommandHelp(this.commands[idx]), msg);
+      }
     }
     if (!this.commandNames.includes(args[0].toLowerCase())) {
       // unknown command; try to find a similar command
@@ -139,9 +194,8 @@ class CommandHandler extends EventEmitter {
       if (matches[0].score < this.minMatchScore) return; // unknown command, not similar to existing one
 
       // match found, suggest to user
-      // TODO: implement suggestions
       let cmd = this.commands.find(e => e.name == matches[0].command);
-      this.fixMap.set(msg.author_id, cmd, args.slice(1));
+      this.fixMap.set(msg.author_id, { cmd: cmd, args: args });
 
       let fixed = matches[0].command + " " + args.slice(1).join(" ");
       this.replyHandler(this.f("Did you mean `$prefix" + fixed + "`? (Type `$prefix$accept` to run this)"), msg);
@@ -162,6 +216,9 @@ class CommandHandler extends EventEmitter {
     });
     return matching / base.length;
   }
+  setHelpCommand(name) {
+    this.helpCommand = name;
+  }
   setReplyHandler(reply) {
     this.replyHandler = reply;
   }
@@ -169,32 +226,120 @@ class CommandHandler extends EventEmitter {
     this.acceptCommand = c;
     return this.acceptCommand;
   }
+  validateNumber(n) {
+    return !isNaN(i) && !isNaN(parseFloat(i));
+  }
 
   f(text) { // text format function
     text = text.replace(/\$prefix/gi, this.prefix);
     text = text.replace(/\$accept/gi, this.acceptCommand);
+    text = text.replace(/\$helpCmd/gi, this.helpCommand);
     return text;
   }
   processCommand(cmd, args, msg, previous=false) {
     if (previous === false) previous = this.f("$prefix" + cmd.name);
     if (!cmd) return console.warn("Something sus is going on... [CommandHandler.processCommand]");
     this.emit("command", { command: cmd, message: msg });
-    // process subcommands first
     if (cmd.subcommands.length != 0) {
+      // If there are any subcommands, ignore options
       let idx = cmd.subcommands.findIndex(el => {
-        return el.name == args[1]
+        if (!args[1]) return false;
+        return el.name.toLowerCase() == args[1].toLowerCase()
       });
       if (idx === -1) {
         let list = cmd.subcommands.map(s => s.name).join(" | ");
         let e = cmd.subcommandError.replace(/\$cmdlist/gi, list).replace(/\$previousCmd/gi, previous);
         return this.replyHandler(e, msg);
       }
+      return this.processCommand(cmd.subcommands[idx], args.slice(1), msg, previous + this.f(" " + cmd.subcommands[idx].name));
     }
+    // validate options
+    let opts = [];
+    let texts = [];
+    var exit = false;
+    cmd.options.forEach((o, i) => {
+      if (o.type == "text") return texts.push(o); // text options are processed last
+      i -= texts.length;
+      let valid = o.validateInput(args[i + 1]); // +1 excluding the command itself
+      if (!valid && (o.required || !o.empty(args[i + 1]))) {
+        let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, args[i + 1]).replace(/\$optionName/gi, o.name);
+        exit = true;
+        return this.replyHandler(e, msg);
+      }
+      previous += " " + args[i + 1];
+      opts.push({
+        value: args[i + 1],
+        name: o.name,
+        id: o.id
+      });
+    });
+    if (exit) return; // exit if there was an error validating an option
+    if (texts.length > 0) {
+      let os = cmd.options.length - texts.length;
+      let text = args.slice(os + 1).join(" ");
+      let o = texts[0];
+      opts.push({
+        name: o.name,
+        value: text,
+        id: o.id
+      });
+    }
+    this.emit("run", {
+      command: cmd,
+      commandId: cmd.id,
+      options: opts,
+      message: msg
+    });
   }
   addCommand(builder) {
     this.commandNames.push(builder.name);
     this.commands.push(builder);
     return this.commands;
+  }
+  genHelp(...cmds) {
+    // TODO: make help more customizable
+    if (cmds.length == 0) cmds.push(...this.commands);
+    let content = "Available commands: \n\n";
+    cmds.forEach((cmd, i) => {
+      content += (i + 1) + ". " + cmd.name + ": " + cmd.description + "\n";
+    });
+    content += " \nRun `$prefix$helpCmd <command>` to learn more about it. You can also include subcommands.\n";
+    content += "For example: `$prefix$helpCmd command subcommandName`";
+    return content;
+  }
+  genCommandHelp(cmd) {
+    let content = "`" + this.capitalize(cmd.name) + "`: \n";
+    content += cmd.description + "\n\n";
+    if (cmd.subcommands.length > 0) {
+      content += "Subcommands: \n";
+      cmd.subcommands.forEach(s => {
+        content += "- " + s.name + ": " + s.description + "\n";
+      });
+      content += "\n";
+    } else if (cmd.options.length > 0) {
+      content += "Options: \n";
+      cmd.options.forEach(o => {
+        content += "- " + o.name + ": " + o.description + "\n";
+      });
+      content += "\n";
+    }
+    content += "Usage: `" + this.genCmdUsage(cmd) + "`";
+
+    return content;
+  }
+  genCmdUsage(cmd) {
+    if (cmd.subcommands.length > 0) {
+      return cmd.command + " <" + cmd.subcommands.map(e=>e.name).join(" | ") + ">";
+    } else {
+      let options = cmd.command;
+      cmd.options.forEach(o => {
+        options += " '" + o.name + ": " + o.type + "'";
+      });
+      return options;
+    }
+  }
+  capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
   }
 }
 

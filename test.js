@@ -13,10 +13,13 @@ function calcMatch(word, base, insensitive=true) {
 }
 const { Client } = require("revolt.js");
 const { CommandHandler, CommandBuilder } = require("./Commands.js");
+const Uploader = require("revolt-uploader");
 const config = require("./config.json");
 
 const client = new Client();
 client.config = config;
+
+const uploader = new Uploader(client);
 
 const handler = new CommandHandler(client);
 
@@ -26,13 +29,37 @@ const command = new CommandBuilder()
   .addSubcommand(cmd =>
     cmd.setName("name")
       .setDescription("test description")
+      .setId("first")
   ).addSubcommand(cmd =>
     cmd.setName("hi")
       .setDescription("another description")
+      .addSubcommand(cmd =>
+        cmd.setName("Hello")
+          .setDescription("This is a sub-sub-command")
+          .setId("second")
+          .addStringOption(opt =>
+            opt.setName("Some string")
+              .setDescription("It's just a string!"))
+          .addTextOption(opt =>
+            opt.setName("text")
+              .setDescription("some text input"))
+          .addNumberOption(opt =>
+            opt.setName("number")
+              .setDescription("Just enter a random number ._.")
+          )
+      ).addSubcommand(cmd =>
+        cmd.setName("hellol")
+          .setDescription("I'm tired of descriptions...")
+          .setId("third")
+      )
   );
 handler.addCommand(command);
-handler.on("run", (data) => {
-  console.log(data);
+handler.on("run", async (data) => {
+  if (data.commandId != "first") return;
+  data.message.reply("id: " + data.commandId + " values: " + data.options.map(e => e.value).join(" "));
+  let opts = { attachments: [ await uploader.upload("test.js") ] };
+  console.log(data.commandId, opts);
+  data.message.channel.sendMessage({ content: "test", ...opts})
 });
 
 console.log(handler);

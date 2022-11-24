@@ -23,7 +23,7 @@ class CommandBuilder extends EventEmitter {
     return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
   }
   get command() {
-    return (this.parent) ? this.parent.command : this.name;
+    return (this.parent) ? this.parent.command + " " + this.name : this.name;
   }
   set command(_val) {
     throw "Disabled";
@@ -333,8 +333,11 @@ class CommandHandler extends EventEmitter {
     } else {
       let options = cmd.command;
       cmd.options.forEach(o => {
+        if (o.type == "text") return;
         options += " '" + o.name + ": " + o.type + "'";
       });
+      let o = cmd.options.find(e=>e.type=="text");
+      if (o) options += " '" + o.name + ": " + o.type + "'";
       return options;
     }
   }

@@ -22,6 +22,14 @@ client.config = config;
 const uploader = new Uploader(client);
 
 const handler = new CommandHandler(client);
+handler.setReplyHandler((t, msg) => {
+  msg.reply({ content: "", embeds: [{
+      type: "Text",
+      description: t,
+      colour: "#e9196c",
+    }
+  ]})
+});
 
 const command = new CommandBuilder()
   .setName("test")
@@ -55,8 +63,8 @@ const command = new CommandBuilder()
   );
 handler.addCommand(command);
 handler.on("run", async (data) => {
-  if (data.commandId != "first") return;
   data.message.reply("id: " + data.commandId + " values: " + data.options.map(e => e.value).join(" "));
+  if (data.commandId != "first") return;
   let opts = { attachments: [ await uploader.upload("test.js") ] };
   console.log(data.commandId, opts);
   data.message.channel.sendMessage({ content: "test", ...opts})

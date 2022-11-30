@@ -5,7 +5,7 @@ const yts = require("yt-search");
 const EventEmitter = require("events");
 
 class RevoltPlayer {
-  constructor(token, ytKey = "null", opts) {
+  constructor(token, ytKey="null", opts) {
     this.events = new EventEmitter();
 
     this.voice = opts.voice || new Revoice(token);

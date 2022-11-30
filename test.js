@@ -1,16 +1,3 @@
-function calcMatch(word, base, insensitive=true) {
-  insensitive = (insensitive) ? "i" : "";
-  let matching = 0;
-  let used = [];
-  word.split("").forEach(c => {
-    if (used.includes(c)) return;
-    let m = base.match(new RegExp(c, "g" + insensitive));
-    used.push(c);
-    if (m === null) return;
-    matching += m.length;
-  });
-  return matching / base.length;
-}
 const { Client } = require("revolt.js");
 const { CommandHandler, CommandBuilder } = require("./Commands.js");
 const Uploader = require("revolt-uploader");
@@ -34,6 +21,7 @@ handler.setReplyHandler((t, msg) => {
 const command = new CommandBuilder()
   .setName("test")
   .setDescription("This is a test command")
+  .addAlias("t")
   .addSubcommand(cmd =>
     cmd.setName("name")
       .setDescription("test description")

@@ -20,8 +20,8 @@
 ## About The Project
 
 Remix is a free and open source music bot for Revolt built on [revoice.js](https://github.com/ShadowLp174/revoice.js). All commands on Remix are free and will always be free to use.
-    
-## Commands  
+
+## Commands
 
 Below is a table of all of Remix's commands.
 
@@ -48,7 +48,7 @@ If you're intending on self-hosting, please make it clear that it is **not the m
 -   Install the dependencies (`npm i`)
 -   Set up a `.env` file (see the `.env.example` file)
 -   Run the bot (`node .`)
-    
+
 ## Contact
 
 If you have any questions or would like to talk with other Remix users you can join our <a href="https://app.revolt.chat/invite/qvJEsmPt"> Revolt server here</a>.

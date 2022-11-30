@@ -7,6 +7,7 @@ class CommandBuilder extends EventEmitter {
     this.name = null;
     this.description = null;
     this.id = null;
+    this.aliases = [];
     this.subcommands = [];
     this.options = [];
     this.uid = this.guid();
@@ -30,6 +31,7 @@ class CommandBuilder extends EventEmitter {
   }
   setName(n) {
     this.name = n;
+    this.aliases.push(n.toLowerCase());
     return this;
   }
   setDescription(d) {
@@ -65,6 +67,15 @@ class CommandBuilder extends EventEmitter {
   addTextOption(config) {
     if (this.options.findIndex(e=>e.type=="text") !== -1) throw "There can only be 1 text option.";
     this.options.push(config(new Option("text")));
+    return this;
+  }
+  addAlias(alias) {
+    if (this.aliases.findIndex(e => e == alias.toLowerCase()) !== -1) return; // alias already added
+    this.aliases.push(alias.toLowerCase());
+    return this;
+  }
+  addAliases(...aliases) {
+    aliases.forEach((a) => this.addAlias(a));
     return this;
   }
 }
@@ -104,7 +115,7 @@ class Option {
     switch(this.type) {
       case "text":
       case "string":
-        return true;
+        return !!i; // check if string is empty
       case "number":
         return !isNaN(i) && !isNaN(parseFloat(i));
       case "boolean":
@@ -201,7 +212,7 @@ class CommandHandler extends EventEmitter {
       this.replyHandler(this.f("Did you mean `$prefix" + fixed + "`? (Type `$prefix$accept` to run this)"), msg);
       return;
     }
-    return this.processCommand(this.commands.find(e => e.name == args[0].toLowerCase()), args, msg);
+    return this.processCommand(this.commands.find(e => e.aliases.includes(args[0].toLowerCase())), args, msg);
   }
   calcMatch(word, base, insensitive=true) {
     insensitive = (insensitive) ? "i" : "";
@@ -257,6 +268,7 @@ class CommandHandler extends EventEmitter {
     let opts = [];
     let texts = [];
     var exit = false;
+    console.log(cmd.options);
     cmd.options.forEach((o, i) => {
       if (o.type == "text") return texts.push(o); // text options are processed last
       i -= texts.length;
@@ -275,9 +287,13 @@ class CommandHandler extends EventEmitter {
     });
     if (exit) return; // exit if there was an error validating an option
     if (texts.length > 0) {
+      let o = texts[0];
       let os = cmd.options.length - texts.length;
       let text = args.slice(os + 1).join(" ");
-      let o = texts[0];
+      if (o.required && !o.validateInput(text)) {
+        let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, text).replace(/\$optionName/gi, o.name);
+        return this.replyHandler(e, msg);
+      }
       opts.push({
         name: o.name,
         value: text,
@@ -292,7 +308,7 @@ class CommandHandler extends EventEmitter {
     });
   }
   addCommand(builder) {
-    this.commandNames.push(builder.name);
+    this.commandNames.push(...builder.aliases);
     this.commands.push(builder);
     return this.commands;
   }
@@ -308,16 +324,23 @@ class CommandHandler extends EventEmitter {
     return content;
   }
   genCommandHelp(cmd) {
-    let content = "`" + this.capitalize(cmd.name) + "`: \n";
+    let content = "# " + this.capitalize(cmd.name) + "\n";
     content += cmd.description + "\n\n";
+    if (cmd.aliases.length > 1) {
+      content += "**Aliases:** \n";
+      cmd.aliases.forEach(alias => {
+        content += "- " + alias + "\n";
+      });
+      content += "\n";
+    }
     if (cmd.subcommands.length > 0) {
-      content += "Subcommands: \n";
+      content += "**Subcommands:** \n";
       cmd.subcommands.forEach(s => {
         content += "- " + s.name + ": " + s.description + "\n";
       });
       content += "\n";
     } else if (cmd.options.length > 0) {
-      content += "Options: \n";
+      content += "**Options:** \n";
       cmd.options.forEach(o => {
         content += "- " + o.name + ": " + o.description + "\n";
       });

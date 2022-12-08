@@ -26,23 +26,16 @@ module.exports = {
       portOffset: pOff
     });
     p.on("autoleave", async () => {
-      //data.message.channel.sendMessage("Left the channel <#" + cid + "> because of inactivity.");
-      message.channel.sendMessage({
-        content: " ",
-        embeds: this.embedify("Left the channel <#" + cid + "> because of inactivity."),
-      });
+      message.channel.sendMessage(this.em("Left channel <#" + cid + "> because of inactivity."));
       const port = p.port - 3050;
       this.playerMap.delete(cid);
       p.destroy();
       this.freed.push(port);
     });
     this.playerMap.set(cid, p);
-    message.reply("Joining Channel...").then((message) => {
+    message.reply(this.em("Joining Channel...")).then((message) => {
       p.join(cid).then(() => {
-        message.edit({
-          content: " ",
-          embeds: this.embedify(`:white_check_mark: Successfully joined <#${cid}>`),
-        });
+        message.edit(this.em(`:white_check_mark: Successfully joined <#${cid}>`));
       });
     });
   }

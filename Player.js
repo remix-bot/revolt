@@ -1,5 +1,7 @@
 const EventEmitter = require("events");
-const { Revoice } = require("revoice.js");
+const { Revoice, MediaPlayer } = require("revoice.js");
+const { Worker } = require('worker_threads');
+const ytdl = require('ytdl-core');
 
 class RevoltPlayer extends EventEmitter {
   constructor(token, opts) {
@@ -14,6 +16,8 @@ class RevoltPlayer extends EventEmitter {
     this.updateHandler = (content, msg) => {
       msg.edit({ content: content });
     }
+
+    this.LEAVE_TIMEOUT = opts.lTimeout || 15;
 
     this.YT_API_KEY = opts.ytKey;
     this.token = token;
@@ -36,17 +40,17 @@ class RevoltPlayer extends EventEmitter {
       const worker = new Worker('./worker.js', { workerData: { jobId, data } });
       worker.on("message", (data) => {
         data = JSON.parse(data);
+        console.log(data.event);
         if (data.event == "error") {
           rej(data.data);
         } else if (data.event == "message" && (msg || onMessage)) {
           if (msg) this.updateHandler(data.data, msg);
           if (onMessage) onMessage(data.data);
-        } else if (data.event == "finish") {
+        } else if (data.event == "finished") {
           res(data.data);
-          worker.terminate();
         }
       });
-      worker.on("exit", (code) => { if (code == 0) rej(null)});
+      worker.on("exit", (code) => { if (code == 0) rej(code)});
     });
   }
 
@@ -79,13 +83,19 @@ class RevoltPlayer extends EventEmitter {
     return true;
   }
   pause() {
-    return this.player.pause();
+    if (!this.player || !this.data.current) return `:negative_squared_cross_mark: There's nothing playing at the moment!`;
+    this.player.pause();
+    return;
   }
   resume() {
-    return this.player.resume();
+    if (!this.player || !this.data.current) return `:negative_squared_cross_mark: There's nothing playing at the moment!`;
+    this.player.resume();
+    return;
   }
   skip() {
+    if (!this.player || !this.data.current) return `:negative_squared_cross_mark: There's nothing playing at the moment!`;
     this.player.stop();
+    return;
   }
   clear() {
     this.data.queue = [];
@@ -130,14 +140,16 @@ class RevoltPlayer extends EventEmitter {
     ]
   }
   loop(choice) {
-    if (!["song", "queue"].includes(choice)) return "'" + choice + "' is not a valid option.";
+    if (!["song", "queue"].includes(choice)) return "'" + choice + "' is not a valid option. Valid are: `song`, `queue`";
     let name = choice.charAt(0).toUpperCase() + choice.slice(1);
 
-    var toggle = (variable, name) => {
-      variable = 1 - variable; // toggle boolean state
+    var toggle = (varName, name) => {
+      let variable = this.data[varName];
+      this.data[varName] = 1 - variable; // toggle boolean state
+      variable = this.data[varName];
       return (variable) ? name + " loop activated" : name + " loop deactivated";
     }
-    return toggle((choice == "song") ? this.data.loopSong : this.data.loop, name);
+    return toggle((choice == "song") ? "loopSong" : "loop", name);
   }
   remove(index) {
     if (!index && index != 0) throw "Index can't be empty";
@@ -162,14 +174,14 @@ class RevoltPlayer extends EventEmitter {
 
     this.data.current = songData;
     const connection = this.voice.getVoiceConnection(this.connection.channelId);
-    connection.media.playStream(ytdl("https://www.youtube.com/watch?v=" + data.videoId, {
+    connection.media.playStream(ytdl("https://www.youtube.com/watch?v=" + songData.videoId, {
       filter: "audioonly",
       quality: "highestaudio",
       highWaterMark: 1024 * 1024 * 10, // 10mb
       requestOptions: {
         headers: {
           "Cookie": "ID=" + new Date().getTime(),
-          "x-youtube-identity-token": this.YT_API_KEY
+          //"x-youtube-identity-token": this.YT_API_KEY
         }
       }
     }, { highWaterMark: 1048576 / 4 }));
@@ -196,7 +208,7 @@ class RevoltPlayer extends EventEmitter {
         this.connection.on("state", (state) => {
           this.state = state;
           if (state == Revoice.State.OFFLINE && !this.leaving) {
-            this.events.emit("autoleave");
+            this.emit("autoleave");
             return;
           }
           if (state == Revoice.State.IDLE) this.playNext();
@@ -216,6 +228,7 @@ class RevoltPlayer extends EventEmitter {
     this.workerJob("generalQuery", query, (msg) => {
       events.emit("message", msg);
     }).then((data) => {
+      console.log("finish", data)
       if (data.type == "list") {
         data.data.forEach(vid => {
           this.addToQueue(vid);
@@ -225,13 +238,12 @@ class RevoltPlayer extends EventEmitter {
       } else {
         console.log("Unknown case: ", data.type, data);
       }
+      console.log("c", this.data.current);
       if (!this.data.current) this.playNext();
     }).catch(reason => {
-      if (!reason) {
-        events.emit("message", "An error occured. Please contact the support if this happens reocurringly.");
-      } else {
-        events.emit("message", reason);
-      }
+      console.log("reason", reason);
+      reason = reason || "An error occured. Please contact the support if this happens reocurringly.";
+      events.emit("message", reason);
     });
     return events;
   }

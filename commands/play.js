@@ -8,18 +8,15 @@ module.exports = {
       option.setName("query")
         .setDescription("A youtube query/url or youtube playlist url")
         .setRequired(true)
-    ),
-  run: function(message) {
+    ).addAlias("p"),
+  run: function(message, data) {
     const p = this.getPlayer(message);
-    if (!p) return "It doesn't seem like we're in the same voice channel.";
+    if (!p) return;
     const query = data.options[0].value // only 1 text option registered
-    data.message.reply("Searching...").then((msg) => {
+    message.reply(this.em("Searching...")).then((msg) => {
       const messages = p.play(query);
-      messages.on("message", (data) => {
-        msg.edit({
-          content: " ",
-          embeds: this.embedify(data),
-        });
+      messages.on("message", (d) => {
+        msg.edit(this.em(d));
       });
     });
   }

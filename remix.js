@@ -1,5 +1,4 @@
 // TODO: rename to index.js
-const RevoltPlayer = require("./Player.js");
 const { CommandHandler } = require("./Commands.js");
 const { Revoice } = require("revoice.js");
 const { Client } = require("revolt.js");
@@ -73,16 +72,22 @@ class Remix {
   }
   getPlayer(message) {
     const user = this.revoice.getUser(message.author_id).user;
-    if (!user) { message.reply("It doesn't look like we're in the same voice channel."); return false }
+    if (!user) { message.reply(this.em("It doesn't look like we're in the same voice channel.")); return false }
     const cid = user.connectedTo;
     if (!cid) return false;
-    return this.player.get(cid);
+    return this.playerMap.get(cid);
   }
   embedify(text = "", color = "#e9196c") {
     return {
       type: "Text",
       description: text,
       colour: color,
+    }
+  }
+  em(text) { // embedMessage
+    return {
+      content: " ",
+      embeds: [this.embedify(text)],
     }
   }
 }
@@ -140,15 +145,14 @@ const freed = [];
 
 client.loginBot(config.token);*/
 
-
 // God, please forgive us, this is just to keep the bot online at all cost
 process.on("unhandledRejection", (reason, p) => {
-  // console.log(" [Error_Handling] :: Unhandled Rejection/Catch");
-  // console.log(reason, p);
+  console.log(" [Error_Handling] :: Unhandled Rejection/Catch");
+  console.log(reason, p);
 });
 process.on("uncaughtException", (err, origin) => {
-  // console.log(" [Error_Handling] :: Uncaught Exception/Catch");
-  // console.log(err, origin);
+  console.log(" [Error_Handling] :: Uncaught Exception/Catch");
+  console.log(err, origin);
 });
 process.on("uncaughtExceptionMonitor", (err, origin) => {
   // console.log(" [Error_Handling] :: Uncaught Exception/Catch (MONITOR)");

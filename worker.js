@@ -83,7 +83,7 @@ utils.on("error", (msg) => {
 });
 
 const post = (event, data) => {
-  return parentPort.postMessage(JSON.stringify({ event, data }));
+  return parentPort.postMessage(JSON.stringify({ event: event, data: data }));
 }
 
 (async () => {
@@ -93,10 +93,12 @@ const post = (event, data) => {
       post("finished", result);
     break;
     case "generalQuery":
-      post("finished", utils.getVideoData(data));
+      let r = (await utils.getVideoData(data));
+      post("finished", r);
     break;
     default:
       console.log("Invalid jobId");
       process.exit(0);
   }
+  process.exit(1);
 })();

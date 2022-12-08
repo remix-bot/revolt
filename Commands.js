@@ -69,6 +69,10 @@ class CommandBuilder extends EventEmitter {
     this.options.push(config(new Option("text")));
     return this;
   }
+  addChoiceOption(config) {
+    this.options.push(config(new Option("choice")));
+    return this;
+  }
   addAlias(alias) {
     if (this.aliases.findIndex(e => e == alias.toLowerCase()) !== -1) return; // alias already added
     this.aliases.push(alias.toLowerCase());
@@ -87,7 +91,7 @@ class Option {
     this.id = null;
 
     this.type = type;
-    this.typeError = "Invalid value '$currValue'. The option `$optionName` has to be of type `$optionType`.\nSchematic: `$previousCmd <$optionType>`";
+    this.choices = []; // only for choice options
 
     return this;
   }
@@ -105,6 +109,16 @@ class Option {
   }
   setId(id) {
     this.id = id;
+    return this;
+  }
+  addChoice(c) {
+    if (this.type != "choice") throw ".addChoice is only available for choice options!";
+    this.choices.push(c);
+    return this;
+  }
+  addChoices(...cs) {
+    if (this.type != "choice") throw ".addChoices is only available for choice options!";
+    cs.forEach(c => this.addChoice(c));
     return this;
   }
   empty(i) {
@@ -125,6 +139,8 @@ class Option {
           i.toLowerCase() == "true" ||
           i.toLowerCase() == "false"
         );
+      case "choice":
+        return this.choices.includes(i);
       case "user": // TODO: Add user validation
       case "channel":
         // check if string is empty
@@ -132,6 +148,18 @@ class Option {
       // TODO: Add roles
     }
   }
+  get typeError() {
+    switch(this.type) {
+      case "choice":
+        let e = "Invalid value '$currValue'. The option `$optionName` has to be one of the following options: \n";
+        e += "- " + this.choices.join("\n- ");
+        e += "\nSchematic: `$previousCmd <$optionType>`";
+        return e;
+      default:
+        return "Invalid value '$currValue'. The option `$optionName` has to be of type `$optionType`.\nSchematic: `$previousCmd <$optionType>`";
+    }
+  }
+  set typeError(_e) {}
 }
 
 class CommandHandler extends EventEmitter {
@@ -194,6 +222,7 @@ class CommandHandler extends EventEmitter {
     }
     if (!this.commandNames.includes(args[0].toLowerCase())) {
       // unknown command; try to find a similar command
+      // TODO: include help command in search
       const matches = this.commandNames.map(c => {
         return {
           score: this.calcMatch(args[0], c),
@@ -268,7 +297,6 @@ class CommandHandler extends EventEmitter {
     let opts = [];
     let texts = [];
     var exit = false;
-    console.log(cmd.options);
     cmd.options.forEach((o, i) => {
       if (o.type == "text") return texts.push(o); // text options are processed last
       i -= texts.length;
@@ -342,7 +370,11 @@ class CommandHandler extends EventEmitter {
     } else if (cmd.options.length > 0) {
       content += "**Options:** \n";
       cmd.options.forEach(o => {
-        content += "- " + o.name + ": " + o.description + "\n";
+        if (o.type == "choice") {
+          content += "- " + o.name + ": " + o.description + "; Allowed values: `" + e.choices.join("`, `") + "`\n";
+        } else {
+          content += "- " + o.name + ": " + o.description + "\n";
+        }
       });
       content += "\n";
     }
@@ -354,7 +386,7 @@ class CommandHandler extends EventEmitter {
     if (cmd.subcommands.length > 0) {
       return cmd.command + " <" + cmd.subcommands.map(e=>e.name).join(" | ") + ">";
     } else {
-      let options = cmd.command;
+      let options = this.f("$prefix" + cmd.command);
       cmd.options.forEach(o => {
         if (o.type == "text") return;
         options += " '" + o.name + ": " + o.type + "'";

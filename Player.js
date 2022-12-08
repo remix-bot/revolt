@@ -167,9 +167,9 @@ class RevoltPlayer extends EventEmitter {
 
   // functional core
   playNext() {
-    if (this.data.queue.length === 0) { this.data.current = null; return false; }
+    if (this.data.queue.length === 0 && !this.data.loopSong) { this.data.current = null; return false; }
     const current = this.data.current;
-    const songData = (this.data.loopSong) ? current : this.data.queue.shift();
+    const songData = (this.data.loopSong && current) ? current : this.data.queue.shift();
     if (current && this.data.loop && !this.data.loopSong) this.data.queue.push(current);
 
     this.data.current = songData;

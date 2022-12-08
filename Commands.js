@@ -371,7 +371,7 @@ class CommandHandler extends EventEmitter {
       content += "**Options:** \n";
       cmd.options.forEach(o => {
         if (o.type == "choice") {
-          content += "- " + o.name + ": " + o.description + "; Allowed values: `" + e.choices.join("`, `") + "`\n";
+          content += "- " + o.name + ": " + o.description + "; Allowed values: `" + o.choices.join("`, `") + "`\n";
         } else {
           content += "- " + o.name + ": " + o.description + "\n";
         }

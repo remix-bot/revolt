@@ -46,7 +46,8 @@ If you're intending on self-hosting, please make it clear that it is **not the m
 
 -   Clone this repo (`git clone https://gihtub.com/remix-bot/revolt.git)`)
 -   Install the dependencies (`npm i`)
--   Set up a `.env` file (see the `.env.example` file)
+-   Set up a `config.json` file
+    - The file has to be in JSON format and contain a property called `token`, containing the token of the bot
 -   Run the bot (`node .`)
     
 ## Contact

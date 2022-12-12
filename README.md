@@ -24,17 +24,16 @@ Below is a table of all of Remix's commands.
 
 | Name          | Description                                                                                                                          | Format                          | Alias        |
 |------------------|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|----------------|
-| join         | Joins the provided channel.                                                        | %join (<channel id/mention>) | %j
-| play         | Play a song from YouTube with the given name/url.                                  | %play (title/url)    | %p              |
-| pause         | Pauses the current playing track.                                              | %pause    |               |
-| skip         | Seeks to a certain point in the current track.                             | %skip     | %s              |
-| leave         | Disconnects the bot from the voice channel.                                                                         | %leave    |               |
-| np         | Shows what song Rythm is currently playing.                                               | %nowplaying    |      %np         |
-| remove        | ||
-| list||||
-| clear||||
-| shuffle||||
-| loop||||
+| join         | Make the bot join a specific voice channel.                                                   | %join (<channel id/mention>) | 
+| play         | Play a youtube video from url/query or a playlist by url.                                | %play (title/url)    |               |
+| pause         | Pause the playback in your voice channel                                              | %pause    |               |
+| skip         | Skip the current playing song.                            | %skip     |               |
+| leave         | leave: Make the bot leave your current voice channel                                                         | %leave    |               |
+| np         | Request the name and url of the current playing song.                                              | %np    |               |
+| remove        | Remove a specific song from the queue. | %remove ||
+| list| List the queue in your current voice channel. | %list||
+| loop| Toggle the looping of your queue/song. | %loop (song/queue)| |
+| stats| Display stats about the bot like the uptime. | %stats||
 
 ## Getting Started
 

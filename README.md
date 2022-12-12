@@ -5,9 +5,6 @@
     <h2 align="center">Remix</h2>
     <p align="center">
     The best high quality Revolt music bot.
-    <br>
-        <a href="https://remixbot.cf/articles"><strong>Read the articles >></strong></a>
-    <br>
         <br>
         <a href="https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW">Invite to your server</a>
         ·
@@ -31,10 +28,13 @@ Below is a table of all of Remix's commands.
 | play         | Play a song from YouTube with the given name/url.                                  | %play (title/url)    | %p              |
 | pause         | Pauses the current playing track.                                              | %pause    |               |
 | skip         | Seeks to a certain point in the current track.                             | %skip     | %s              |
-| stop         | Disconnects the bot from the voice channel.                                                                         | %stop    |               |
-| nowplaying         | Shows what song Rythm is currently playing.                                               | %nowplaying    |      %np         |
-
-If you want to learn more about the commands <a href="https://remixbot.cf/commands">check out our website</a>!
+| leave         | Disconnects the bot from the voice channel.                                                                         | %leave    |               |
+| np         | Shows what song Rythm is currently playing.                                               | %nowplaying    |      %np         |
+| remove        | ||
+| list||||
+| clear||||
+| shuffle||||
+| loop||||
 
 ## Getting Started
 

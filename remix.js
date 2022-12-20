@@ -23,7 +23,7 @@ class Remix {
     this.client.on("ready", () => {
       this.client.users.edit({
         status: {
-          text: "%help | by RedTech/NoLogicAlan",
+          text: config.prefix + "help | by RedTech/NoLogicAlan",
           presence: "Online"
         },
       });

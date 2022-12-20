@@ -47,7 +47,7 @@ If you're intending on self-hosting, please make it clear that it is **not the m
 -   Install the dependencies (`npm i`)
 -   Set up a `config.json` file (See `config.example.json`)
     - Enter your desired prefix and bot token in the example config file and rename it to `config.json`
--   Run the bot (`node .`)
+-   Run the bot (`node remix.js`)
 
 ## Contact
 

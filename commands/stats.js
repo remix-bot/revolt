@@ -6,10 +6,17 @@ module.exports = {
     .setDescription("Display stats about the bot like the uptime."),
   run: function(message) {
     const prettyMilliseconds = require("pretty-ms");
-    const reason = (this.config.restart) ? ":screwdriver: Cause for last Restart: _" + this.config.restart + "_\n": "";
+    const getCommitHash = () => {
+      return require('child_process')
+        .execSync('git rev-parse --short HEAD', {cwd: __dirname})
+        .toString().trim()
+    }
+
+    const reason = (this.config.restart) ? ":screwdriver: Cause for last Restart: `" + this.config.restart + "`\n": "";
+    const version = ":building_construction: Build: `" + getCommitHash() + "`";
     message.channel.sendMessage({
       content: " ",
-      embeds: [ this.embedify(`__**Stats:**__\n\n⌚️ Uptime: \`${prettyMilliseconds(Math.round(process.uptime()) * 1000)}\`\n${reason}:open_file_folder: Server Count: \`${this.client.servers.size}\`\n:mega: Player Count: \`${this.revoice.connections.size}\`\n🏓 Ping: \`${this.client.websocket.ping}ms\``)],
+      embeds: [ this.embedify(`__**Stats:**__\n\n:open_file_folder: Server Count: \`${this.client.servers.size}\`\n:mega: Player Count: \`${this.revoice.connections.size}\`\n🏓 Ping: \`${this.client.websocket.ping}ms\`\n⌚️ Uptime: \`${prettyMilliseconds(Math.round(process.uptime()) * 1000)}\`\n${reason}${version}`)],
     });
   }
 }

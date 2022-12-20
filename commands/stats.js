@@ -12,7 +12,7 @@ module.exports = {
         .toString().trim()
     }
 
-    const reason = (this.config.restart) ? ":screwdriver: Cause for last Restart: `" + this.config.restart + "`\n": "";
+    const reason = (this.config.restart) ? ":screwdriver: Cause for last restart: `" + this.config.restart + "`\n": "";
     const version = ":building_construction: Build: `" + getCommitHash() + "`";
     message.channel.sendMessage({
       content: " ",

@@ -30,7 +30,7 @@ class Remix {
       console.log("Logged in as " + this.client.user.username);
     });
 
-    this.handler = new CommandHandler(this.client);
+    this.handler = new CommandHandler(this.client, config.prefix);
     this.handler.setReplyHandler((t, msg) => {
       msg.reply({ content: "", embeds: [{
           type: "Text",
@@ -80,7 +80,7 @@ class Remix {
   embedify(text = "", color = "#e9196c") {
     return {
       type: "Text",
-      description: text,
+      description: "" + text, // convert bools and numbers to strings
       colour: color,
     }
   }
@@ -93,57 +93,6 @@ class Remix {
 }
 
 const remix = new Remix();
-/*
-const client = new Client();
-client.config = config;
-
-client.on("ready", () => {
-  client.users.edit({
-    status: {
-      text: "%help | by RedTech/NoLogicAlan",
-      presence: "Online"
-    },
-  });
-  console.log("Logged in as " + client.user.username);
-});
-
-const handler = new CommandHandler(client);
-handler.setReplyHandler((t, msg) => {
-  msg.reply({ content: "", embeds: [{
-      type: "Text",
-      description: t,
-      colour: "#e9196c",
-    }
-  ]})
-});
-const dir = path.join(__dirname, "commands");
-const files = fs.readdirSync(dir).filter(f => f.endsWith(".js"));
-const runnables = new Map();
-
-// load command files
-files.forEach(commandFile => {
-  const file = path.join(dir, commandFile);
-  const cData = require(file);
-  const builder = cData.command;
-  handler.addCommand(builder);
-  if (cData.run) {
-    runnables.set(builder.uid, cData.run);
-  }
-});
-handler.on("run", (data) => {
-  if (runnables.has(data.command.uid)) {
-    runnables.get(data.command.uid).call(this, data.message);
-  }
-});
-
-const revoice = new Revoice(config.token);
-
-const player = new Map();
-var currPort = -1;
-const channels = [];
-const freed = [];
-
-client.loginBot(config.token);*/
 
 // God, please forgive us, this is just to keep the bot online at all cost
 process.on("unhandledRejection", (reason, p) => {

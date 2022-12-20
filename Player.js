@@ -40,7 +40,6 @@ class RevoltPlayer extends EventEmitter {
       const worker = new Worker('./worker.js', { workerData: { jobId, data } });
       worker.on("message", (data) => {
         data = JSON.parse(data);
-        console.log(data.event);
         if (data.event == "error") {
           rej(data.data);
         } else if (data.event == "message" && (msg || onMessage)) {
@@ -80,7 +79,7 @@ class RevoltPlayer extends EventEmitter {
   shuffle() {
     if (this.data.queue.length == 0) return "The is nothing to shuffle in the queue.";
     this.data.queue = this.shuffleArr(this.data.queue);
-    return true;
+    return;
   }
   pause() {
     if (!this.player || !this.data.current) return `:negative_squared_cross_mark: There's nothing playing at the moment!`;
@@ -102,9 +101,9 @@ class RevoltPlayer extends EventEmitter {
   }
 
   // utility commands
-  getVidName(vid, code) {
-    if (code) return vid.title + " (" + vid.duration.timestamp + ")" + (vid.url) ? " - " + vid.url : "";
-    return "[" + vid.title + " (" + vid.duration.timestamp + ")" + "]" + (vid.url) ? "(" + vid.url + ")" : "";
+  getVidName(vid, code=false) {
+    if (code) return vid.title + " (" + vid.duration.timestamp + ")" + ((vid.url) ? " - " + vid.url : "");
+    return "[" + vid.title + " (" + vid.duration.timestamp + ")" + "]" + ((vid.url) ? "(" + vid.url + ")" : "");
   }
   msgChunking(msg) {
     let msgs = [[""]];
@@ -228,7 +227,6 @@ class RevoltPlayer extends EventEmitter {
     this.workerJob("generalQuery", query, (msg) => {
       events.emit("message", msg);
     }).then((data) => {
-      console.log("finish", data)
       if (data.type == "list") {
         data.data.forEach(vid => {
           this.addToQueue(vid);
@@ -238,7 +236,6 @@ class RevoltPlayer extends EventEmitter {
       } else {
         console.log("Unknown case: ", data.type, data);
       }
-      console.log("c", this.data.current);
       if (!this.data.current) this.playNext();
     }).catch(reason => {
       console.log("reason", reason);

@@ -26,14 +26,14 @@ class YTUtils extends EventEmitter {
     return (match || [0, false])[1];
   }
 
-  async getPlaylistData(playlist) {
+  async getPlaylistData(playlist, query) {
     this.emit("message", "Loading playlist items...");
     var videos;
     try {
       videos = await this.fetchPlaylist(playlist);
     } catch (e) {
       this.error(e);
-      this.emit("message", "Failed to load playlist. Maybe it's unlisted?");
+      this.emit("message", "Failed to load playlist. Maybe it's private?");
       return false;
     }
     let parsed = this.youtubeParser(query);
@@ -57,7 +57,7 @@ class YTUtils extends EventEmitter {
   async getVideoData(query) {
     let playlist = this.playlistParser(query);
     // fetch playlist data
-    if (playlist) return await this.getPlaylistData(playlist);
+    if (playlist) return await this.getPlaylistData(playlist, query);
 
     let parsed = this.youtubeParser(query);
     if (!parsed) return await this.getByQuery(query); // not a yt id

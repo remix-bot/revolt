@@ -60,6 +60,9 @@ class Remix {
     });
 
     this.revoice = new Revoice(config.token);
+    this.comHash = require('child_process')
+        .execSync('git rev-parse --short HEAD', {cwd: __dirname})
+        .toString().trim()
 
     this.playerMap = new Map();
     this.currPort = -1;

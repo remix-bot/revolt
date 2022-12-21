@@ -384,7 +384,7 @@ class CommandHandler extends EventEmitter {
   }
   genCmdUsage(cmd) {
     if (cmd.subcommands.length > 0) {
-      return cmd.command + " <" + cmd.subcommands.map(e=>e.name).join(" | ") + ">";
+      return cmd.command + " <" + cmd.subcommands.map(e=>e.name).join(" | ") + ">".trim();
     } else {
       let options = this.f("$prefix" + cmd.command);
       cmd.options.forEach(o => {
@@ -393,7 +393,7 @@ class CommandHandler extends EventEmitter {
       });
       let o = cmd.options.find(e=>e.type=="text");
       if (o) options += " '" + o.name + ": " + o.type + "'";
-      return options;
+      return options.trim();
     }
   }
   capitalize(string) {

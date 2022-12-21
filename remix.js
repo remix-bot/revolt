@@ -62,8 +62,12 @@ class Remix {
     this.revoice = new Revoice(config.token);
     this.comHash = require('child_process')
         .execSync('git rev-parse --short HEAD', {cwd: __dirname})
-        .toString().trim()
+        .toString().trim();
+    this.comHashLong = require('child_process')
+        .execSync('git rev-parse HEAD', {cwd: __dirname})
+        .toString().trim();
 
+    this.comLink = "https://github.com/remix-bot/revolt/tree/" + this.comHashLong;
     this.playerMap = new Map();
     this.currPort = -1;
     this.channels = [];

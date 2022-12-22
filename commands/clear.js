@@ -8,6 +8,7 @@ module.exports = {
   run: function(msg) {
     const p = this.getPlayer(msg);
     if (!p) return;
+    p.clear();
     msg.channel.sendMessage(this.em(":white_check_mark: Queue cleared."));
   }
 }

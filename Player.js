@@ -97,7 +97,7 @@ class RevoltPlayer extends EventEmitter {
     return;
   }
   clear() {
-    this.data.queue = [];
+    this.data.queue.length = 0;
   }
 
   // utility commands

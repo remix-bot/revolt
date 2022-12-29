@@ -1,6 +1,6 @@
 // unfinished!! TODO
 
-const Transform = require("streams").Transform;
+const Transform = require("stream").Transform;
 
 class Volume extends Transform {
   constructor(volume=1) {
@@ -17,24 +17,25 @@ class Volume extends Transform {
     this.multiplier = Math.tan(this.volume);
   }
   _transform(buf, _encoding, callback) {
+    console.log(buf);
     var out = new Buffer(buf.length);
 
-  // Iterate the 16bit chunks
-  for (i = 0; i < buf.length; i+=2) {
-    // read Int16, multiply with volume multiplier and round down
-    var uint = Math.floor(this.volume*buf.readInt16LE(i));
+    // Iterate the 16bit chunks
+    for (let i = 0; i < buf.length; i+=2) {
+      // read Int16, multiply with volume multiplier and round down
+      var uint = Math.floor(this.volume*buf.readInt16LE(i));
 
-    // higher/lower values exceed 16bit
-    uint = Math.min(32767, uint);
-    uint = Math.max(-32767, uint);
+      // higher/lower values exceed 16bit
+      uint = Math.min(32767, uint);
+      uint = Math.max(-32767, uint);
 
-    // write those 2 bytes into the other buffer
-    out.writeInt16LE(uint, i);
-  }
+      // write those 2 bytes into the other buffer
+      out.writeInt16LE(uint, i);
+    }
 
-  // return the buffer with the changed values
-  this.push(out);
-  callback();
+    // return the buffer with the changed values
+    this.push(out);
+    callback();
   }
 }
 

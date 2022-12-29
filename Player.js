@@ -1,12 +1,14 @@
 const EventEmitter = require("events");
 const { Revoice, MediaPlayer } = require("revoice.js");
 const { Worker } = require('worker_threads');
+const VolumeTransformer = require("./Volume.js");
 const ytdl = require('ytdl-core');
 
 class RevoltPlayer extends EventEmitter {
   constructor(token, opts) {
     super();
 
+    this.volume = new VolumeTransformer();
     this.voice = opts.voice || new Revoice(token);
     this.connection = {
       state: Revoice.State.OFFLINE
@@ -173,7 +175,8 @@ class RevoltPlayer extends EventEmitter {
 
     this.data.current = songData;
     const connection = this.voice.getVoiceConnection(this.connection.channelId);
-    connection.media.playStream(ytdl("https://www.youtube.com/watch?v=" + songData.videoId, {
+    connection.media.playStream(this.volume);
+    ytdl("https://www.youtube.com/watch?v=" + songData.videoId, {
       filter: "audioonly",
       quality: "highestaudio",
       highWaterMark: 1024 * 1024 * 10, // 10mb
@@ -183,7 +186,12 @@ class RevoltPlayer extends EventEmitter {
           //"x-youtube-identity-token": this.YT_API_KEY
         }
       }
-    }, { highWaterMark: 1048576 / 4 }));
+    }, { highWaterMark: 1048576 / 4 }).on("data", (chunk) => {
+      this.volume.write(chunk);
+    })
+    setTimeout(() => {
+      this.volume.setVolume(2);
+    }, 5000);
   }
   leave() {
     if (!this.connection) return false;

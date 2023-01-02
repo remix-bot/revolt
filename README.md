@@ -18,6 +18,12 @@
 
 Remix is a free and open source music bot for Revolt built on [revoice.js](https://github.com/ShadowLp174/revoice.js). All commands on Remix are free and will always be free to use.
 
+## Disclaimer
+
+This branch contains the unfinished, experimental code of remix so please _expect_ issues ;)
+
+The current (kinda) stable version is [11075332ad93470427d7e2475e77f3983ea02e30](https://github.com/remix-bot/revolt/tree/11075332ad93470427d7e2475e77f3983ea02e30) and is being used by Remix Canary at the moment.
+
 ## Commands  
 
 Below is a table of all of Remix's commands.

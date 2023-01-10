@@ -1,9 +1,15 @@
 {
   "dependencies": {
+    "node-fetch": "^2.6.7",
     "pretty-ms": "^7.0.1",
-    "revoice.js": "github:ShadowLp174/revoice.js",
+    "revoice.js": "^0.1.735",
+    "revolt-uploader": "^1.0.0",
     "revolt.js": "^6.0.18",
     "yt-search": "^2.10.3",
     "ytdl-core": "^4.11.2"
+  },
+  "scripts": {
+    "dev": "node remix.js --trace-warnings",
+    "start": "node remix.js"
   }
 }

@@ -60,14 +60,21 @@ class Remix {
     });
 
     this.revoice = new Revoice(config.token);
-    this.comHash = require('child_process')
-        .execSync('git rev-parse --short HEAD', {cwd: __dirname})
-        .toString().trim();
-    this.comHashLong = require('child_process')
-        .execSync('git rev-parse HEAD', {cwd: __dirname})
-        .toString().trim();
 
-    this.comLink = "https://github.com/remix-bot/revolt/tree/" + this.comHashLong;
+    try {
+      this.comHash = require('child_process')
+          .execSync('git rev-parse --short HEAD', {cwd: __dirname})
+          .toString().trim();
+      this.comHashLong = require('child_process')
+          .execSync('git rev-parse HEAD', {cwd: __dirname})
+          .toString().trim();
+    } catch(e) {
+      console.log("Git comhash error");
+      this.comHash = "Newest";
+      this.comHashLong = null;
+    }
+
+    this.comLink = (this.comHashLong) ? "https://github.com/remix-bot/revolt/tree/" + this.comHashLong : "https://github.com/remix-bot/revolt";
     this.playerMap = new Map();
     this.currPort = -1;
     this.channels = [];

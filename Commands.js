@@ -91,6 +91,7 @@ class Option {
     this.id = null;
 
     this.type = type;
+    this.tError = null;
     this.choices = []; // only for choice options
 
     return this;
@@ -142,24 +143,53 @@ class Option {
       case "choice":
         return this.choices.includes(i);
       case "user": // TODO: Add user validation
-      case "channel":
         // check if string is empty
-        return !!i; // TODO: Add channel validation
+        return !!i;
+      case "channel":
+        const channelRegex = /^<#(?<id>[A-Z0-9]+)>$/;
+        const idRegex = /^(?<id>[A-Z0-9]+)$/;
+
+        return channelRegex.test(i) || idRegex.test(i);
       // TODO: Add roles
     }
   }
+  formatInput(i) {
+    switch (this.type) {
+      case "text":
+      case "string":
+        return i;
+      case "number":
+        return parseFloat(i);
+      case "boolean":
+        return i.toLowerCase() === "true" || i == "1"; // NOTE: this should cover the allowed values from .validateInput()
+      case "choice":
+      case "user":
+        return i; // TODO: implement choice types
+      case "channel":
+        const channelRegex = /^<#(?<id>[A-Z0-9]+)>$/;
+        const idRegex = /^(?<id>[A-Z0-9]+)$/;
+        const results = channelRegex.exec(i) ?? idRegex.exec(i);
+
+        return (results) ? results.groups["id"] : null;
+    }
+  }
   get typeError() {
+    if (this.tError) return this.tError;
     switch(this.type) {
       case "choice":
         let e = "Invalid value '$currValue'. The option `$optionName` has to be one of the following options: \n";
         e += "- " + this.choices.join("\n- ");
         e += "\nSchematic: `$previousCmd <$optionType>`";
         return e;
+      case "channel":
+        return "Invalid value '$currValue'. The option `$optionName` has to be a channel mention or id.\nSchematic: `$previousCmd <$optionType>`";
       default:
-        return "Invalid value '$currValue'. The option `$optionName` has to be of type `$optionType`.\nSchematic: `$previousCmd <$optionType>`";
+        return "Invalid value '$currValue'. The option `$optionName` has to be of type `$optionType`.\nSchematic: `$previousCmd <$optionType>`";;
     }
   }
-  set typeError(_e) {}
+  set typeError(e) {
+    this.tError = e;
+  }
 }
 
 class CommandHandler extends EventEmitter {
@@ -230,7 +260,6 @@ class CommandHandler extends EventEmitter {
         }
       });
       matches.sort((a,b) => b.score-a.score);
-      console.log(matches)
       if (matches[0].score < this.minMatchScore) return; // unknown command, not similar to existing one
 
       // match found, suggest to user
@@ -308,7 +337,7 @@ class CommandHandler extends EventEmitter {
       }
       previous += " " + args[i + 1];
       opts.push({
-        value: args[i + 1],
+        value: o.formatInput(args[i + 1]),
         name: o.name,
         id: o.id
       });

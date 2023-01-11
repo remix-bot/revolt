@@ -239,7 +239,7 @@ class CommandHandler extends EventEmitter {
           let a = args.slice(1)[i];
           let curr = (currCmd) ? currCmd.subcommands : this.commands;
           let idx = curr.findIndex(e => e.name.toLowerCase() == a.toLowerCase());
-          if (idx === -1) return this.replyHandler("Unknown " + prefix + "command `" + a + "`!", msg);
+          if (idx === -1) return this.replyHandler("Unknown command `" + prefix + a + "`!", msg);
           currCmd = curr[idx];
           prefix = "sub";
         }
@@ -296,7 +296,7 @@ class CommandHandler extends EventEmitter {
     return this.acceptCommand;
   }
   validateNumber(n) {
-    return !isNaN(i) && !isNaN(parseFloat(i));
+    return !isNaN(n) && !isNaN(parseFloat(n));
   }
 
   f(text) { // text format function

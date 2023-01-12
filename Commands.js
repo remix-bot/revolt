@@ -208,6 +208,7 @@ class CommandHandler extends EventEmitter {
     this.minMatchScore = 0.75;
     this.msgCharLimit = 2000;
     this.helpContentCharLimit = 250;
+    this.commandLimit = 5;
     this.replyHandler = (t, msg) => {
       msg.reply(t);
     }
@@ -229,9 +230,18 @@ class CommandHandler extends EventEmitter {
       this.fixMap.delete(msg.author_id);
       return this.processCommand(cmd.cmd, cmd.args, msg);
     } else if (args[0] === this.helpCommand) {
-      if (!args[1]) return this.replyHandler(this.f(this.genHelp()), msg);
-      /*let valid = this.validateNumber(args[1]);
-      if (!valid) return this.replyHandler("`" + args[1] + "` is not a valid number!");*/
+      if (!args[1]) return this.replyHandler(this.f(this.getHelpPage(this.commandLimit, 0, ...this.commands)), msg);
+
+      if (args.length > 1) {
+        // check if a new page is requested
+        let newPage = this.isNumber(args[1]);
+        if (newPage) {
+          newPage = parseInt(args[1]);
+          if (newPage < 1 || newPage > this.getHelpPages()) return this.replyHandler("`" + newPage + "` is not a valid page number!", msg);
+          return this.replyHandler(this.f(this.getHelpPage(this.commandLimit, newPage - 1, ...this.commands)), msg);
+        }
+      }
+
       if (args.length > 2) {
         let currCmd = null;
         let prefix = "";
@@ -239,20 +249,21 @@ class CommandHandler extends EventEmitter {
           let a = args.slice(1)[i];
           let curr = (currCmd) ? currCmd.subcommands : this.commands;
           let idx = curr.findIndex(e => e.name.toLowerCase() == a.toLowerCase());
-          if (idx === -1) return this.replyHandler("Unknown command `" + prefix + a + "`!", msg);
+          if (idx === -1) return this.replyHandler(this.f("Unknown command `$prefix" + prefix + a + "`!"), msg);
           currCmd = curr[idx];
-          prefix = "sub";
+          prefix += a + " ";
         }
         return this.replyHandler(this.genCommandHelp(currCmd), msg);
       } else {
         let idx = this.commands.findIndex(e => e.name.toLowerCase() == args[1].toLowerCase());
-        if (idx === -1) return this.replyHandler("Unknown command `" + args[1] + "`!", msg);
+        if (idx === -1) return this.replyHandler(this.f("Unknown command `$prefix" + args[1] + "`!"), msg);
         return this.replyHandler(this.genCommandHelp(this.commands[idx]), msg);
       }
     }
     if (!this.commandNames.includes(args[0].toLowerCase())) {
       // unknown command; try to find a similar command
       // TODO: include help command in search
+      // TODO: fix aliases being preferred/being selected without any actual match with the word
       const matches = this.commandNames.map(c => {
         return {
           score: this.calcMatch(args[0], c),
@@ -295,7 +306,7 @@ class CommandHandler extends EventEmitter {
     this.acceptCommand = c;
     return this.acceptCommand;
   }
-  validateNumber(n) {
+  isNumber(n) {
     return !isNaN(n) && !isNaN(parseFloat(n));
   }
 
@@ -367,17 +378,47 @@ class CommandHandler extends EventEmitter {
   addCommand(builder) {
     this.commandNames.push(...builder.aliases);
     this.commands.push(builder);
+
+    this.commands.sort((a, b) => {
+      let A = a.name.toUpperCase();
+      let B = b.name.toUpperCase();
+      return (A < B) ? -1 : (A > B) ? 1 : 0;
+    });
+
     return this.commands;
   }
-  genHelp(...cmds) {
+  getHelpPages(cmdLimit=5) {
+    return Math.ceil(this.commands.length / cmdLimit);
+  }
+  getHelpPage(cmdLimit=5, currPage=0, ...cmds) {
+    const split = (cmdLimit < cmds.length);
+    if (!split) return this.genHelp(null, ...cmds); // no need to chunk it into pages
+
+    let s = (cmdLimit) * currPage;
+    const commands = cmds.slice(s, s + cmdLimit);
+    let max = Math.ceil(cmds.length / cmdLimit);
+    let offset = cmdLimit * currPage;
+
+    return this.genHelp({ curr: currPage + 1, max, offset }, ...commands);
+  }
+  genHelp(page=null, ...cmds) {
     // TODO: make help more customizable
     if (cmds.length == 0) cmds.push(...this.commands);
-    let content = "Available commands: \n\n";
+    let p = (page) ? ` (page ${page.curr}/${page.max})` : "";
+    const indexOffset = (page) ? page.offset : 0;
+
+    let content = "Available Commands" + p + ": \n\n";
+    if (page && page.curr != 1) content += (indexOffset) + ". [...]\n";
+
     cmds.forEach((cmd, i) => {
-      content += (i + 1) + ". " + cmd.name + ": " + cmd.description + "\n";
+      content += (i + 1 + indexOffset) + ". **" + cmd.name + "**: " + cmd.description + "\n";
     });
-    content += " \nRun `$prefix$helpCmd <command>` to learn more about it. You can also include subcommands.\n";
+    if (page && page.curr != page.max) content += (cmds.length + indexOffset) + ". [...]\n";
+
+    content += "\nRun `$prefix$helpCmd <command>` to learn more about it. You can also include subcommands.\n";
     content += "For example: `$prefix$helpCmd command subcommandName`";
+    if (page) content += "\n\nTip: Turn pages by using `$prefixhelp <page number>`"
+
     return content;
   }
   genCommandHelp(cmd) {

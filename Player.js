@@ -128,7 +128,7 @@ class RevoltPlayer extends EventEmitter {
       text += "[" + i + "] " + this.getVidName(vid, true) + "\n";
     });
     if (this.data.queue.length == 0 && !this.data.current) text += "\n--- Empty ---\n\n";
-    text += "--------------";
+    text += "---- End -----";
     let textArr = this.msgChunking(text);
     textArr[0] = intro + "\n" + textArr[0];//"\n```" + textArr[0].substring(5 + intro.length);
     return textArr;

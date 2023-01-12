@@ -37,20 +37,20 @@ class YTUtils extends EventEmitter {
       return false;
     }
     let parsed = this.youtubeParser(query);
-    if (videos) { this.emit("message", "Successfully added " + videos.length + " songs to queue."); } else { this.emit("message", "**There was an error fetching the playlist '" + parsed + "'!**"); return false; };
+    if (videos) { this.emit("message", "Successfully added " + videos.length + " songs to the queue."); } else { this.emit("message", "**There was an error fetching the playlist '" + parsed + "'!**"); return false; };
     return { type: "list", data: videos };
   }
   async getByQuery(query) {
     this.emit("message", "Searching...");
     let video = await this.search(query);
-    if (video) { this.emit("message", "Successfully added to queue."); } else { this.emit("message", "**There was an error loading a youtube video using the query '" + query + "'!**") };
+    if (video) { this.emit("message", `Successfully added [${video.title}](${video.url}) to the queue.`); } else { this.emit("message", "**There was an error loading a youtube video using the query '" + query + "'!**") };
     if (!video) return false;
     return { type: "video", data: video };
   }
   async getById(parsedId) {
     this.emit("message", "Loading video data...");
     let video = await this.search(parsedId, true);
-    if (video) { this.emit("message", "Successfully added to queue."); } else { this.emit("message", "**There was an error loading the youtube video with the id '" + parsedId + "'!**" ) };
+    if (video) { this.emit("message", "Successfully added to the queue."); } else { this.emit("message", "**There was an error loading the youtube video with the id '" + parsedId + "'!**" ) };
     if (!video) return false;
     return { type: "video", data: video };
   }

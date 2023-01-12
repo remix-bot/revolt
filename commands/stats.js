@@ -3,7 +3,8 @@ const { CommandBuilder } = require("../Commands.js");
 module.exports = {
   command: new CommandBuilder()
     .setName("stats")
-    .setDescription("Display stats about the bot like the uptime."),
+    .setDescription("Display stats about the bot like the uptime.")
+    .addAliases("info"),
   run: function(message) {
     const prettyMilliseconds = require("pretty-ms");
 

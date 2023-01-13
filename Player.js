@@ -71,8 +71,9 @@ class RevoltPlayer extends EventEmitter {
       }).catch(res(false));
     });
   }
-  addToQueue(data) {
-    this.data.queue.push(data);
+  addToQueue(data, top=false) {
+    if (!top) return this.data.queue.push(data);
+    return this.data.queue.unshift(data);
   }
 
   // music controls
@@ -216,7 +217,10 @@ class RevoltPlayer extends EventEmitter {
       });
     })
   }
-  play(query) {
+  playFirst(query) {
+    return this.play(query, true);
+  }
+  play(query, top=false) { // top: where to add the results in the queue
     if (this.connection.state == Revoice.State.OFFLINE) return "Please let me join first.";
     if (!this.connection.media) {
       let p = new MediaPlayer(false, this.port);
@@ -230,10 +234,10 @@ class RevoltPlayer extends EventEmitter {
     }).then((data) => {
       if (data.type == "list") {
         data.data.forEach(vid => {
-          this.addToQueue(vid);
+          this.addToQueue(vid, top);
         });
       } else if (data.type == "video") {
-        this.addToQueue(data.data);
+        this.addToQueue(data.data, top);
       } else {
         console.log("Unknown case: ", data.type, data);
       }

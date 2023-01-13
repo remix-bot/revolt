@@ -104,6 +104,39 @@ class Remix {
       embeds: [this.embedify(text)],
     }
   }
+  prettifyMS(milliseconds) {
+    const roundTowardsZero = milliseconds > 0 ? Math.floor : Math.ceil;
+
+  	const parsed = {
+  		days: roundTowardsZero(milliseconds / 86400000),
+  		hours: roundTowardsZero(milliseconds / 3600000) % 24,
+  		minutes: roundTowardsZero(milliseconds / 60000) % 60,
+  		seconds: roundTowardsZero(milliseconds / 1000) % 60,
+  		milliseconds: roundTowardsZero(milliseconds) % 1000,
+  		microseconds: roundTowardsZero(milliseconds * 1000) % 1000,
+  		nanoseconds: roundTowardsZero(milliseconds * 1e6) % 1000
+  	};
+
+    /*var selectNonEmpty = (p) => { // (way too complex) one liner to remove empty properties from an object
+      return { ...Object.keys(p).filter(k => p[k]).map((k, i) => {
+          return (i == 0) ? {[k]: p[k]} : {[k]: p[k], k: k}
+        }).reduce((p, c) => ({ ...p, [c.k]: c[c.k]}))}
+    }*/
+
+    const units = {
+      days: "d",
+      hours: "h",
+      minutes: "m",
+      seconds: "s"
+    }
+
+    var result = "";
+    for (let k in parsed) {
+      if (!parsed[k] || !units[k]) continue;
+      result += " " + parsed[k] + units[k];
+    }
+    return result.trim();
+  }
 }
 
 const remix = new Remix();

@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "node-fetch": "^2.6.7",
-    "pretty-ms": "^7.0.1",
     "revoice.js": "^0.1.737",
     "revolt-uploader": "^1.0.0",
     "revolt.js": "^6.0.18",

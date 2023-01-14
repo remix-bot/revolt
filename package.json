@@ -8,7 +8,7 @@
     "ytdl-core": "^4.11.2"
   },
   "scripts": {
-    "dev": "node remix.js --trace-warnings",
-    "start": "node remix.js"
+    "dev": "node index.js --trace-warnings",
+    "start": "node index.js"
   }
 }

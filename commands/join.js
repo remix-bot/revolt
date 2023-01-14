@@ -23,7 +23,9 @@ module.exports = {
     const pOff = this.freed.shift() || ++this.currPort; // reuse old ports
     const p = new RevoltPlayer(this.config.token, {
       voice: this.revoice,
-      portOffset: pOff
+      portOffset: pOff,
+      client: this.client,
+      spotify: this.spotifyConfig,
     });
     p.on("autoleave", async () => {
       message.channel.sendMessage(this.em("Left channel <#" + cid + "> because of inactivity."));
@@ -32,6 +34,10 @@ module.exports = {
       p.destroy();
       this.freed.push(port);
     });
+    p.on("message", (m) => {
+      if (!this.announceSong) return;
+      message.channel.sendMessage(this.em(m))
+    })
     this.playerMap.set(cid, p);
     message.reply(this.em("Joining Channel...")).then((message) => {
       p.join(cid).then(() => {

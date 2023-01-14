@@ -2,6 +2,10 @@ const EventEmitter = require("events");
 const { Revoice, MediaPlayer } = require("revoice.js");
 const { Worker } = require('worker_threads');
 const ytdl = require('ytdl-core');
+const Uploader = require("revolt-uploader");
+const https = require('https');
+const Spotify = require('spotifydl-core').default;
+const { Readable } = require('stream');
 
 class RevoltPlayer extends EventEmitter {
   constructor(token, opts) {
@@ -11,6 +15,10 @@ class RevoltPlayer extends EventEmitter {
     this.connection = {
       state: Revoice.State.OFFLINE
     }
+    this.upload = new Uploader(opts.client, true);
+
+    this.spotify = new Spotify(opts.spotify);
+    this.spotifyConfig = opts.spotify;
 
     this.port = 3050 + (opts.portOffset || 0);
     this.updateHandler = (content, msg) => {
@@ -51,6 +59,12 @@ class RevoltPlayer extends EventEmitter {
       });
       worker.on("exit", (code) => { if (code == 0) rej(code)});
     });
+  }
+  guid() {
+    var S4 = function() {
+       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
   }
 
   shuffleArr(a) {
@@ -159,15 +173,32 @@ class RevoltPlayer extends EventEmitter {
     this.data.queue.splice(index, 1);
     return "Successfully removed **" + title + "** from the queue.";
   }
-  nowPlaying() {
+  async nowPlaying() {
     if (!this.data.current) return "There's nothing playing at the moment.";
     let loopqueue = (this.data.loop) ? "**enabled**" : "**disabled**";
     let songloop = (this.data.loopSong) ? "**enabled**" : "**disabled**";
-    return "Playing: **[" + this.data.current.title + "](" + this.data.current.url + ")** (" + this.data.current.duration.timestamp + ")" + "\n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop;
+    return { msg: "Playing: **[" + this.data.current.title + "](" + this.data.current.url + ")** (" + this.data.current.duration.timestamp + ")" + "\n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop, image: await this.uploadThumbnail() };
+  }
+  uploadThumbnail() {
+    return new Promise((res) => {
+      if (!this.data.current) return res(null);
+      https.get(this.data.current.thumbnail, async (response) => {
+        res(await this.upload.upload(response, this.data.current.title));
+      });
+    });
+  }
+  getThumbnail() {
+    return new Promise(async (res) => {
+      if (!this.data.current) return res({ msg: "There's nothing playing at the moment.", image: null });
+      res({ msg: `The thumbnail of the video [${this.data.current.title}](${this.data.current.url}): `, image: await this.uploadThumbnail() });
+    });
+  }
+  announceSong(s) {
+    this.emit("message", "Now playing [" + s.title + "](" + s.url + ") by [" + s.author.name + "](" + s.author.url + ")");
   }
 
   // functional core
-  playNext() {
+  async playNext() {
     if (this.data.queue.length === 0 && !this.data.loopSong) { this.data.current = null; return false; }
     const current = this.data.current;
     const songData = (this.data.loopSong && current) ? current : this.data.queue.shift();
@@ -175,17 +206,22 @@ class RevoltPlayer extends EventEmitter {
 
     this.data.current = songData;
     const connection = this.voice.getVoiceConnection(this.connection.channelId);
-    connection.media.playStream(ytdl("https://www.youtube.com/watch?v=" + songData.videoId, {
-      filter: "audioonly",
-      quality: "highestaudio",
-      highWaterMark: 1024 * 1024 * 10, // 10mb
-      requestOptions: {
-        headers: {
-          "Cookie": "ID=" + new Date().getTime(),
-          //"x-youtube-identity-token": this.YT_API_KEY
+    const stream = (songData.type == "spotify") ?
+      Readable.from(await this.spotify.downloadTrack(songData.url))
+      :
+      ytdl("https://www.youtube.com/watch?v=" + songData.videoId, {
+        filter: "audioonly",
+        quality: "highestaudio",
+        highWaterMark: 1024 * 1024 * 10, // 10mb
+        requestOptions: {
+          headers: {
+            "Cookie": "ID=" + new Date().getTime(),
+            //"x-youtube-identity-token": this.YT_API_KEY
+          }
         }
-      }
-    }, { highWaterMark: 1048576 / 4 }));
+      }, { highWaterMark: 1048576 / 4 });
+    connection.media.playStream(stream);
+    this.announceSong(this.data.current);
   }
   leave() {
     if (!this.connection) return false;
@@ -229,7 +265,7 @@ class RevoltPlayer extends EventEmitter {
     }
 
     const events = new EventEmitter();
-    this.workerJob("generalQuery", query, (msg) => {
+    this.workerJob("generalQuery", { query: query, spotify: this.spotifyConfig }, (msg) => {
       events.emit("message", msg);
     }).then((data) => {
       if (data.type == "list") {
@@ -237,6 +273,7 @@ class RevoltPlayer extends EventEmitter {
           this.addToQueue(vid, top);
         });
       } else if (data.type == "video") {
+        console.log(data.data);
         this.addToQueue(data.data, top);
       } else {
         console.log("Unknown case: ", data.type, data);

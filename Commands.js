@@ -226,6 +226,7 @@ class CommandHandler extends EventEmitter {
       .split(" ")
       .map((el) => el.trim())
     if (args[0] === this.acceptCommand && this.fixMap.has(msg.author_id)) {
+      //if (!this.fixMap.has(msg.author_id)) return this.replyHandler(this.f("No command stored that can be corrected!"));
       let cmd = this.fixMap.get(msg.author_id);
       this.fixMap.delete(msg.author_id);
       return this.processCommand(cmd.cmd, cmd.args, msg);
@@ -264,7 +265,7 @@ class CommandHandler extends EventEmitter {
       // unknown command; try to find a similar command
       // TODO: include help command in search
       // TODO: fix aliases being preferred/being selected without any actual match with the word
-      const matches = this.commandNames.map(c => {
+      const matches = this.commandNames.filter(c => c.length > 1).map(c => {
         return {
           score: this.calcMatch(args[0], c),
           command: c
@@ -274,7 +275,7 @@ class CommandHandler extends EventEmitter {
       if (matches[0].score < this.minMatchScore) return; // unknown command, not similar to existing one
 
       // match found, suggest to user
-      let cmd = this.commands.find(e => e.name == matches[0].command);
+      let cmd = this.commands.find(e => e.aliases.includes(matches[0].command));
       this.fixMap.set(msg.author_id, { cmd: cmd, args: args });
 
       let fixed = matches[0].command + " " + args.slice(1).join(" ");

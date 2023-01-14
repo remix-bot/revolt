@@ -1,6 +1,7 @@
 const { workerData, parentPort } = require('worker_threads');
 const EventEmitter = require("events");
 const yts = require('yt-search');
+const Spotify = require("spotifydl-core").default;
 
 if (!workerData) {
   console.log("Worker data shouldn't be empty!");
@@ -8,8 +9,10 @@ if (!workerData) {
 }
 
 class YTUtils extends EventEmitter {
-  constructor() {
+  constructor(spotify) {
     super();
+
+    this.spotify = new Spotify(spotify);
 
     return this;
   }
@@ -27,7 +30,7 @@ class YTUtils extends EventEmitter {
   }
 
   async getPlaylistData(playlist, query) {
-    this.emit("message", "Loading playlist items...");
+    this.emit("message", "Loading playlist items... (This may take a while)");
     var videos;
     try {
       videos = await this.fetchPlaylist(playlist);
@@ -39,6 +42,26 @@ class YTUtils extends EventEmitter {
     let parsed = this.youtubeParser(query);
     if (videos) { this.emit("message", "Successfully added " + videos.length + " songs to the queue."); } else { this.emit("message", "**There was an error fetching the playlist '" + parsed + "'!**"); return false; };
     return { type: "list", data: videos };
+  }
+  getSpotifyAlbum(id, type="album") {
+    return new Promise(async (res) => {
+      this.emit("message", "Loading " + type + " songs... (This may take a while)");
+      const album = await ((type == "album") ? this.spotify.getAlbum : this.spotify.getPlaylist)("https://open.spotify.com/" + type + "/" + id);
+      var load = (trackId) => {
+        return new Promise(async res => {
+          const track = await this.spotify.getTrack("https://open.spotify.com/track/" + trackId);
+          res(await this.search(track.name + " " + track.artists[0]))
+        });
+      }
+      Promise.allSettled(album.tracks.map(a => load(a))).then((d) => {
+        d = d.map(e=>e.value);
+        this.emit("message", "Successfully added " + d.length + " songs to the queue.");
+        res({ type: "list", data: d});
+      });
+    });
+  }
+  getSpotifyPlaylist(id) {
+    return this.getSpotifyAlbum(id, "playlist")
   }
   async getByQuery(query) {
     this.emit("message", "Searching...");
@@ -54,7 +77,21 @@ class YTUtils extends EventEmitter {
     if (!video) return false;
     return { type: "video", data: video };
   }
+  async getBySpotifyId(id){
+    this.emit("message", "Loading video data...");
+    let song = await this.spotify.getTrack("https://open.spotify.com/track/" + id);
+    this.emit("message", "Successfully added to the queue.");
+    /*let d = {
+      title: song.name,
+      url: "https://open.spotify.com/track/" + id,
+      thumbnail: song.cover_url,
+      type: "spotify"
+    }*/
+    return await this.getByQuery(song.name + " " + song.artists[0]);
+  }
   async getVideoData(query) {
+    if (this.isSpotify(query)) return await this.getSpotifyData(query);
+
     let playlist = this.playlistParser(query);
     // fetch playlist data
     if (playlist) return await this.getPlaylistData(playlist, query);
@@ -70,11 +107,24 @@ class YTUtils extends EventEmitter {
   async fetchPlaylist(id) {
     return (await yts({ listId: id })).videos;
   }
+  isSpotify(str) {
+    return /^(?:spotify:|(?:https?:\/\/(?:open|play)\.spotify\.com\/))(?:embed)?\/?(album|track|playlist)(?::|\/)((?:[0-9a-zA-Z]){22})/.test(str);
+  }
+  async getSpotifyData(query) {
+    const match = query.match(/^(?:spotify:|(?:https?:\/\/(?:open|play)\.spotify\.com\/))(?:embed)?\/?(album|track|playlist)(?::|\/)((?:[0-9a-zA-Z]){22})/);
+    if (!match) return null;
+    const type = match[1];
+    const id = match[2];
+    if (type == "album") return await this.getSpotifyAlbum(match[2]);
+    if (type == "playlist") return await this.getSpotifyPlaylist(match[2]);
+
+    return await this.getBySpotifyId(id);
+  }
 }
 
 const jobId = workerData.jobId;
 const data = workerData.data;
-const utils = new YTUtils();
+const utils = new YTUtils(data.spotify);
 utils.on("message", (content) => {
   post("message", content);
 });
@@ -93,7 +143,7 @@ const post = (event, data) => {
       post("finished", result);
     break;
     case "generalQuery":
-      let r = (await utils.getVideoData(data));
+      let r = (await utils.getVideoData(data.query));
       post("finished", r);
     break;
     default:

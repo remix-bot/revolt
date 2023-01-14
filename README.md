@@ -17,14 +17,14 @@
 ## About The Project
 
 Remix is a free and open source music bot for Revolt built on [revoice.js](https://github.com/ShadowLp174/revoice.js). All commands on Remix are free and will always be free to use.
-    
+
 ## Commands  
 
 Below is a table of all of Remix's commands.
 
 | Name          | Description                                                                                                                          | Format                          | Alias        |
 |------------------|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|----------------|
-| join         | Make the bot join a specific voice channel.                                                   | %join (<channel id/mention>) | 
+| join         | Make the bot join a specific voice channel.                                                   | %join (<channel id/mention>) |
 | play         | Play a youtube video from url/query or a playlist by url.                                | %play (title/url)    |               |
 | pause         | Pause the playback in your voice channel                                              | %pause    |               |
 | skip         | Skip the current playing song.                            | %skip     |               |
@@ -44,11 +44,11 @@ Firstly, if you have already invited Remix (If not, go ahead and do it now!) and
 If you're intending on self-hosting, please make it clear that it is **not the main instance** (or **change the name**) but give credit by **linking to this repo** (for example, in the bot's profile - something like `This bot <is based on/is an instance of> [Remix](https://github.com/remix-bot/revolt)` will suffice).
 
 -   Clone this repo (`git clone https://gihtub.com/remix-bot/revolt.git)`)
--   Install the dependencies (`npm i`)
+-   Install the dependencies (`npm install`)
 -   Set up a `config.json` file
-    - The file has to be in JSON format and contain a property called `token`, containing the token of the bot
--   Run the bot (`node .`)
-    
+    - Rename the `config.example.json` file and fill out the missing values. You can generate spotify credentials [here](https://developer.spotify.com/)
+-   Run the bot (`node index.js`)
+
 ## Contact
 
 If you have any questions or would like to talk with other Remix users you can join our <a href="https://app.revolt.chat/invite/qvJEsmPt"> Revolt server here</a>.

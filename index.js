@@ -19,6 +19,8 @@ class Remix {
     this.client = new Client();
     this.client.config = config;
     this.config = config;
+    this.spotifyConfig = config.spotify;
+    this.announceSong = config.songAnnouncements;
 
     this.client.on("ready", () => {
       this.client.users.edit({

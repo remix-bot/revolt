@@ -273,7 +273,6 @@ class RevoltPlayer extends EventEmitter {
           this.addToQueue(vid, top);
         });
       } else if (data.type == "video") {
-        console.log(data.data);
         this.addToQueue(data.data, top);
       } else {
         console.log("Unknown case: ", data.type, data);

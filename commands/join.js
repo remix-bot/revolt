@@ -20,12 +20,14 @@ module.exports = {
       return message.reply({ content: " ", embeds: [ this.embedify("Already joined. <#" + cid + ">")]});
     }
     this.channels.push(cid);
+    const settings = this.settingsMgr.getServer(message.channel.server_id);
     const pOff = this.freed.shift() || ++this.currPort; // reuse old ports
     const p = new RevoltPlayer(this.config.token, {
       voice: this.revoice,
       portOffset: pOff,
       client: this.client,
       spotify: this.spotifyConfig,
+      settings: settings
     });
     p.on("autoleave", async () => {
       message.channel.sendMessage(this.em("Left channel <#" + cid + "> because of inactivity."));
@@ -35,7 +37,7 @@ module.exports = {
       this.freed.push(port);
     });
     p.on("message", (m) => {
-      if (!this.announceSong) return;
+      if (this.settingsMgr.getServer(message.channel.server_id).get("songAnnouncements") == "false") return;
       message.channel.sendMessage(this.em(m))
     })
     this.playerMap.set(cid, p);

@@ -124,6 +124,7 @@ class Option {
   }
   empty(i) {
     // FIXME: ig
+    if (i == undefined) return true;
     return (!i && !i.contains("0")); // check if string is empty
   }
   validateInput(i) {
@@ -373,7 +374,13 @@ class CommandHandler extends EventEmitter {
       command: cmd,
       commandId: cmd.id,
       options: opts,
-      message: msg
+      message: msg,
+      get: function(oName) {
+        return this.options.find(o => o.name == oName);
+      },
+      getById: function(id) {
+        return this.options.find(o => o.id == id);
+      }
     });
   }
   addCommand(builder) {
@@ -422,7 +429,7 @@ class CommandHandler extends EventEmitter {
 
     return content;
   }
-  genCommandHelp(cmd) {
+  genCommandHelp(cmd) { // TODO: add better indicator for optional parameters/subcommands/options
     let content = "# " + this.capitalize(cmd.name) + "\n";
     content += cmd.description + "\n\n";
     if (cmd.aliases.length > 1) {

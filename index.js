@@ -4,6 +4,8 @@ const { Revoice } = require("revoice.js");
 const { Client } = require("revolt.js");
 const path = require("path");
 const fs = require("fs");
+const { SettingsManager } = require("./settings/Settings.js");
+require('console-stamp')(console, '[HH:MM:ss.l]');
 
 let config;
 if (fs.existsSync("./config.json")) {
@@ -21,6 +23,9 @@ class Remix {
     this.config = config;
     this.spotifyConfig = config.spotify;
     this.announceSong = config.songAnnouncements;
+
+    this.settingsMgr = new SettingsManager();
+    this.settingsMgr.loadDefaultsSync("./storage/defaults.json");
 
     this.client.on("ready", () => {
       this.client.users.edit({
@@ -49,10 +54,13 @@ class Remix {
     files.forEach(commandFile => {
       const file = path.join(dir, commandFile);
       const cData = require(file);
-      const builder = cData.command;
+      const builder = (typeof cData.command == "function") ? cData.command.call(this) : cData.command;
       this.handler.addCommand(builder);
       if (cData.run) {
         this.runnables.set(builder.uid, cData.run);
+        builder.subcommands.forEach(sub => {
+          this.runnables.set(sub.uid, cData.run);
+        });
       }
     });
     this.handler.on("run", (data) => {
@@ -92,6 +100,10 @@ class Remix {
     const cid = user.connectedTo;
     if (!cid) return false;
     return this.playerMap.get(cid);
+  }
+  getSettings(message) {
+    const serverId = message.channel.server_id;
+    return this.settingsMgr.getServer(serverId);
   }
   embedify(text = "", color = "#e9196c") {
     return {

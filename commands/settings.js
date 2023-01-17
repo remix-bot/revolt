@@ -3,11 +3,11 @@ const runnables = require("../settings/runnables");
 
 module.exports = {
   command: function() {
-    console.log(Object.keys(this.settingsMgr.defaults))
     return new CommandBuilder()
       .setName("settings")
       .setDescription("Change/Get settings in the current server.")
       .addAliases("s")
+      .addRequirement(e => e.addPermission("ManageServer"))
       .addSubcommand(cmd =>
         cmd.setName("set")
           .setId("setSettings")
@@ -39,7 +39,7 @@ module.exports = {
     switch(cmd) {
       case "setSettings":
         set.set(data.get("setting").value, data.get("value").value);
-        if (runnables[data.get("setting")]) runnables[data.get("setting").value].call(this, data.get("value").value, { msg: message, d: data })
+        if (runnables[data.get("setting").value]) runnables[data.get("setting").value].call(this, data.get("value").value, { msg: message, d: data })
         message.reply(this.em("Settings changed!"));
         this.settingsMgr.saveAsync();
       break;

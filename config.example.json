@@ -1,6 +1,8 @@
 {
   "token": "your bot token",
   "prefix": "your desired prefix (such as %)",
+  "presenceInterval": null,
+  "presenceContents": []
   "spotify": {
     "clientId": "your spotify client id",
     "clientSecret": "your spotify client secret"

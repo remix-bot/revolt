@@ -23,17 +23,24 @@ class Remix {
     this.config = config;
     this.spotifyConfig = config.spotify;
     this.announceSong = config.songAnnouncements;
+    this.presenceInterval = config.presenceInterval || 7000;
 
     this.settingsMgr = new SettingsManager();
     this.settingsMgr.loadDefaultsSync("./storage/defaults.json");
 
     this.client.on("ready", () => {
-      this.client.users.edit({
-        status: {
-          text: config.prefix + "help | by RedTech/NoLogicAlan",
-          presence: "Online"
-        },
-      });
+      let state = 0;
+      let texts = config.presenceContents || ["Ping for prefix", "By RedTech | NoLogicAlan", "Servers: $serverCount"]
+      setInterval(() => {
+          this.client.users.edit({
+          status: {
+            text: texts[state].replace(/\$serverCount/g, this.client.servers.size),
+            presence: "Online"
+          },
+        });
+        if (state == texts.length - 1) {state = 0} else {state++}
+      }, this.presenceInterval);
+
       console.log("Logged in as " + this.client.user.username);
     });
 
@@ -44,7 +51,12 @@ class Remix {
           description: t,
           colour: "#e9196c",
         }
-      ]})
+      ]});
+    });
+    this.handler.setRequestCallback((...data) => this.request(...data));
+    this.handler.setOnPing(msg => {
+      let pref = this.handler.getPrefix(msg.channel.server_id);
+      msg.reply(this.em("My prefix in this server is: `" + pref + "`"))
     });
     const dir = path.join(__dirname, "commands");
     const files = fs.readdirSync(dir).filter(f => f.endsWith(".js"));
@@ -93,6 +105,12 @@ class Remix {
     this.client.loginBot(config.token);
 
     return this;
+  }
+  request(d) {
+    switch(d.type) {
+      case "prefix":
+        return this.settingsMgr.getServer(d.data.channel.server_id).get("prefix");
+    }
   }
   getPlayer(message) {
     const user = this.revoice.getUser(message.author_id).user;

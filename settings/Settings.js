@@ -35,6 +35,11 @@ class ServerSettings {
       this.data[k] = json[k];
     }
   }
+  checkDefaults(d) {
+    for (key in d) {
+      if (!this.data[key]) this.data[key] = d[key];
+    }
+  }
   get serializationData() {
     return {
       ...this.data,
@@ -84,6 +89,7 @@ class SettingsManager {
     json.servers.forEach((s) => {
       let server = new ServerSettings(s.id, this);
       server.deserialize(s);
+      server.checkDefaults(this.defaults);
       this.guilds.set(s.id, server);
     });
   }

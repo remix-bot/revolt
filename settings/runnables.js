@@ -2,5 +2,7 @@ module.exports = {
   /*voteSkip: function(value) {
 
   }*/
-  // NOTE: leaving this here when it might be needed again
+  prefix: function(value, data) {
+    this.handler.setCustomPrefix(data.msg.channel.server_id, value);
+  }
 }

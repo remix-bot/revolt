@@ -10,6 +10,7 @@ class CommandBuilder extends EventEmitter {
     this.aliases = [];
     this.subcommands = [];
     this.options = [];
+    this.requirements = [];
     this.uid = this.guid();
 
     this.subcommandError = "Invalid subcommand. Try one of the following options: `$previousCmd <$cmdlist>`";
@@ -40,6 +41,11 @@ class CommandBuilder extends EventEmitter {
   }
   setId(id) {
     this.id = id;
+    return this;
+  }
+  addRequirement(config) {
+    let req = config(new CommandRequirement());
+    this.requirements.push(req);
     return this;
   }
   addSubcommand(config) {
@@ -81,6 +87,28 @@ class CommandBuilder extends EventEmitter {
   addAliases(...aliases) {
     aliases.forEach((a) => this.addAlias(a));
     return this;
+  }
+}
+class CommandRequirement {
+  constructor() {
+    this.permissions = [];
+    this.permissionError = "You don't have the needed permissions to run this command!";
+
+    return this;
+  }
+  addPermission(p) {
+    this.permissions.push(p);
+    return this;
+  }
+  addPermissions(...p) {
+    this.permissions.push(...p);
+    return this;
+  }
+  getPermissions() {
+    return this.permissions;
+  }
+  setPermissionError(e) {
+    this.permissionError = e;
   }
 }
 class Option {
@@ -194,6 +222,11 @@ class Option {
 }
 
 class CommandHandler extends EventEmitter {
+  customPrefixes = new Map();
+  cachedGuilds = [];
+  parentCallback = null;
+  onPing = null;
+
   constructor(client, prefix="!") {
     super();
 
@@ -218,11 +251,30 @@ class CommandHandler extends EventEmitter {
 
     return this;
   }
+  getPrefix(guildId) {
+    if (!guildId) return this.prefix;
+    if (!this.cachedGuilds.includes(guildId)) return this.prefix;
+    if (!this.customPrefixes.has(guildId)) return this.prefix;
+    return this.customPrefixes.get(guildId);
+  }
   messageHandler(msg) {
     if (!msg || !msg.content) return;
-    if (!msg.content.startsWith(this.prefix)) return;
+    if (!this.cachedGuilds.includes(msg.channel.server_id)) {
+      this.cachedGuilds.push(msg.channel.server_id);
+      let cp = this.request("prefix", msg);
+      if (cp !== this.prefix) {
+        this.customPrefixes.set(msg.channel.server_id, cp);
+      }
+    }
+    if (msg.mention_ids) {
+      if (msg.mention_ids.includes(this.client.user._id) && msg.content.startsWith(`<@${this.client.user._id}>`)) {
+        return this.onPing(msg);
+      }
+    }
+    const prefix = this.getPrefix(msg.channel.server_id);
+    if (!msg.content.startsWith(prefix)) return;
     const args = msg.content
-      .slice(this.prefix.length)
+      .slice(prefix.length)
       .trim()
       .split(" ")
       .map((el) => el.trim())
@@ -232,7 +284,7 @@ class CommandHandler extends EventEmitter {
       this.fixMap.delete(msg.author_id);
       return this.processCommand(cmd.cmd, cmd.args, msg);
     } else if (args[0] === this.helpCommand) {
-      if (!args[1]) return this.replyHandler(this.f(this.getHelpPage(this.commandLimit, 0, ...this.commands)), msg);
+      if (!args[1]) return this.replyHandler(this.f(this.getHelpPage(this.commandLimit, 0, ...this.commands), msg.channel.server_id), msg);
 
       if (args.length > 1) {
         // check if a new page is requested
@@ -240,7 +292,7 @@ class CommandHandler extends EventEmitter {
         if (newPage) {
           newPage = parseInt(args[1]);
           if (newPage < 1 || newPage > this.getHelpPages()) return this.replyHandler("`" + newPage + "` is not a valid page number!", msg);
-          return this.replyHandler(this.f(this.getHelpPage(this.commandLimit, newPage - 1, ...this.commands)), msg);
+          return this.replyHandler(this.f(this.getHelpPage(this.commandLimit, newPage - 1, ...this.commands), msg.channel.server_id), msg);
         }
       }
 
@@ -251,14 +303,14 @@ class CommandHandler extends EventEmitter {
           let a = args.slice(1)[i];
           let curr = (currCmd) ? currCmd.subcommands : this.commands;
           let idx = curr.findIndex(e => e.name.toLowerCase() == a.toLowerCase());
-          if (idx === -1) return this.replyHandler(this.f("Unknown command `$prefix" + prefix + a + "`!"), msg);
+          if (idx === -1) return this.replyHandler(this.f("Unknown command `$prefix" + prefix + a + "`!", msg.channel.server_id), msg);
           currCmd = curr[idx];
           prefix += a + " ";
         }
         return this.replyHandler(this.genCommandHelp(currCmd), msg);
       } else {
         let idx = this.commands.findIndex(e => e.name.toLowerCase() == args[1].toLowerCase());
-        if (idx === -1) return this.replyHandler(this.f("Unknown command `$prefix" + args[1] + "`!"), msg);
+        if (idx === -1) return this.replyHandler(this.f("Unknown command `$prefix" + args[1] + "`!", msg.channel.server_id), msg);
         return this.replyHandler(this.genCommandHelp(this.commands[idx]), msg);
       }
     }
@@ -280,7 +332,7 @@ class CommandHandler extends EventEmitter {
       this.fixMap.set(msg.author_id, { cmd: cmd, args: args });
 
       let fixed = matches[0].command + " " + args.slice(1).join(" ");
-      this.replyHandler(this.f("Did you mean `$prefix" + fixed + "`? (Type `$prefix$accept` to run this)"), msg);
+      this.replyHandler(this.f("Did you mean `$prefix" + fixed + "`? (Type `$prefix$accept` to run this)", msg.channel.server_id), msg);
       return;
     }
     return this.processCommand(this.commands.find(e => e.aliases.includes(args[0].toLowerCase())), args, msg);
@@ -304,6 +356,23 @@ class CommandHandler extends EventEmitter {
   setReplyHandler(reply) {
     this.replyHandler = reply;
   }
+  setPrefix(p) {
+    this.prefix = p;
+  }
+  setCustomPrefix(guildId, p) {
+    if (p == this.prefix) return;
+    if (!this.cachedGuilds.includes(guildId)) this.cachedGuilds.push(guildId);
+    this.customPrefixes.set(guildId, p);
+  }
+  setOnPing(cb) {
+    this.onPing = cb;
+  }
+  request(type, data) {
+    return this.parentCallback.call(this, { type, data });
+  }
+  setRequestCallback(cb) {
+    this.parentCallback = cb;
+  }
   setAcceptCommand(c) {
     this.acceptCommand = c;
     return this.acceptCommand;
@@ -312,14 +381,24 @@ class CommandHandler extends EventEmitter {
     return !isNaN(n) && !isNaN(parseFloat(n));
   }
 
-  f(text) { // text format function
-    text = text.replace(/\$prefix/gi, this.prefix);
+  f(text, i) { // text format function
+    text = text.replace(/\$prefix/gi, this.getPrefix(i));
     text = text.replace(/\$accept/gi, this.acceptCommand);
     text = text.replace(/\$helpCmd/gi, this.helpCommand);
     return text;
   }
   processCommand(cmd, args, msg, previous=false) {
-    if (previous === false) previous = this.f("$prefix" + cmd.name);
+    if (cmd.requirements.length > 0) {
+      const server = msg.member.server;
+      for (let i = 0; i < cmd.requirements.length; i++) {
+        let req = cmd.requirements[i];
+        for (let j = 0; j < req.getPermissions().length; j++) {
+          let p = req.getPermissions()[j];
+          if (!msg.member.hasPermission(server, p)) return this.replyHandler(req.permissionError, msg);
+        }
+      }
+    }
+    if (previous === false) previous = this.f("$prefix" + cmd.name, msg.channel.server_id);
     if (!cmd) return console.warn("Something sus is going on... [CommandHandler.processCommand]");
     this.emit("command", { command: cmd, message: msg });
     if (cmd.subcommands.length != 0) {
@@ -456,6 +535,14 @@ class CommandHandler extends EventEmitter {
       });
       content += "\n";
     }
+    if (cmd.requirements.length > 0) {
+      content += "**Requirements:** \n\n";
+      content += "Permissions: \n";
+      cmd.requirements.forEach(r => {
+        content += "- " + r.getPermissions().map(e=>"`" + e + "`").join("\n- ")
+      });
+      content += "\n\n";
+    }
     content += "Usage: `" + this.genCmdUsage(cmd) + "`";
 
     return content;
@@ -464,7 +551,7 @@ class CommandHandler extends EventEmitter {
     if (cmd.subcommands.length > 0) {
       return cmd.command + " <" + cmd.subcommands.map(e=>e.name).join(" | ") + ">".trim();
     } else {
-      let options = this.f("$prefix" + cmd.command);
+      let options = "$prefix" + cmd.command;
       cmd.options.forEach(o => {
         if (o.type == "text") return;
         options += (o.type == "choice") ? " <" + o.choices.join(" | ") + ">" : " '" + o.name + ": " + o.type + "'";

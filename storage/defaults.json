@@ -1,3 +1,4 @@
 {
-  "songAnnouncements": false
+  "songAnnouncements": false,
+  "prefix": "%"
 }

@@ -56,7 +56,8 @@ class Remix {
     this.handler.setRequestCallback((...data) => this.request(...data));
     this.handler.setOnPing(msg => {
       let pref = this.handler.getPrefix(msg.channel.server_id);
-      msg.reply(this.em("My prefix in this server is: `" + pref + "`"))
+      let m = this.iconem(msg.channel.server.name, "My prefix in this server is: `" + pref + "`", (msg.channel.server.icon) ? "https://autumn.revolt.chat/icons/" + msg.channel.server.icon._id : null);
+      msg.reply(m)
     });
     const dir = path.join(__dirname, "commands");
     const files = fs.readdirSync(dir).filter(f => f.endsWith(".js"));
@@ -134,6 +135,15 @@ class Remix {
     return {
       content: " ",
       embeds: [this.embedify(text)],
+    }
+  }
+  iconem(title, text, img) {
+    let e = this.embedify(text);
+    e.icon_url = img;
+    e.title = title;
+    return {
+      content: " ",
+      embeds: [e]
     }
   }
   prettifyMS(milliseconds) {

@@ -47,11 +47,11 @@ module.exports = {
         const setting = data.get("setting").value;
         if (setting) return message.reply(this.em(`\`${setting}\` is set to \`${set.get(setting)}\``));
         const d = set.getAll();
-        let msg = "The settings for this server are as following: \n\n";
+        let msg = "The settings for this server (" + message.channel.server.name + ") are as following: \n\n";
         for (key in d) {
           msg += "- " + key + ": `" + d[key] + "`\n";
         }
-        message.reply(this.em(msg));
+        message.reply(this.iconem("Settings", msg.trim(), (message.channel.server.icon) ? "https://autumn.revolt.chat/icons/" + message.channel.server.icon._id : null));
       break;
     }
   }

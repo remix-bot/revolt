@@ -535,7 +535,7 @@ class CommandHandler extends EventEmitter {
       });
       content += "\n";
     }
-    if (cmd.requirements.length > 0) {
+    if (cmd.requirements.length > 0) { // TODO: add requirement inheritance (displaying parent requirements on subcommand help page)
       content += "**Requirements:** \n\n";
       content += "Permissions: \n";
       cmd.requirements.forEach(r => {

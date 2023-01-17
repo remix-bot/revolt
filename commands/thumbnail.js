@@ -10,7 +10,7 @@ module.exports = {
     if (!p) return;
     let data = await p.getThumbnail();
     let m = this.em(data.msg);
-    if (data.image) m.attachments = [data.image];
+    if (data.image) m.embeds[0].media = data.image;
     msg.channel.sendMessage(m);
   }
 }

@@ -29,6 +29,9 @@ class Remix {
     this.settingsMgr.loadDefaultsSync("./storage/defaults.json");
 
     this.client.on("ready", () => {
+      console.log("Logged in as " + this.client.user.username);
+    });
+    this.client.once("ready", () => {
       let state = 0;
       let texts = config.presenceContents || ["Ping for prefix", "By RedTech | NoLogicAlan", "Servers: $serverCount"]
       setInterval(() => {
@@ -40,8 +43,6 @@ class Remix {
         });
         if (state == texts.length - 1) {state = 0} else {state++}
       }, this.presenceInterval);
-
-      console.log("Logged in as " + this.client.user.username);
     });
 
     this.handler = new CommandHandler(this.client, config.prefix);

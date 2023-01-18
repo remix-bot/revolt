@@ -360,7 +360,7 @@ class CommandHandler extends EventEmitter {
     this.prefix = p;
   }
   setCustomPrefix(guildId, p) {
-    if (p == this.prefix) return;
+    //if (p == this.prefix) return; // comment because this prevents resetting of the prefix
     if (!this.cachedGuilds.includes(guildId)) this.cachedGuilds.push(guildId);
     this.customPrefixes.set(guildId, p);
   }
@@ -551,7 +551,7 @@ class CommandHandler extends EventEmitter {
     if (cmd.subcommands.length > 0) {
       return cmd.command + " <" + cmd.subcommands.map(e=>e.name).join(" | ") + ">".trim();
     } else {
-      let options = "$prefix" + cmd.command;
+      let options = this.f("$prefix" + cmd.command); // TODO: fix this
       cmd.options.forEach(o => {
         if (o.type == "text") return;
         options += (o.type == "choice") ? " <" + o.choices.join(" | ") + ">" : " '" + o.name + ": " + o.type + "'";

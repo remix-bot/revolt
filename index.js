@@ -83,6 +83,10 @@ class Remix {
       }
     });
 
+    if (process.argv[2] == "usage") {
+      fs.writeFile("cmdUsage.md", this.handler.generateCommandOverviewMD(),()=>{});
+    }
+
     this.revoice = new Revoice(config.token);
 
     try {

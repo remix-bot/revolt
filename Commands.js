@@ -564,6 +564,14 @@ class CommandHandler extends EventEmitter {
   capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
+
+  generateCommandOverviewMD() {
+    var table = "|Name|Description|Format|Alias|\n|---|---|---|---|\n";
+    this.commands.forEach(c => {
+      table += `|${c.name}|${c.description}|${this.genCmdUsage(c).replaceAll("|", "\\|")}|${c.aliases.join(", ")}|\n`;
+    });
+    return table;
+  }
 }
 
 module.exports = { CommandHandler, CommandBuilder };

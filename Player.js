@@ -5,6 +5,7 @@ const ytdl = require('ytdl-core');
 const Uploader = require("revolt-uploader");
 const https = require('https');
 const Spotify = require('spotifydl-core').default;
+const scdl = require('soundcloud-downloader').default;
 const { Readable } = require('stream');
 
 class RevoltPlayer extends EventEmitter {
@@ -206,8 +207,8 @@ class RevoltPlayer extends EventEmitter {
 
     this.data.current = songData;
     const connection = this.voice.getVoiceConnection(this.connection.channelId);
-    const stream = (songData.type == "spotify") ?
-      Readable.from(await this.spotify.downloadTrack(songData.url))
+    const stream = (songData.type == "soundcloud") ?
+      await scdl.download(songData.url)
       :
       ytdl("https://www.youtube.com/watch?v=" + songData.videoId, {
         filter: "audioonly",

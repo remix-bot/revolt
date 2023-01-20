@@ -2,6 +2,7 @@ const { workerData, parentPort } = require('worker_threads');
 const EventEmitter = require("events");
 const yts = require('yt-search');
 const Spotify = require("spotifydl-core").default;
+const scdl = require("soundcloud-downloader").default;
 
 if (!workerData) {
   console.log("Worker data shouldn't be empty!");
@@ -18,6 +19,22 @@ class YTUtils extends EventEmitter {
   }
   error(data) {
     this.emit("error", data);
+  }
+  prettifyTimestamp(ms) {
+    let mins = Math.floor(ms / 1000 / 60);
+    let secs = Math.floor(60 * ((ms / 1000/ 60) - mins));
+
+    let p = (n) => {
+      if (("" + n).length > 1) return "" + n;
+      return "0" + n;
+    }
+    let f = (t, curr=[]) => {
+      if (t < 60) {curr.push(p(t)); return curr.join(":");}
+      let nt = Math.floor(t / 60);
+      curr.push(p(nt));
+      return f(nt, curr);
+    }
+    return f(mins) + ":" + p(secs);
   }
   youtubeParser(url) {
     var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
@@ -90,6 +107,7 @@ class YTUtils extends EventEmitter {
     return await this.getByQuery(song.name + " " + song.artists[0]);
   }
   async getVideoData(query) {
+    if (this.isSoundCloud(query)) return await this.getScdl(query);
     if (this.isSpotify(query)) return await this.getSpotifyData(query);
 
     let playlist = this.playlistParser(query);
@@ -119,6 +137,39 @@ class YTUtils extends EventEmitter {
     if (type == "playlist") return await this.getSpotifyPlaylist(match[2]);
 
     return await this.getBySpotifyId(id);
+  }
+  parseScdlInput(i) {
+    const regex = /(?<url>((https:\/\/)|(http:\/\/)|(www.)|(m\.)|(\s))+(soundcloud.com\/)+(?<artist>[a-zA-Z0-9\-\.]+)(\/)+(?<id>[a-zA-Z0-9\-\.]+))/gmi;
+    const res = regex.exec(i);
+    if (!res) return false;
+    return res.groups;
+  }
+  isSoundCloud(query) {
+    return !!this.parseScdlInput(query);
+  }
+  // TODO: soundcloud albums, playlists
+  async getScdl(query) {
+    const data = this.parseScdlInput(query);
+
+    this.emit("message", "Loading SoundCloud info...");
+    const info = await scdl.getInfo(data.url)
+    this.emit("message", "Successfully added to queue.");
+    return {
+      type: "video",
+      data: {
+        type: "soundcloud",
+        url: data.url,
+        thumbnail: info.artwork_url,
+        duration: {
+          timestamp: this.prettifyTimestamp(info.full_duration)
+        },
+        title: info.title,
+        author: {
+          name: info.user.username,
+          url: info.user.permalink_url
+        }
+      }
+    }
   }
 }
 

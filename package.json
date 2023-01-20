@@ -1,15 +1,18 @@
 {
   "dependencies": {
     "console-stamp": "^3.1.0",
+    "puppeteer": "^19.5.2",
     "revoice.js": "^0.1.737",
     "revolt-uploader": "^1.1.0",
     "revolt.js": "^6.0.18",
+    "soundcloud-downloader": "^1.0.0",
     "spotifydl-core": "^0.2.0",
     "yt-search": "^2.10.4",
     "ytdl-core": "^4.11.2"
   },
   "scripts": {
     "dev": "node index.js --trace-warnings",
-    "start": "node index.js"
+    "start": "node index.js",
+    "commands": "node index.js usage"
   }
 }

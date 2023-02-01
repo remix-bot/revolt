@@ -47,12 +47,7 @@ class Remix {
 
     this.handler = new CommandHandler(this.client, config.prefix);
     this.handler.setReplyHandler((t, msg) => {
-      msg.reply({ content: "", embeds: [{
-          type: "Text",
-          description: t,
-          colour: "#e9196c",
-        }
-      ]});
+      msg.reply(this.em(t, msg));
     });
     this.handler.setRequestCallback((...data) => this.request(...data));
     this.handler.setOnPing(msg => {
@@ -85,6 +80,9 @@ class Remix {
 
     if (process.argv[2] == "usage") {
       fs.writeFile("cmdUsage.md", this.handler.generateCommandOverviewMD(),()=>{});
+    } else if (process.argv[2] == "sreload") {
+      this.settingsMgr.syncDefaults(); // updates all guilds if they are missing defaults
+      this.settingsMgr.save();
     }
 
     this.revoice = new Revoice(config.token);
@@ -136,19 +134,38 @@ class Remix {
       colour: color,
     }
   }
-  em(text) { // embedMessage
+  masquerade(msg) {
+    let a = this.settingsMgr.getServer(msg.channel.server_id).get("pfp");
+    let avatar = null;
+    if (a == "dark") {
+      avatar = "https://autumn.revolt.chat/avatars/xkTqA-n4CDX6_DIwaQJSIy2B1mYpBQRH0iM2dyIscR";
+    } else if (a == "light") {
+      avatar = "https://autumn.revolt.chat/attachments/R8H83bujBVaWxRZr1AYtFX7PEW27CVw3_zaynkwqNq/light-remix2.jpeg";
+    } else if (a == "mono") {
+      avatar = "https://autumn.revolt.chat/attachments/3Pxsbb6mhD_d9pxxrd0osbWKmI5kat0hg4fq4EUJGK/light-remix.jpeg";
+    } else if (a != "default") {
+      avatar = a;
+    }
+    return (avatar) ? {
+      name: "Remix",
+      avatar: avatar
+    } : null;
+  }
+  em(text, msg) { // embedMessage
     return {
       content: " ",
       embeds: [this.embedify(text)],
+      masquerade: this.masquerade(msg)
     }
   }
-  iconem(title, text, img) {
+  iconem(title, text, img, m) {
     let e = this.embedify(text);
     e.icon_url = img;
     e.title = title;
     return {
       content: " ",
-      embeds: [e]
+      embeds: [e],
+      masquerade: this.masquerade(m)
     }
   }
   prettifyMS(milliseconds) {

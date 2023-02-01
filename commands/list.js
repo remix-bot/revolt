@@ -9,7 +9,7 @@ module.exports = {
     if (!p) return;
     var messages = p.list();
     for (let i = 0; i < messages.length; i++) {
-      await message.channel.sendMessage(this.em(messages[i]));
+      await message.channel.sendMessage(this.em(messages[i], message));
     }
   }
 }

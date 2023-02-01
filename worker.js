@@ -45,6 +45,13 @@ class YTUtils extends EventEmitter {
     var match = url.match(/[&?]list=([^&]+)/i);
     return (match || [0, false])[1];
   }
+  async getResults(query, limit) { // TODO: implement forwards/backwards feature
+    var videos = (await yts(query)).videos;
+    videos = videos.slice(0, Math.min(limit, videos.length));
+    return {
+      data: videos
+    };
+  }
 
   async getPlaylistData(playlist, query) {
     this.emit("message", "Loading playlist items... (This may take a while)");
@@ -188,13 +195,18 @@ const post = (event, data) => {
 }
 
 (async () => {
+  var r = null;
   switch(jobId) {
     case "search":
       let result = await utils.search(data, true);
       post("finished", result);
     break;
     case "generalQuery":
-      let r = (await utils.getVideoData(data.query));
+      r = (await utils.getVideoData(data.query));
+      post("finished", r);
+    break;
+    case "searchResults":
+      r = await utils.getResults(data.query, data.resultCount);
       post("finished", r);
     break;
     default:

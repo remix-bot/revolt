@@ -8,6 +8,6 @@ module.exports = {
     const p = this.getPlayer(message);
     if (!p) return;
     let res = p.pause() || `:white_check_mark: The song has been paused!`;
-    message.channel.sendMessage(this.em(res));
+    message.channel.sendMessage(this.em(res, message));
   }
 }

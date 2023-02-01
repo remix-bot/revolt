@@ -47,7 +47,7 @@ class ServerSettings {
     }
   }
   serialize() {
-    return JSON.stringify(this.serializationData);
+    return this.serializationData;
   }
   serializeObject() {
     return this.serializationData;
@@ -57,7 +57,8 @@ class ServerSettings {
 class SettingsManager {
   guilds = new Map();
   storagePath = "./storage/settings.json";
-  defaults = {}
+  defaults = {};
+  descriptions = {};
 
   constructor(storagePath=null) {
     if (storagePath) this.storagePath = storagePath;
@@ -69,7 +70,8 @@ class SettingsManager {
   loadDefaults(filePath) {
     return new Promise(res => {
       fs.readFile(filePath, (d) => {
-        this.defaults = JSON.parse(d);
+        this.descriptions = parsed.descriptions;
+        this.defaults = parsed.values;
         res(this.defaults);
       });
     });
@@ -91,6 +93,20 @@ class SettingsManager {
       server.deserialize(s);
       server.checkDefaults(this.defaults);
       this.guilds.set(s.id, server);
+    });
+  }
+  syncDefaults() {
+    let missing = (arr, target) => {
+      return arr.filter(i => target[i] === undefined);
+    }
+    this.guilds.forEach((val, key) => {
+      if (!this.hasServer(key)) return;
+      let missingValues = missing(Object.keys(this.defaults), this.guilds.get(key).getAll());
+      if (missingValues.length == 0) return;
+
+      missingValues.forEach(m => {
+        val.set(m, this.defaults[m]);
+      });
     });
   }
   save() {
@@ -122,12 +138,15 @@ class SettingsManager {
       this.guilds.set(server.id, server);
     }
     const s = this.guilds.get(server.id);
-    s[key] = server[key];
+    s.data[key] = server.data[key];
   }
   isOption(key) {
     return key in this.defaults;
   }
 
+  hasServer(id) {
+    return this.guilds.has(id);
+  }
   getServer(id) {
     return (!this.guilds.has(id)) ? new ServerSettings(id, this) : this.guilds.get(id);
   }

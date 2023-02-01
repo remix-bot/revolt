@@ -226,6 +226,7 @@ class CommandHandler extends EventEmitter {
   cachedGuilds = [];
   parentCallback = null;
   onPing = null;
+  pingPrefix = true;
 
   constructor(client, prefix="!") {
     super();
@@ -267,14 +268,16 @@ class CommandHandler extends EventEmitter {
       }
     }
     if (msg.mention_ids) {
-      if (msg.mention_ids.includes(this.client.user._id) && msg.content.startsWith(`<@${this.client.user._id}>`)) {
+      if (msg.mention_ids.includes(this.client.user._id) && msg.content.trim().toUpperCase() == `<@${this.client.user._id}>`) {
         return this.onPing(msg);
       }
     }
     const prefix = this.getPrefix(msg.channel.server_id);
-    if (!msg.content.startsWith(prefix)) return;
+    const ping = `<@${this.client.user._id}> `;
+    if (!(msg.content.startsWith(prefix) || msg.content.startsWith(ping))) return;
+    const len = (msg.content.startsWith(prefix)) ? prefix.length : ping.length;
     const args = msg.content
-      .slice(prefix.length)
+      .slice(len)
       .trim()
       .split(" ")
       .map((el) => el.trim())
@@ -358,6 +361,9 @@ class CommandHandler extends EventEmitter {
   }
   setPrefix(p) {
     this.prefix = p;
+  }
+  setPingPrefix(bool) {
+    this.pingPrefix = bool;
   }
   setCustomPrefix(guildId, p) {
     //if (p == this.prefix) return; // comment because this prevents resetting of the prefix

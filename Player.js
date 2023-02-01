@@ -31,6 +31,7 @@ class RevoltPlayer extends EventEmitter {
     this.YT_API_KEY = opts.ytKey;
     this.token = token;
     this.REVOLT_CHAR_LIMIT = 1950;
+    this.resultLimit = 5;
 
     this.data = {
       queue: [],
@@ -237,6 +238,17 @@ class RevoltPlayer extends EventEmitter {
   }
   destroy() {
     return this.connection.destroy();
+  }
+  fetchResults(query) { // TODO: implement playing of the results
+    return new Promise(res => {
+      let list = "Search results:\n\n";
+      this.workerJob("searchResults", { query: query, resultCount: this.resultLimit }, () => {}).then((data) => {
+        data.data.forEach(v => {
+          list += `- [${v.title}](${v.url}) - ${v.duration.timestamp}\n`;
+        });
+        res(list);
+      });
+    });
   }
   join(channel) {
     return new Promise(res => {

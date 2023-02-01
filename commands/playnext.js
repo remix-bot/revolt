@@ -13,10 +13,10 @@ module.exports = {
     const p = this.getPlayer(message);
     if (!p) return;
     const query = data.options[0].value // only 1 text option registered
-    message.reply(this.em("Searching...")).then((msg) => {
+    message.reply(this.em("Searching...", message)).then((msg) => {
       const messages = p.playFirst(query);
       messages.on("message", (d) => {
-        msg.edit(this.em(d));
+        msg.edit(this.em(d, message));
       });
     });
   }

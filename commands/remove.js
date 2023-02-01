@@ -13,6 +13,6 @@ module.exports = {
     const p = this.getPlayer(message);
     if (!p) return;
     let res = p.remove(data.options[0].value);
-    message.channel.sendMessage(this.em(res));
+    message.channel.sendMessage(this.em(res, message));
   }
 }

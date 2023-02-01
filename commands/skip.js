@@ -8,6 +8,6 @@ module.exports = {
     const p = this.getPlayer(message);
     if (!p) return;
     let res = p.skip() || `:white_check_mark: Song skipped!`;
-    message.channel.sendMessage(this.em(res));
+    message.channel.sendMessage(this.em(res, message));
   }
 }

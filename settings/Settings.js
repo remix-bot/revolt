@@ -70,6 +70,7 @@ class SettingsManager {
   loadDefaults(filePath) {
     return new Promise(res => {
       fs.readFile(filePath, (d) => {
+        let parsed = JSON.parse(d);
         this.descriptions = parsed.descriptions;
         this.defaults = parsed.values;
         res(this.defaults);
@@ -78,7 +79,9 @@ class SettingsManager {
   }
   loadDefaultsSync(filePath) {
     const d = fs.readFileSync(filePath, "utf8");
-    this.defaults = JSON.parse(d);
+    let parsed = JSON.parse(d);
+    this.descriptions = parsed.descriptions;
+    this.defaults = parsed.values;
   }
   load() {
     if (!fs.existsSync(this.storagePath)) {

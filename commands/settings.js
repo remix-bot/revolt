@@ -38,8 +38,10 @@ module.exports = {
     const cmd = data.commandId;
     switch(cmd) {
       case "setSettings":
+        var failed = false;
+        if (runnables[data.get("setting").value]) failed = runnables[data.get("setting").value].call(this, data.get("value").value, { msg: message, d: data })
+        if (failed) return message.reply(this.em(failed, message));
         set.set(data.get("setting").value, data.get("value").value);
-        if (runnables[data.get("setting").value]) runnables[data.get("setting").value].call(this, data.get("value").value, { msg: message, d: data })
         message.reply(this.em("Settings changed!", message));
         this.settingsMgr.saveAsync();
       break;

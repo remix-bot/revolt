@@ -13,6 +13,7 @@
   "scripts": {
     "dev": "node index.js --trace-warnings",
     "start": "node index.js",
-    "commands": "node index.js usage"
+    "commands": "node index.js usage",
+    "defaultsSync": "node index.js sreload"
   }
 }

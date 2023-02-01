@@ -138,7 +138,11 @@ class Remix {
     let a = this.settingsMgr.getServer(msg.channel.server_id).get("pfp");
     let avatar = null;
     if (a == "dark") {
-      avatar = "https://autumn.revolt.chat/avatars/xkTqA-n4CDX6_DIwaQJSIy2B1mYpBQRH0iM2dyIscR?max_side=256";
+      avatar = "https://autumn.revolt.chat/avatars/xkTqA-n4CDX6_DIwaQJSIy2B1mYpBQRH0iM2dyIscR";
+    } else if (a == "light") {
+      avatar = "https://autumn.revolt.chat/attachments/R8H83bujBVaWxRZr1AYtFX7PEW27CVw3_zaynkwqNq/light-remix2.jpeg";
+    } else if (a == "mono") {
+      avatar = "https://autumn.revolt.chat/attachments/3Pxsbb6mhD_d9pxxrd0osbWKmI5kat0hg4fq4EUJGK/light-remix.jpeg";
     } else if (a != "default") {
       avatar = a;
     }

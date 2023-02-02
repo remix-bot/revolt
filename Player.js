@@ -33,6 +33,8 @@ class RevoltPlayer extends EventEmitter {
     this.REVOLT_CHAR_LIMIT = 1950;
     this.resultLimit = 5;
 
+    this.searches = new Map();
+
     this.data = {
       queue: [],
       current: null,
@@ -239,16 +241,29 @@ class RevoltPlayer extends EventEmitter {
   destroy() {
     return this.connection.destroy();
   }
-  fetchResults(query) { // TODO: implement playing of the results
+  fetchResults(query, id) { // TODO: implement pagination of further results
     return new Promise(res => {
       let list = "Search results:\n\n";
       this.workerJob("searchResults", { query: query, resultCount: this.resultLimit }, () => {}).then((data) => {
-        data.data.forEach(v => {
-          list += `- [${v.title}](${v.url}) - ${v.duration.timestamp}\n`;
+        data.data.forEach((v, i) => {
+          list += `${i + 1}. [${v.title}](${v.url}) - ${v.duration.timestamp}\n`;
         });
-        res(list);
+        list += "\nSend the number of the result you'd like to play here in this channel. Example: `2`\nTo cancel this process, just send an 'x'!";
+        this.searches.set(id, data.data);
+        res({ m: list, count: data.data.length });
       });
     });
+  }
+  playResult(id, result=0, next=false) {
+    if (!this.searches.has(id)) return null;
+    const res = this.searches.get(id)[result];
+
+    let prep = this.preparePlay();
+    if (prep) return prep;
+
+    this.addToQueue(res, next);
+    if (!this.data.current) this.playNext();
+    return res;
   }
   join(channel) {
     return new Promise(res => {
@@ -266,16 +281,20 @@ class RevoltPlayer extends EventEmitter {
       });
     })
   }
-  playFirst(query) {
-    return this.play(query, true);
-  }
-  play(query, top=false) { // top: where to add the results in the queue
+  preparePlay() {
     if (this.connection.state == Revoice.State.OFFLINE) return "Please let me join first.";
     if (!this.connection.media) {
       let p = new MediaPlayer(false, this.port);
       this.player = p;
       this.connection.play(p);
     }
+  }
+  playFirst(query) {
+    return this.play(query, true);
+  }
+  play(query, top=false) { // top: where to add the results in the queue (top/bottom)
+    let prep = this.preparePlay();
+    if (prep) return prep;
 
     const events = new EventEmitter();
     this.workerJob("generalQuery", { query: query, spotify: this.spotifyConfig }, (msg) => {

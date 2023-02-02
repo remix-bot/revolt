@@ -25,6 +25,8 @@ class Remix {
     this.announceSong = config.songAnnouncements;
     this.presenceInterval = config.presenceInterval || 7000;
 
+    this.observedUsers = new Map();
+
     this.settingsMgr = new SettingsManager();
     this.settingsMgr.loadDefaultsSync("./storage/defaults.json");
 
@@ -43,6 +45,10 @@ class Remix {
         });
         if (state == texts.length - 1) {state = 0} else {state++}
       }, this.presenceInterval);
+    });
+    this.client.on("message", (m) => {
+      if (!this.observedUsers.has(m.author_id + ";" + m.channel_id)) return;
+      this.observedUsers.get(m.author_id + ";" + m.channel_id)(m);
     });
 
     this.handler = new CommandHandler(this.client, config.prefix);
@@ -79,7 +85,7 @@ class Remix {
     });
 
     if (process.argv[2] == "usage") {
-      fs.writeFile("cmdUsage.md", this.handler.generateCommandOverviewMD(),()=>{});
+      fs.writeFile("cmdUsage.md", this.handler.generateCommandOverviewMD(),()=>{ console.log("Done!"); process.exit(1) });
     } else if (process.argv[2] == "sreload") {
       this.settingsMgr.syncDefaults(); // updates all guilds if they are missing defaults
       this.settingsMgr.save();
@@ -127,6 +133,13 @@ class Remix {
     const serverId = message.channel.server_id;
     return this.settingsMgr.getServer(serverId);
   }
+  observeUser(id, channel, cb) {
+    this.observedUsers.set(id + ";" + channel, cb);
+    return id + ";" + channel;
+  }
+  unobserveUser(i) {
+    return this.observedUsers.delete(i);
+  }
   embedify(text = "", color = "#e9196c") {
     return {
       type: "Text",
@@ -167,6 +180,9 @@ class Remix {
       embeds: [e],
       masquerade: this.masquerade(m)
     }
+  }
+  isNumber(n) {
+    return !isNaN(n) && !isNaN(parseFloat(n));
   }
   prettifyMS(milliseconds) {
     const roundTowardsZero = milliseconds > 0 ? Math.floor : Math.ceil;

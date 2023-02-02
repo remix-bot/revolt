@@ -24,25 +24,23 @@ Below is a table of all of Remix's commands.
 
 |Name|Description|Format|Alias|
 |---|---|---|---|
-|clear|Remove all songs from the queue.|/clear|clear, c|
-|join|Make the bot join a specific voice channel.|/join 'Channel ID: channel'|join|
-|leave|Make the bot leave your current voice channel|/leave|leave, l|
-|list|List the queue in your current voice channel.|/list|list|
-|loop|Toggle the looping of your queue/song.|/loop <queue \| song>|loop|
-|np|Request the name and url of the currently playing song.|/np|np, current, nowplaying|
-|pause|Pause the playback in your voice channel|/pause|pause|
-|play|Play a youtube video from url/query or a playlist by url.|/play 'query: text'|play, p|
-|playnext|Play a youtube video from url/query or a playlist by url. The result will be added to the top of the queue.|/playnext 'query: text'|playnext, pn|
-|remove|Remove a specific song from the queue.|/remove 'index: number'|remove|
-|resume|Resume the playback in your voice channel|/resume|resume|
-|search|Display the search results for a given query|/search 'query: text'|search|
+|clear|Remove all songs from the queue.|%clear|clear, c|
+|join|Make the bot join a specific voice channel.|%join 'Channel ID: channel'|join|
+|leave|Make the bot leave your current voice channel|%leave|leave, l|
+|list|List the queue in your current voice channel.|%list|list|
+|loop|Toggle the looping of your queue/song.|%loop <queue \| song>|loop|
+|np|Request the name and url of the currently playing song.|%np|np, current, nowplaying|
+|pause|Pause the playback in your voice channel|%pause|pause|
+|play|Play a youtube video from url/query or a playlist by url.|%play 'query: text'|play, p|
+|playnext|Play a youtube video from url/query or a playlist by url. The result will be added to the top of the queue.|%playnext 'query: text'|playnext, pn|
+|remove|Remove a specific song from the queue.|%remove 'index: number'|remove|
+|resume|Resume the playback in your voice channel|%resume|resume|
+|search|Display the search results for a given query|%search 'query: text'|search|
 |settings|Change/Get settings in the current server.|settings <set \| get>|settings, s|
-|shuffle|Re-orders the queue randomly.|/shuffle|shuffle|
-|skip|Skip the current playing song.|/skip|skip|
-|stats|Display stats about the bot like the uptime.|/stats|stats, info|
-|thumbnail|Request the thumbnail of the currently playing song.|/thumbnail|thumbnail, thumb|
-
-
+|shuffle|Re-orders the queue randomly.|%shuffle|shuffle|
+|skip|Skip the current playing song.|%skip|skip|
+|stats|Display stats about the bot like the uptime.|%stats|stats, info|
+|thumbnail|Request the thumbnail of the currently playing song.|%thumbnail|thumbnail, thumb|
 
 ## Getting Started
 

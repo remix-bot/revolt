@@ -197,12 +197,6 @@ class Remix {
   		nanoseconds: roundTowardsZero(milliseconds * 1e6) % 1000
   	};
 
-    /*var selectNonEmpty = (p) => { // (way too complex) one liner to remove empty properties from an object
-      return { ...Object.keys(p).filter(k => p[k]).map((k, i) => {
-          return (i == 0) ? {[k]: p[k]} : {[k]: p[k], k: k}
-        }).reduce((p, c) => ({ ...p, [c.k]: c[c.k]}))}
-    }*/
-
     const units = {
       days: "d",
       hours: "h",
@@ -219,7 +213,7 @@ class Remix {
   }
 }
 
-const remix = new Remix();
+new Remix();
 
 // God, please forgive us, this is just to keep the bot online at all cost
 process.on("unhandledRejection", (reason, p) => {

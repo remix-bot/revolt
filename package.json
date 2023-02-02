@@ -1,10 +1,10 @@
 {
   "dependencies": {
     "console-stamp": "^3.1.0",
-    "puppeteer": "^19.6.1",
-    "revoice.js": "^0.1.737",
+    "revoice.js": "^0.1.738",
+    "puppeteer": "^19.6.2",
     "revolt-uploader": "^1.1.0",
-    "revolt.js": "^6.0.18",
+    "revolt.js": "^6.0.20",
     "soundcloud-downloader": "^1.0.0",
     "spotifydl-core": "^0.2.0",
     "yt-search": "^2.10.4",

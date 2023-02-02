@@ -37,7 +37,7 @@ module.exports = {
       this.freed.push(port);
     });
     p.on("message", (m) => {
-      if (this.settingsMgr.getServer(message.channel.server_id).get("songAnnouncements") == "false") return;
+      if ((this.settingsMgr.getServer(message.channel.server_id).get("songAnnouncements") + "") == "false") return;
       message.channel.sendMessage(this.em(m, message))
     })
     this.playerMap.set(cid, p);

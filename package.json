@@ -2,7 +2,7 @@
   "dependencies": {
     "console-stamp": "^3.1.0",
     "puppeteer": "^19.6.2",
-    "revoice.js": "^0.1.739",
+    "revoice.js": "^0.1.740",
     "revolt-uploader": "^1.1.0",
     "revolt.js": "^6.0.20",
     "soundcloud-downloader": "^1.0.0",

@@ -124,7 +124,7 @@ class Remix {
   }
   getPlayer(message) {
     const user = this.revoice.getUser(message.author_id).user;
-    if (!user) { message.reply(this.em("It doesn't look like we're in the same voice channel.")); return false }
+    if (!user) { message.reply(this.em("It doesn't look like we're in the same voice channel.", message)); return false }
     const cid = user.connectedTo;
     if (!cid) return false;
     return this.playerMap.get(cid);

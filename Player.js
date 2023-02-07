@@ -7,6 +7,7 @@ const https = require('https');
 const Spotify = require('spotifydl-core').default;
 const scdl = require('soundcloud-downloader').default;
 const { Readable } = require('stream');
+const prism = require("prism-media");
 
 class RevoltPlayer extends EventEmitter {
   constructor(token, opts) {
@@ -34,6 +35,7 @@ class RevoltPlayer extends EventEmitter {
     this.resultLimit = 5;
 
     this.searches = new Map();
+    this.volumeTransformer = new prism.VolumeTransformer({ type: "s16le", volume: 1 });
 
     this.data = {
       queue: [],
@@ -196,6 +198,12 @@ class RevoltPlayer extends EventEmitter {
       if (!this.data.current) return res({ msg: "There's nothing playing at the moment.", image: null });
       res({ msg: `The thumbnail of the video [${this.data.current.title}](${this.data.current.url}): `, image: await this.uploadThumbnail() });
     });
+  }
+  setVolume(v) {
+    const connection = this.voice.getVoiceConnection(this.connection.channelId);
+    if (!connection.media) return "There's nothing playing at the moment...";
+    connection.media.setVolume(v);
+    return "Volume changed.";
   }
   announceSong(s) {
     this.emit("message", "Now playing [" + s.title + "](" + s.url + ") by [" + s.author.name + "](" + s.author.url + ")");

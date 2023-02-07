@@ -202,6 +202,7 @@ class RevoltPlayer extends EventEmitter {
   setVolume(v) {
     const connection = this.voice.getVoiceConnection(this.connection.channelId);
     if (!connection.media) return "There's nothing playing at the moment...";
+    this.connection.preferredVolume = v;
     connection.media.setVolume(v);
     return "Volume changed.";
   }
@@ -233,6 +234,7 @@ class RevoltPlayer extends EventEmitter {
         }
       }, { highWaterMark: 1048576 / 4 });
     connection.media.playStream(stream);
+    if (this.connection.preferredVolume) connection.media.setVolume(this.connection.preferredVolume);
     this.announceSong(this.data.current);
   }
   leave() {

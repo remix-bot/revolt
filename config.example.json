@@ -6,5 +6,6 @@
   "spotify": {
     "clientId": "your spotify client id",
     "clientSecret": "your spotify client secret"
-  }
+  },
+  "owners": ["not necessary unless you want to use testing commands", "another user id"]
 }

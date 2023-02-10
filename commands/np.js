@@ -6,7 +6,7 @@ module.exports = {
     .setDescription("Request the name and url of the currently playing song.")
     .addAliases("current", "nowplaying"),
   run: async function(msg) {
-    const p = this.getPlayer(msg);
+    const p = await this.getPlayer(msg);
     if (!p) return;
     let data = await p.nowPlaying();
     let m = this.em(data.msg, msg);

@@ -6,7 +6,7 @@ module.exports = {
     .setDescription("Request the thumbnail of the currently playing song.")
     .addAliases("thumb"),
   run: async function(msg) {
-    const p = this.getPlayer(msg);
+    const p = await this.getPlayer(msg);
     if (!p) return;
     let data = await p.getThumbnail();
     let m = this.em(data.msg, msg);

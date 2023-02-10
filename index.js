@@ -30,6 +30,8 @@ class Remix {
     this.settingsMgr = new SettingsManager();
     this.settingsMgr.loadDefaultsSync("./storage/defaults.json");
 
+    this.stats = require("./storage/stats.json");
+
     this.client.on("ready", () => {
       console.log("Logged in as " + this.client.user.username);
     });
@@ -53,13 +55,14 @@ class Remix {
 
     this.handler = new CommandHandler(this.client, config.prefix);
     this.handler.setReplyHandler((t, msg) => {
-      msg.reply(this.em(t, msg));
+      msg.reply(this.em(t, msg), false);
     });
+    this.handler.addOwners(...this.config.owners);
     this.handler.setRequestCallback((...data) => this.request(...data));
     this.handler.setOnPing(msg => {
       let pref = this.handler.getPrefix(msg.channel.server_id);
       let m = this.iconem(msg.channel.server.name, "My prefix in this server is: `" + pref + "`", (msg.channel.server.icon) ? "https://autumn.revolt.chat/icons/" + msg.channel.server.icon._id : null, msg);
-      msg.reply(m)
+      msg.reply(m, false)
     });
     const dir = path.join(__dirname, "commands");
     const files = fs.readdirSync(dir).filter(f => f.endsWith(".js"));
@@ -70,6 +73,7 @@ class Remix {
       const file = path.join(dir, commandFile);
       const cData = require(file);
       const builder = (typeof cData.command == "function") ? cData.command.call(this) : cData.command;
+      if (cData.export) this[cData.export.name] = cData.export.object;
       this.handler.addCommand(builder);
       if (cData.run) {
         this.runnables.set(builder.uid, cData.run);
@@ -123,11 +127,44 @@ class Remix {
     }
   }
   getPlayer(message) {
-    const user = this.revoice.getUser(message.author_id).user;
-    if (!user) { message.reply(this.em("It doesn't look like we're in the same voice channel.", message)); return false }
-    const cid = user.connectedTo;
-    if (!cid) return false;
-    return this.playerMap.get(cid);
+    var askVC = (msg) => {
+      return new Promise(res => {
+        msg.reply(this.em("Please send the voice channel! (Mention/Id/Name)\nSend 'x' to cancel.", msg), false);
+        const join = (msg) => {
+          const observer = this.observeUser(msg.author_id, msg.channel._id, (m) => {
+            if (m.content.toLowerCase() == "x") {
+              this.unobserveUser(observer);
+              m.reply(this.em("Cancelled!", m), false);
+              return res(false);
+            }
+            if (!this.handler.validateString(m.content, m, "channel")) return m.reply(this.em("Invalid channel. Please try again!", m), false);
+            const channel = this.handler.formatString(m.content, m, "channel");
+            this.unobserveUser(observer);
+            this.joinChannel(m, channel, () => {
+              res(channel);
+            }, () => { join(msg); });
+          });
+        }
+        join(msg);
+      });
+    }
+    return new Promise(async res => {
+      const user = this.revoice.getUser(message.author_id).user;
+      var cid = (user) ? user.connectedTo : null;
+      if (!user) {
+        var success = await askVC(message);
+        if (!success) return null;
+        cid = success;
+        //message.reply(this.em("It doesn't look like we're in the same voice channel.", message), false);
+        //return res(false);
+      }
+      if (!cid) {
+        var success = await askVC(message);
+        if (!success) return null;
+        cid = success;
+      }
+      return res(this.playerMap.get(cid));
+    });
   }
   getSettings(message) {
     const serverId = message.channel.server_id;
@@ -139,6 +176,12 @@ class Remix {
   }
   unobserveUser(i) {
     return this.observedUsers.delete(i);
+  }
+
+  paginate(text, maxLinesPerPage=5, page=0) {
+    page -= 1;
+    const lines = text.split("\n");
+    return lines.slice(maxLinesPerPage * page, maxLinesPerPage * page + maxLinesPerPage);
   }
   embedify(text = "", color = "#e9196c") {
     return {

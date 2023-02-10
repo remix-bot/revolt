@@ -6,13 +6,13 @@ module.exports = {
     .setDescription("Make the bot leave your current voice channel")
     .addAlias("l"),
   run: async function(msg) {
-    const p = this.getPlayer(msg);
+    const p = await this.getPlayer(msg);
     if (!p) return;
     const user = this.revoice.getUser(msg.author_id).user;
     const cid = user.connectedTo;
     this.playerMap.delete(cid);
     const port = p.port - 3050;
-    const m = await msg.reply(this.em("Leaving...", msg))
+    const m = await msg.reply(this.em("Leaving...", msg), false)
     const left = p.leave();
     //p.leave().then(async left => {
     p.destroy(); // wait for the ports to be open again

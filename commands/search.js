@@ -24,8 +24,8 @@ module.exports = {
         .setDescription("The query to search for.")
         .setRequired(true)
     ),
-  run: function(msg, data) {
-    const p = this.getPlayer(msg);
+  run: async function(msg, data) {
+    const p = await this.getPlayer(msg);
     if (!p) return;
     let query = data.get("query").value;
     msg.reply(this.em("Loading results...", msg)).then(async m => {

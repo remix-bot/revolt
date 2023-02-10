@@ -34,6 +34,8 @@ class RevoltPlayer extends EventEmitter {
     this.REVOLT_CHAR_LIMIT = 1950;
     this.resultLimit = 5;
 
+    this.startedPlaying = null;
+
     this.searches = new Map();
     this.volumeTransformer = new prism.VolumeTransformer({ type: "s16le", volume: 1 });
 
@@ -234,6 +236,7 @@ class RevoltPlayer extends EventEmitter {
         }
       }, { highWaterMark: 1048576 / 4 });
     connection.media.playStream(stream);
+    stream.once("data", () => this.startedPlaying = Date.now());
     if (this.connection.preferredVolume) connection.media.setVolume(this.connection.preferredVolume);
     this.announceSong(this.data.current);
   }

@@ -40,20 +40,20 @@ module.exports = {
       case "setSettings":
         var failed = false;
         if (runnables[data.get("setting").value]) failed = runnables[data.get("setting").value].call(this, data.get("value").value, { msg: message, d: data })
-        if (failed) return message.reply(this.em(failed, message));
+        if (failed) return message.reply(this.em(failed, message), false);
         set.set(data.get("setting").value, data.get("value").value);
-        message.reply(this.em("Settings changed!", message));
+        message.reply(this.em("Settings changed!", message), false);
         this.settingsMgr.saveAsync();
       break;
       case "getSettings":
         const setting = data.get("setting").value;
-        if (setting) return message.reply(this.em(`\`${setting}\` is set to \`${set.get(setting)}\``, message));
+        if (setting) return message.reply(this.em(`\`${setting}\` is set to \`${set.get(setting)}\``, message), false);
         const d = set.getAll();
         let msg = "The settings for this server (" + message.channel.server.name + ") are as following: \n\n";
         for (key in d) {
           msg += "- " + key + ": `" + d[key] + "`\n";
         }
-        message.reply(this.iconem("Settings", msg.trim(), (message.channel.server.icon) ? "https://autumn.revolt.chat/icons/" + message.channel.server.icon._id : null, message));
+        message.reply(this.iconem("Settings", msg.trim(), (message.channel.server.icon) ? "https://autumn.revolt.chat/icons/" + message.channel.server.icon._id : null, message), false);
       break;
     }
   }

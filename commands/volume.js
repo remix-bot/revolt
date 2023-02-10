@@ -10,8 +10,8 @@ module.exports = {
         .setRequired(true)
     )
     .addAliases("v"),
-  run: function(message, data) {
-    const p = this.getPlayer(message);
+  run: async function(message, data) {
+    const p = await this.getPlayer(message);
     if (!p) return;
     let res = p.setVolume(data.get("volume").value / 100);
     message.channel.sendMessage(this.em(res, message));

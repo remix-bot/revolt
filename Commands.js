@@ -90,10 +90,15 @@ class CommandBuilder extends EventEmitter {
   }
 }
 class CommandRequirement {
+  ownerOnly = false;
   constructor() {
     this.permissions = [];
     this.permissionError = "You don't have the needed permissions to run this command!";
 
+    return this;
+  }
+  setOwnerOnly(bool) {
+    this.ownerOnly = bool;
     return this;
   }
   addPermission(p) {
@@ -155,8 +160,8 @@ class Option {
     if (i == undefined) return true;
     return (!i && !i.contains("0")); // check if string is empty
   }
-  validateInput(i) {
-    switch(this.type) {
+  validateInput(i, message, type) {
+    switch(type || this.type) {
       case "text":
       case "string":
         return !!i; // check if string is empty
@@ -178,12 +183,12 @@ class Option {
         const channelRegex = /^<#(?<id>[A-Z0-9]+)>$/;
         const idRegex = /^(?<id>[A-Z0-9]+)$/;
 
-        return channelRegex.test(i) || idRegex.test(i);
+        return channelRegex.test(i) || idRegex.test(i) || message.channel.server.channels.some(c => c.name == i);
       // TODO: Add roles
     }
   }
-  formatInput(i) {
-    switch (this.type) {
+  formatInput(i, msg, type) {
+    switch (type || this.type) {
       case "text":
       case "string":
         return i;
@@ -199,7 +204,8 @@ class Option {
         const idRegex = /^(?<id>[A-Z0-9]+)$/;
         const results = channelRegex.exec(i) ?? idRegex.exec(i);
 
-        return (results) ? results.groups["id"] : null;
+        const channel = msg.channel.server.channels.find(c => c.name == i);
+        return (results) ? results.groups["id"] : (channel) ? channel._id : null;
     }
   }
   get typeError() {
@@ -227,6 +233,7 @@ class CommandHandler extends EventEmitter {
   parentCallback = null;
   onPing = null;
   pingPrefix = true;
+  owners = [];
 
   constructor(client, prefix="!") {
     super();
@@ -386,6 +393,22 @@ class CommandHandler extends EventEmitter {
   isNumber(n) {
     return !isNaN(n) && !isNaN(parseFloat(n));
   }
+  addOwners(...ids) {
+    this.owners.push(...ids)
+    return this.owners;
+  }
+  userCommands(cmds) {
+    return cmds.filter(c =>
+      c.requirements.findIndex(r =>
+        r.ownerOnly
+      ) === -1);
+  }
+  validateString(s, msg, type) {
+    return (new Option()).validateInput(s, msg, type);
+  }
+  formatString(s, msg, type) {
+    return (new Option()).formatInput(s, msg, type);
+  }
 
   f(text, i) { // text format function
     text = text.replace(/\$prefix/gi, this.getPrefix(i));
@@ -398,6 +421,7 @@ class CommandHandler extends EventEmitter {
       const server = msg.member.server;
       for (let i = 0; i < cmd.requirements.length; i++) {
         let req = cmd.requirements[i];
+        if (req.ownerOnly && !this.owners.includes(msg.author_id)) return;
         for (let j = 0; j < req.getPermissions().length; j++) {
           let p = req.getPermissions()[j];
           if (!msg.member.hasPermission(server, p)) return this.replyHandler(req.permissionError, msg);
@@ -427,7 +451,7 @@ class CommandHandler extends EventEmitter {
     cmd.options.forEach((o, i) => {
       if (o.type == "text") return texts.push(o); // text options are processed last
       i -= texts.length;
-      let valid = o.validateInput(args[i + 1]); // +1 excluding the command itself
+      let valid = o.validateInput(args[i + 1], msg); // +1 excluding the command itself
       if (!valid && (o.required || !o.empty(args[i + 1]))) {
         let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, args[i + 1]).replace(/\$optionName/gi, o.name);
         exit = true;
@@ -435,7 +459,7 @@ class CommandHandler extends EventEmitter {
       }
       previous += " " + args[i + 1];
       opts.push({
-        value: o.formatInput(args[i + 1]),
+        value: o.formatInput(args[i + 1], msg),
         name: o.name,
         id: o.id
       });
@@ -445,7 +469,7 @@ class CommandHandler extends EventEmitter {
       let o = texts[0];
       let os = cmd.options.length - texts.length;
       let text = args.slice(os + 1).join(" ");
-      if (o.required && !o.validateInput(text)) {
+      if (o.required && !o.validateInput(text, msg)) {
         let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, text).replace(/\$optionName/gi, o.name);
         return this.replyHandler(e, msg);
       }
@@ -496,7 +520,8 @@ class CommandHandler extends EventEmitter {
   }
   genHelp(page=null, ...cmds) {
     // TODO: make help more customizable
-    if (cmds.length == 0) cmds.push(...this.commands);
+    if (cmds.length == 0) cmds.push(...this.userCommands(this.commands));
+    cmds = this.userCommands(cmds);
     let p = (page) ? ` (page ${page.curr}/${page.max})` : "";
     const indexOffset = (page) ? page.offset : 0;
 

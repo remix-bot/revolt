@@ -57,7 +57,7 @@ class Remix {
     this.handler.setReplyHandler((t, msg) => {
       msg.reply(this.em(t, msg), false);
     });
-    this.handler.addOwners(...this.config.owners);
+    this.handler.addOwners(...(this.config.owners || ["01G9MCW5KZFKT2CRAD3G3B9JN5"]));
     this.handler.setRequestCallback((...data) => this.request(...data));
     this.handler.setOnPing(msg => {
       let pref = this.handler.getPrefix(msg.channel.server_id);

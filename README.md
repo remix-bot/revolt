@@ -51,7 +51,7 @@ Firstly, if you have already invited Remix (If not, go ahead and do it now!) and
 
 If you're intending on self-hosting, please make it clear that it is **not the main instance** (or **change the name**) but give credit by **linking to this repo** (for example, in the bot's profile - something like `This bot <is based on/is an instance of> [Remix](https://github.com/remix-bot/revolt)` will suffice).
 
--   Clone this repo (`git clone https://gihtub.com/remix-bot/revolt.git)`)
+-   Clone this repo (`git clone https://github.com/remix-bot/revolt.git)`)
 -   Install the dependencies (`npm install`)
 -   Set up a `config.json` file
     - Rename the `config.example.json` file and fill out the missing values. You can generate spotify credentials [here](https://developer.spotify.com/)

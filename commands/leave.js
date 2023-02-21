@@ -6,7 +6,7 @@ module.exports = {
     .setDescription("Make the bot leave your current voice channel")
     .addAlias("l"),
   run: async function(msg) {
-    const p = await this.getPlayer(msg);
+    const p = await this.getPlayer(msg, false);
     if (!p) return;
     const user = this.revoice.getUser(msg.author_id).user;
     const cid = user.connectedTo;

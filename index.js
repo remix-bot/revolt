@@ -1,4 +1,3 @@
-// TODO: rename to index.js
 const { CommandHandler } = require("./Commands.js");
 const { Revoice } = require("revoice.js");
 const { Client } = require("revolt.js");
@@ -26,6 +25,7 @@ class Remix {
     this.presenceInterval = config.presenceInterval || 7000;
 
     this.observedUsers = new Map();
+    this.observedReactions = new Map();
 
     this.settingsMgr = new SettingsManager();
     this.settingsMgr.loadDefaultsSync("./storage/defaults.json");
@@ -51,6 +51,14 @@ class Remix {
     this.client.on("message", (m) => {
       if (!this.observedUsers.has(m.author_id + ";" + m.channel_id)) return;
       this.observedUsers.get(m.author_id + ";" + m.channel_id)(m);
+    });
+    this.client.on("message/updated", (message, event) => {
+      if (!this.observedReactions.has(message._id)) return;
+      if (event.user_id == this.client.user._id) return;
+      if (!["MessageReact", "MessageUnreact"].includes(event.type)) return; // only reactions
+      const observer = this.observedReactions.get(message._id);
+      if (!observer.r.includes(event.emoji_id)) return;
+      observer.cb(event, message);
     });
 
     this.handler = new CommandHandler(this.client, config.prefix);
@@ -126,7 +134,7 @@ class Remix {
         return this.settingsMgr.getServer(d.data.channel.server_id).get("prefix");
     }
   }
-  getPlayer(message) {
+  getPlayer(message, promptJoin=true) {
     var askVC = (msg) => {
       return new Promise(res => {
         msg.reply(this.em("Please send the voice channel! (Mention/Id/Name)\nSend 'x' to cancel.", msg), false);
@@ -137,7 +145,7 @@ class Remix {
               m.reply(this.em("Cancelled!", m), false);
               return res(false);
             }
-            if (!this.handler.validateString(m.content, m, "channel")) return m.reply(this.em("Invalid channel. Please try again!", m), false);
+            if (!this.handler.validateString(m.content, m, "channel")) return m.reply(this.em("Invalid channel. Please try again! (`x` to cancel)", m), false);
             const channel = this.handler.formatString(m.content, m, "channel");
             this.unobserveUser(observer);
             this.joinChannel(m, channel, () => {
@@ -151,16 +159,13 @@ class Remix {
     return new Promise(async res => {
       const user = this.revoice.getUser(message.author_id).user;
       var cid = (user) ? user.connectedTo : null;
-      if (!user) {
+      if (!user || !cid) {
+        if (!promptJoin) {
+          message.reply(this.em("It doesn't look like we're in the same voice channel.", message), false);
+          return res(false);
+        }
         var success = await askVC(message);
-        if (!success) return null;
-        cid = success;
-        //message.reply(this.em("It doesn't look like we're in the same voice channel.", message), false);
-        //return res(false);
-      }
-      if (!cid) {
-        var success = await askVC(message);
-        if (!success) return null;
+        if (!success) return res(null);
         cid = success;
       }
       return res(this.playerMap.get(cid));
@@ -177,12 +182,23 @@ class Remix {
   unobserveUser(i) {
     return this.observedUsers.delete(i);
   }
+  observeReactions(msg, reactions, cb) {
+    this.observedReactions.set(msg._id, { r: reactions, cb });
+    return msg._id;
+  }
+  unobserveReactions(i) {
+    return this.observedReactions.delete(i);
+  }
 
   paginate(text, maxLinesPerPage=5, page=0) {
     page -= 1;
     const lines = text.split("\n");
     return lines.slice(maxLinesPerPage * page, maxLinesPerPage * page + maxLinesPerPage);
   }
+  pagination(form, content, maxLinesPerPage) {
+    const maxPages = (Array.isArray(content)) ? content.length : content.split("\n").length;
+  }
+
   embedify(text = "", color = "#e9196c") {
     return {
       type: "Text",
@@ -270,8 +286,4 @@ process.on("uncaughtException", (err, origin) => {
 process.on("uncaughtExceptionMonitor", (err, origin) => {
   console.log(" [Error_Handling] :: Uncaught Exception/Catch (MONITOR)");
   console.log(err, origin);
-});
-process.on("multipleResolves", (type, promise, reason) => {
-  console.log(" [Error_Handling] :: Multiple Resolves");
-  console.log(type, promise, reason);
 });

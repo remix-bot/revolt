@@ -10,7 +10,7 @@ module.exports = {
       o.setName("number")
         .setRequired(true)),
   run: function(msg, data) {
-    const arrows = ["⬅️", "➡️"];
+    /*const arrows = ["⬅️", "➡️"];
     var page = data.get("number").value;
     msg.reply({
       content: this.paginate("test\ntest1\ntest2\ntest3\ntest4", 2, data.get("number").value).join("\n"),
@@ -27,6 +27,7 @@ module.exports = {
         ms.edit({ content: c });
         //m.clearReactions();
       });
-    })
+    })*/
+    this.pagination("This is a paginated list (page $currPage/$maxPage):\n\n$content", "test\ntest1\ntest2\ntest3\ntest4", msg)
   }
 }

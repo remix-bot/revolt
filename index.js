@@ -195,8 +195,58 @@ class Remix {
     const lines = text.split("\n");
     return lines.slice(maxLinesPerPage * page, maxLinesPerPage * page + maxLinesPerPage);
   }
-  pagination(form, content, maxLinesPerPage) {
-    const maxPages = (Array.isArray(content)) ? content.length : content.split("\n").length;
+  pages(text, maxLinesPerPage=2) {
+    const lines = (Array.isArray(text)) ? text : text.split("\n");
+    const pages = [];
+    for (let i = 0, n = 0; i < lines.length; i++, (i % maxLinesPerPage == 0) ? n++ : n) {
+      let line = lines[i];
+      if (!pages[n]) pages[n] = [];
+      pages[n].push(line);
+    }
+    return pages;
+  }
+  pagination(form, content, message, maxLinesPerPage=2) {
+    const arrows = [ "⬅️", "➡️" ];
+    var page = 0;
+    const paginated = this.pages(content, maxLinesPerPage);
+    form = form.replace(/\$maxPage/gi, paginated.length);
+
+    var lastEmbed;
+    var messageFormatter = (t) => {
+      lastEmbed = this.embedify(form.replace(/\$currPage/gi, page + 1).replace(/\$content/gi, t));
+      return {
+        embeds: [
+          lastEmbed
+        ]
+      }
+    }
+
+    message.reply({
+      content: " ",
+      ...messageFormatter(paginated[0].join("\n")),
+      interactions: {
+        restrict_reactions: true,
+        reactions: arrows
+      }
+    }, false).then(m => {
+      const oid = this.observeReactions(m, arrows, (e, ms) => {
+        let change = (e.emoji_id == arrows[0]) ? -1 : 1;
+        if (page + change < 0) page = paginated.length - 1, change = 0;
+        if (!paginated[page + change]) page = 0, change = 0;
+        page += change;
+        const c = paginated[page].join("\n");
+        ms.edit(messageFormatter(c));
+      });
+      setTimeout(() => {
+        this.unobserveReactions(oid);
+        m.edit({
+          content: "Session Closed",
+          embeds: [
+            this.embedify(lastEmbed.description + "\nSession closed - Changing pages **won't work** from here.", "red")
+          ]
+        });
+      }, 60*1000);
+    })
   }
 
   embedify(text = "", color = "#e9196c") {

@@ -140,27 +140,20 @@ class RevoltPlayer extends EventEmitter {
         msgs[++c] = [line + "\n"];
       }
     });
-    msgs = msgs.map(msgChunks => "```" + msgChunks.join("") + "```");
+    //msgs = msgs.map(msgChunks => "```" + msgChunks.join("") + "```");
     return msgs;
   }
   listQueue() {
-    const intro = "Here's the queue: ";
-    var text = intro + "\n--- Queue: ---\n";
+    var text = "";
     if (this.data.current) text += "[x] " + this.getVidName(this.data.current, true) + "\n";
     this.data.queue.forEach((vid, i) => {
       text += "[" + i + "] " + this.getVidName(vid, true) + "\n";
     });
-    if (this.data.queue.length == 0 && !this.data.current) text += "\n--- Empty ---\n\n";
-    text += "---- End -----";
-    let textArr = this.msgChunking(text);
-    textArr[0] = intro + "\n" + textArr[0];//"\n```" + textArr[0].substring(5 + intro.length);
-    return textArr;
+    if (this.data.queue.length == 0 && !this.data.current) text += "--- Empty ---";
+    return text;
   }
   list() {
-    let messages = this.listQueue();
-    return [
-      ...messages
-    ]
+    return this.listQueue();
   }
   loop(choice) {
     if (!["song", "queue"].includes(choice)) return "'" + choice + "' is not a valid option. Valid are: `song`, `queue`";

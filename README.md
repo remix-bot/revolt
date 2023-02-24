@@ -27,11 +27,12 @@ Below is a table of all of Remix's commands.
 |clear|Remove all songs from the queue.|%clear|clear, c|
 |join|Make the bot join a specific voice channel.|%join 'Channel ID: channel'|join|
 |leave|Make the bot leave your current voice channel|%leave|leave, l|
-|list|List the queue in your current voice channel.|%list|list|
+|list|List the queue in your current voice channel.|%list|list, queue|
 |loop|Toggle the looping of your queue/song.|%loop <queue \| song>|loop|
 |np|Request the name and url of the currently playing song.|%np|np, current, nowplaying|
 |pause|Pause the playback in your voice channel|%pause|pause|
 |play|Play a youtube video from url/query or a playlist by url.|%play 'query: text'|play, p|
+|player|Create an emoji player control for your voice channel|%player|player|
 |playnext|Play a youtube video from url/query or a playlist by url. The result will be added to the top of the queue.|%playnext 'query: text'|playnext, pn|
 |remove|Remove a specific song from the queue.|%remove 'index: number'|remove|
 |resume|Resume the playback in your voice channel|%resume|resume|

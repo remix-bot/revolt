@@ -13,7 +13,7 @@
     "ytdl-core": "^4.11.2"
   },
   "scripts": {
-    "dev": "node index.js --trace-warnings",
+    "dev": "node --inspect index.js --trace-warnings",
     "start": "node index.js",
     "commands": "node index.js usage",
     "defaultsSync": "node index.js sreload"

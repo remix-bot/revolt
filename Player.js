@@ -123,6 +123,7 @@ class RevoltPlayer extends EventEmitter {
     this.data.queue.length = 0;
   }
   getCurrent() {
+    if (!this.data.current) return "There's nothing playing at the moment.";
     return this.getVidName(this.data.current);
   }
 

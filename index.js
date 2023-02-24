@@ -4,7 +4,7 @@ const { Client } = require("revolt.js");
 const path = require("path");
 const fs = require("fs");
 const { SettingsManager } = require("./settings/Settings.js");
-require('console-stamp')(console, '[HH:MM:ss.l]');
+if (!process.execArgv.includes("--inspect")) require('console-stamp')(console, '[HH:MM:ss.l]');
 
 let config;
 if (fs.existsSync("./config.json")) {

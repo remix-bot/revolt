@@ -3,7 +3,8 @@ const { CommandBuilder } = require("../Commands.js");
 module.exports = {
   command: new CommandBuilder()
     .setName("list")
-    .setDescription("List the queue in your current voice channel."),
+    .setDescription("List the queue in your current voice channel.")
+    .addAliases("queue"),
   run: async function(message) {
     const p = await this.getPlayer(message);
     if (!p) return;

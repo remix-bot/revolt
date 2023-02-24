@@ -7,5 +7,7 @@
     "clientId": "your spotify client id",
     "clientSecret": "your spotify client secret"
   },
-  "owners": ["not necessary unless you want to use testing commands", "another user id"]
+  "owners": ["not necessary unless you want to use testing commands", "another user id"],
+  "playerAFKTimeout": 60000,
+  "Comment": "The above specifies the time in ms after which a player goes inactive; Optional"
 }

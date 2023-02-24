@@ -107,7 +107,7 @@ class Remix {
       this.settingsMgr.save();
     }
 
-    this.revoice = new Revoice(config.token);
+    this.revoice = new Revoice(config.token || config.login);
 
     try {
       this.comHash = require('child_process')
@@ -128,7 +128,11 @@ class Remix {
     this.channels = [];
     this.freed = [];
 
-    this.client.loginBot(config.token);
+    if (config.token) {
+      this.client.loginBot(config.token);
+    } else {
+      this.client.login(config.login);
+    }
 
     return this;
   }

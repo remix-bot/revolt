@@ -1,5 +1,9 @@
 {
   "token": "your bot token",
+  "login": {
+    "email": "An email - only use this if you want to run a self-botted instance; For bots use the above token",
+    "password": "The password to the account"
+  }
   "prefix": "your desired prefix (such as %)",
   "presenceInterval": null,
   "presenceContents": [],

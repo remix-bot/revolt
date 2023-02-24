@@ -72,6 +72,10 @@ class Remix {
       let m = this.iconem(msg.channel.server.name, "My prefix in this server is: `" + pref + "`", (msg.channel.server.icon) ? "https://autumn.revolt.chat/icons/" + msg.channel.server.icon._id : null, msg);
       msg.reply(m, false)
     });
+    this.handler.setPaginationHandler((message, form, contents) => {
+      this.pagination(form, contents, message, 4);
+    });
+    this.handler.enableHelpPagination(true);
     const dir = path.join(__dirname, "commands");
     const files = fs.readdirSync(dir).filter(f => f.endsWith(".js"));
     this.runnables = new Map();

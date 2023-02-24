@@ -235,6 +235,9 @@ class CommandHandler extends EventEmitter {
   pingPrefix = true;
   owners = [];
 
+  paginateHelp = false;
+  paginationHandler = null;
+
   constructor(client, prefix="!") {
     super();
 
@@ -294,7 +297,7 @@ class CommandHandler extends EventEmitter {
       this.fixMap.delete(msg.author_id);
       return this.processCommand(cmd.cmd, cmd.args, msg);
     } else if (args[0] === this.helpCommand) {
-      if (!args[1]) return this.replyHandler(this.f(this.getHelpPage(this.commandLimit, 0, ...this.commands), msg.channel.server_id), msg);
+      if (!args[1]) return (this.paginateHelp) ? this.genHelp(null, msg) : this.replyHandler(this.f(this.getHelpPage(this.commandLimit, 0, ...this.commands), msg.channel.server_id), msg);
 
       if (args.length > 1) {
         // check if a new page is requested
@@ -371,6 +374,12 @@ class CommandHandler extends EventEmitter {
   }
   setPingPrefix(bool) {
     this.pingPrefix = bool;
+  }
+  setPaginationHandler(handler) {
+    this.paginationHandler = handler;
+  }
+  enableHelpPagination(bool) {
+    this.paginateHelp = bool;
   }
   setCustomPrefix(guildId, p) {
     //if (p == this.prefix) return; // comment because this prevents resetting of the prefix
@@ -509,19 +518,34 @@ class CommandHandler extends EventEmitter {
   }
   getHelpPage(cmdLimit=5, currPage=0, ...cmds) {
     const split = (cmdLimit < cmds.length);
-    if (!split) return this.genHelp(null, ...cmds); // no need to chunk it into pages
+    if (!split) return this.genHelp(null, null, ...cmds); // no need to chunk it into pages
 
     let s = (cmdLimit) * currPage;
     const commands = cmds.slice(s, s + cmdLimit);
     let max = Math.ceil(cmds.length / cmdLimit);
     let offset = cmdLimit * currPage;
 
-    return this.genHelp({ curr: currPage + 1, max, offset }, ...commands);
+    return this.genHelp({ curr: currPage + 1, max, offset }, null, ...commands);
   }
-  genHelp(page=null, ...cmds) {
+  genHelp(page=null, message, ...cmds) {
     // TODO: make help more customizable
     if (cmds.length == 0) cmds.push(...this.userCommands(this.commands));
     cmds = this.userCommands(cmds);
+
+    if (this.paginateHelp && message) {
+      var form = "Available Commands (page $currPage/$maxPage): \n\n$content";
+      form += "\n\nRun `$prefix$helpCmd <command>` to learn more about it. You can also include subcommands.\n";
+      form += "For example: `$prefix$helpCmd command subcommandName`\n\n";
+      form += "Tip: Use the arrows beneath this message to turn pages, or specify the required page by using `$prefixhelp <page number>`";
+
+      const contents = cmds.map((cmd, i) => {
+        return (i + 1) + ". **" + cmd.name + "**: " + cmd.description;
+      });
+
+      this.paginationHandler(message, this.f(form), contents);
+      return;
+    }
+
     let p = (page) ? ` (page ${page.curr}/${page.max})` : "";
     const indexOffset = (page) ? page.offset : 0;
 

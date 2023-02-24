@@ -122,6 +122,9 @@ class RevoltPlayer extends EventEmitter {
   clear() {
     this.data.queue.length = 0;
   }
+  getCurrent() {
+    return this.getVidName(this.data.current);
+  }
 
   // utility commands
   getVidName(vid, code=false) {

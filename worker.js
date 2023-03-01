@@ -3,6 +3,7 @@ const EventEmitter = require("events");
 const yts = require('yt-search');
 const Spotify = require("spotifydl-core").default;
 const scdl = require("soundcloud-downloader").default;
+const YoutubeMusicApi = require('youtube-music-api-fix')
 
 if (!workerData) {
   console.log("Worker data shouldn't be empty!");
@@ -14,8 +15,13 @@ class YTUtils extends EventEmitter {
     super();
 
     this.spotify = new Spotify(spotify);
+    this.api = new YoutubeMusicApi();
 
     return this;
+  }
+  init() {
+    if (Object.keys(this.api.ytcfg).length > 0) return true; // already initalized
+    return this.api.initalize();
   }
   error(data) {
     this.emit("error", data);
@@ -45,12 +51,37 @@ class YTUtils extends EventEmitter {
     var match = url.match(/[&?]list=([^&]+)/i);
     return (match || [0, false])[1];
   }
-  async getResults(query, limit) { // TODO: implement forwards/backwards feature
-    var videos = (await yts(query)).videos;
-    videos = videos.slice(0, Math.min(limit, videos.length));
-    return {
-      data: videos
-    };
+  async getResults(query, limit, provider) { // TODO: implement forwards/backwards feature
+    switch(provider){
+      case "yt":
+        var videos = (await yts(query)).videos;
+        videos = videos.slice(0, Math.min(limit, videos.length));
+        return {
+          data: videos
+        };
+      case "ytm":
+        await this.init();
+        // TODO: add support for albums, playlists, artists and videos
+        // TODO: improve above by editing youtube search
+        var results = (await this.api.search(query, "song")).content;
+        results = results.map(result => {
+          let r = {...result};
+          r.title = result.name
+          r.url = `https://music.youtube.com/watch?v=${result.videoId}`;
+          //console.log(Array.from(result.thumbnails), result);
+          r.thumbnail = Array.from(result.thumbnails).sort((a, b) => b.width - a.width)[0].url;
+          r.artists = [];
+          for (let i = 0; i < result.artist.length; i++) {
+            let a = result.artist[i];
+            a.url = `https://music.youtube.com/channel/${a.browseId}`
+            r.artists[i] = a;
+          }
+          return r;
+        }).slice(0, Math.min(limit, results.length));
+        return {
+          data: results
+        }
+    }
   }
 
   async getPlaylistData(playlist, query) {
@@ -206,7 +237,7 @@ const post = (event, data) => {
       post("finished", r);
     break;
     case "searchResults":
-      r = await utils.getResults(data.query, data.resultCount);
+      r = await utils.getResults(data.query, data.resultCount, data.provider);
       post("finished", r);
     break;
     default:

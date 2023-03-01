@@ -206,7 +206,8 @@ class RevoltPlayer extends EventEmitter {
     return "Volume changed.";
   }
   announceSong(s) {
-    this.emit("message", "Now playing [" + s.title + "](" + s.url + ") by [" + s.author.name + "](" + s.author.url + ")");
+    var author = (!s.artists) ? "[" + s.author.name + "](" + s.author.url + ")" : s.artists.map(a => `[${a.name}](${a.url})`).join(" & ");
+    this.emit("message", "Now playing [" + s.title + "](" + s.url + ") by " + author);
   }
 
   // functional core
@@ -251,12 +252,12 @@ class RevoltPlayer extends EventEmitter {
   destroy() {
     return this.connection.destroy();
   }
-  fetchResults(query, id) { // TODO: implement pagination of further results
+  fetchResults(query, id, provider="yt") { // TODO: implement pagination of further results
     return new Promise(res => {
-      let list = "Search results:\n\n";
-      this.workerJob("searchResults", { query: query, resultCount: this.resultLimit }, () => {}).then((data) => {
+      let list = `Search results using **${(provider == "yt") ? "Youtube" : "YoutubeMusic"}**:\n\n`;
+      this.workerJob("searchResults", { query: query, provider: provider, resultCount: this.resultLimit }, () => {}).then((data) => {
         data.data.forEach((v, i) => {
-          list += `${i + 1}. [${v.title}](${v.url}) - ${v.duration.timestamp}\n`;
+          list += `${i + 1}. [${v.title}](${v.url}) - ${(typeof v.duration === "object") ? v.duration.timestamp : "Unknown length"}\n`;
         });
         list += "\nSend the number of the result you'd like to play here in this channel. Example: `2`\nTo cancel this process, just send an 'x'!";
         this.searches.set(id, data.data);

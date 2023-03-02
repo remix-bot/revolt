@@ -97,6 +97,33 @@ class RevoltPlayer extends EventEmitter {
     if (!top) return this.data.queue.push(data);
     return this.data.queue.unshift(data);
   }
+  prettifyMS(milliseconds) {
+    const roundTowardsZero = milliseconds > 0 ? Math.floor : Math.ceil;
+
+  	const parsed = {
+  		days: roundTowardsZero(milliseconds / 86400000),
+  		hours: roundTowardsZero(milliseconds / 3600000) % 24,
+  		minutes: roundTowardsZero(milliseconds / 60000) % 60,
+  		seconds: roundTowardsZero(milliseconds / 1000) % 60,
+  		milliseconds: roundTowardsZero(milliseconds) % 1000,
+  		microseconds: roundTowardsZero(milliseconds * 1000) % 1000,
+  		nanoseconds: roundTowardsZero(milliseconds * 1e6) % 1000
+  	};
+
+    const units = {
+      days: "d",
+      hours: "h",
+      minutes: "m",
+      seconds: "s"
+    }
+
+    var result = "";
+    for (let k in parsed) {
+      if (!parsed[k] || !units[k]) continue;
+      result += parsed[k] + ":";
+    }
+    return result.slice(0, result.length - 1).trim();
+  }
 
   // music controls
   shuffle() {
@@ -129,8 +156,8 @@ class RevoltPlayer extends EventEmitter {
 
   // utility commands
   getVidName(vid, code=false) {
-    if (code) return vid.title + " (" + vid.duration.timestamp + ")" + ((vid.url) ? " - " + vid.url : "");
-    return "[" + vid.title + " (" + vid.duration.timestamp + ")" + "]" + ((vid.url) ? "(" + vid.url + ")" : "");
+    if (code) return vid.title + " (" + this.getDuration(vid) + ")" + ((vid.url) ? " - " + vid.url : "");
+    return "[" + vid.title + " (" + this.getDuration(vid) + ")" + "]" + ((vid.url) ? "(" + vid.url + ")" : "");
   }
   msgChunking(msg) {
     let msgs = [[""]];
@@ -178,11 +205,21 @@ class RevoltPlayer extends EventEmitter {
     this.data.queue.splice(index, 1);
     return "Successfully removed **" + title + "** from the queue.";
   }
+  getDuration(duration) {
+    if (typeof duration === "object") {
+      return duration.timestamp;
+    } else {
+      return this.prettifyMS(duration);
+    }
+  }
+  getCurrentDuration() {
+    return this.getDuration(this.data.current.duration);
+  }
   async nowPlaying() {
     if (!this.data.current) return "There's nothing playing at the moment.";
     let loopqueue = (this.data.loop) ? "**enabled**" : "**disabled**";
     let songloop = (this.data.loopSong) ? "**enabled**" : "**disabled**";
-    return { msg: "Playing: **[" + this.data.current.title + "](" + this.data.current.url + ")** (" + this.data.current.duration.timestamp + ")" + "\n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop, image: await this.uploadThumbnail() };
+    return { msg: "Playing: **[" + this.data.current.title + "](" + this.data.current.url + ")** (" + this.getCurrentDuration() + ")" + "\n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop, image: await this.uploadThumbnail() };
   }
   uploadThumbnail() {
     return new Promise((res) => {
@@ -257,7 +294,7 @@ class RevoltPlayer extends EventEmitter {
       let list = `Search results using **${(provider == "yt") ? "Youtube" : "YoutubeMusic"}**:\n\n`;
       this.workerJob("searchResults", { query: query, provider: provider, resultCount: this.resultLimit }, () => {}).then((data) => {
         data.data.forEach((v, i) => {
-          list += `${i + 1}. [${v.title}](${v.url}) - ${(typeof v.duration === "object") ? v.duration.timestamp : "Unknown length"}\n`;
+          list += `${i + 1}. [${v.title}](${v.url}) - ${this.getDuration(v.duration)}\n`;
         });
         list += "\nSend the number of the result you'd like to play here in this channel. Example: `2`\nTo cancel this process, just send an 'x'!";
         this.searches.set(id, data.data);

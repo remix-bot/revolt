@@ -62,20 +62,14 @@ class YTUtils extends EventEmitter {
       case "ytm":
         await this.init();
         // TODO: add support for albums, playlists, artists and videos
-        // TODO: improve above by editing youtube search
+        // TODO: improve above by editing youtube search package to include all
         var results = (await this.api.search(query, "song")).content;
         results = results.map(result => {
           let r = {...result};
           r.title = result.name
           r.url = `https://music.youtube.com/watch?v=${result.videoId}`;
-          //console.log(Array.from(result.thumbnails), result);
           r.thumbnail = Array.from(result.thumbnails).sort((a, b) => b.width - a.width)[0].url;
-          r.artists = [];
-          for (let i = 0; i < result.artist.length; i++) {
-            let a = result.artist[i];
-            a.url = `https://music.youtube.com/channel/${a.browseId}`
-            r.artists[i] = a;
-          }
+          r.artists = ((Array.isArray(result.artist)) ?Array.from(result.artist) : [result.artist]).map(a => (a.url = `https://music.youtube.com/channel/${a.browseId}`, a))
           return r;
         }).slice(0, Math.min(limit, results.length));
         return {
@@ -85,6 +79,7 @@ class YTUtils extends EventEmitter {
   }
 
   async getPlaylistData(playlist, query) {
+    // TODO: add youtube music playlist loading
     this.emit("message", "Loading playlist items... (This may take a while)");
     var videos;
     try {

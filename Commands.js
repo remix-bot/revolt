@@ -125,12 +125,14 @@ class Option {
 
     this.type = type;
     this.tError = null;
+    this.aliases = [null];
     this.choices = []; // only for choice options
 
     return this;
   }
   setName(n) {
     this.name = n;
+    this.aliases[0] = n;
     return this;
   }
   setDescription(d) {
@@ -143,6 +145,10 @@ class Option {
   }
   setId(id) {
     this.id = id;
+    return this;
+  }
+  addFlagAliases(...a) {
+    this.aliases.push(...a);
     return this;
   }
   addChoice(c) {
@@ -237,6 +243,8 @@ class CommandHandler extends EventEmitter {
 
   paginateHelp = false;
   paginationHandler = null;
+
+  invalidFlagError = "Invalid flag `$invalidFlag`. It doesn't match any options on this command.\n`$previousCmd $invalidFlag`";
 
   constructor(client, prefix="!") {
     super();
@@ -456,28 +464,54 @@ class CommandHandler extends EventEmitter {
     // validate options
     let opts = [];
     let texts = [];
-    var exit = false;
-    cmd.options.forEach((o, i) => {
-      if (o.type == "text") return texts.push(o); // text options are processed last
-      i -= texts.length;
-      let valid = o.validateInput(args[i + 1], msg); // +1 excluding the command itself
-      if (!valid && (o.required || !o.empty(args[i + 1]))) {
-        let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, args[i + 1]).replace(/\$optionName/gi, o.name);
-        exit = true;
-        return this.replyHandler(e, msg);
+
+    const options = cmd.options.slice();
+    var usedArgumentCount = 0;
+    for (let i = 0, argIndex = 1; i < options.length; i++) { // TODO: Add quote wrapping for text options
+      const o = options[i];
+      if (o.type == "text") { texts.push(o); continue; } // text options are processed last
+      let valid = o.validateInput(args[argIndex], msg); // argIndex starts at 1 to exclude command itself
+      if (!valid && (o.required || !o.empty(args[argIndex]))) {
+        let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, args[argIndex]).replace(/\$optionName/gi, o.name);
+        if (!args[argIndex]) return this.replyHandler(e, msg);
+        if (!args[argIndex].startsWith("-")) return this.replyHandler(e, msg);
       }
-      previous += " " + args[i + 1];
+      if (args[argIndex].startsWith("-")) { // flags
+        const flagName = args[argIndex].slice(1);
+        const op = cmd.options.find(e => e.aliases.includes(flagName));
+        if (!op) return this.replyHandler(this.invalidFlagError.replace(/\$previousCmd/gi, previous).replace(/\$invalidFlag/gi, "-" + flagName), msg);
+        const idx = options.findIndex(e => e.id == op.id);
+        if (idx !== -1) options.splice(idx, 1);
+        previous += " " + args[argIndex];
+        const value = args[++argIndex];
+        argIndex++;
+        i--; // check current option next time
+        let valid = op.validateInput(value, msg);
+        if (!valid && (op.required || !op.empty(value))) {
+          let e = op.typeError.replace(/\$optionType/gi, op.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, value).replace(/\$optionName/gi, op.name);
+          return this.replyHandler(e, msg);
+        }
+        usedArgumentCount += 2;
+        previous += " " + value;
+        opts.push({
+          value: op.formatInput(value, msg),
+          name: op.name,
+          id: op.id
+        });
+        continue;
+      }
       opts.push({
-        value: o.formatInput(args[i + 1], msg),
+        value: o.formatInput(args[argIndex], msg),
         name: o.name,
         id: o.id
       });
-    });
-    if (exit) return; // exit if there was an error validating an option
+      previous += " " + args[argIndex];
+      argIndex++;
+      usedArgumentCount++;
+    }
     if (texts.length > 0) {
       let o = texts[0];
-      let os = cmd.options.length - texts.length;
-      let text = args.slice(os + 1).join(" ");
+      let text = args.slice(usedArgumentCount + 1).join(" ");
       if (o.required && !o.validateInput(text, msg)) {
         let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, text).replace(/\$optionName/gi, o.name);
         return this.replyHandler(e, msg);
@@ -564,6 +598,7 @@ class CommandHandler extends EventEmitter {
     return content;
   }
   genCommandHelp(cmd) { // TODO: add better indicator for optional parameters/subcommands/options
+    // TODO: make options work;
     let content = "# " + this.capitalize(cmd.name) + "\n";
     content += cmd.description + "\n\n";
     if (cmd.aliases.length > 1) {

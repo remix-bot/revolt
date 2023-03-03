@@ -23,7 +23,8 @@ module.exports = {
       o.setName("provider")
         .setDescription("The search result provider. (Youtube or Youtube Music)")
         .addChoices("yt", "ytm")
-        .setRequired(true))
+        .setRequired(true)
+        .addFlagAliases("p", "u", "s"))
     .addTextOption(o =>
       o.setName("query")
         .setDescription("The query to search for.")

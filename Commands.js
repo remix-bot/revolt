@@ -485,13 +485,7 @@ class CommandHandler extends EventEmitter {
     for (let i = 0, argIndex = 1; i < options.length; i++) {
       const o = options[i];
       if (o.type == "text") { texts.push(o); continue; } // text options are processed last
-      let valid = o.validateInput(args[argIndex], msg); // argIndex starts at 1 to exclude command itself
-      if (!valid && (o.required || !o.empty(args[argIndex]))) { // TODO: Add quote wrapping for text options in normal arguments
-        let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, args[argIndex]).replace(/\$optionName/gi, o.name);
-        if (!args[argIndex]) return this.replyHandler(e, msg);
-        if (!args[argIndex].startsWith("-")) return this.replyHandler(e, msg);
-      }
-      if (args[argIndex].startsWith("-")) { // flags
+      if ((args[argIndex] || "").startsWith("-")) { // flags
         const flagName = args[argIndex].slice(1);
         const op = cmd.options.find(e => e.aliases.includes(flagName));
         if (!op) return this.replyHandler(this.invalidFlagError.replace(/\$previousCmd/gi, previous).replace(/\$invalidFlag/gi, "-" + flagName), msg);
@@ -500,13 +494,11 @@ class CommandHandler extends EventEmitter {
         previous += " " + args[argIndex];
         var value = args[++argIndex];
         // text quote wrapping
-        if (value) {
-          if (value.startsWith('"') && (op.type == "string" || op.type == "text")) {
-            const data = collectArguments(argIndex, value, [value]);
-            if (!data) return this.textWrapError; // TODO: this
-            argIndex += data.index - argIndex;
-            value = data.args.join(" ").slice(1, data.args.join(" ").length - 1);
-          }
+        if ((value || "").startsWith('"') && (op.type == "string" || op.type == "text")) {
+          const data = collectArguments(argIndex, value, [value]);
+          if (!data) return this.textWrapError; // TODO: this
+          argIndex += data.index - argIndex;
+          value = data.args.join(" ").slice(1, data.args.join(" ").length - 1);
         }
         argIndex++;
         i--; // check current option next time
@@ -524,12 +516,26 @@ class CommandHandler extends EventEmitter {
         });
         continue;
       }
+      var value = args[argIndex];
+      if ((args[argIndex] || "").startsWith('"') && (o.type == "string" || o.type == "text")) {
+        const data = collectArguments(argIndex, args[argIndex], [args[argIndex]]);
+        if (!data) return this.textWrapError;
+        argIndex += data.index - argIndex;
+        value = data.args.join(" ");
+        value = value.slice(1, value.length - 1);
+      }
+      let valid = o.validateInput(value, msg); // argIndex starts at 1 to exclude command itself
+      if (!valid && (o.required || !o.empty(value))) {
+        let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, value).replace(/\$optionName/gi, o.name);
+        return this.replyHandler(e, msg);
+      }
+
       opts.push({
-        value: o.formatInput(args[argIndex], msg),
+        value: o.formatInput(value, msg),
         name: o.name,
         id: o.id
       });
-      previous += " " + args[argIndex];
+      previous += " " + value;
       argIndex++;
       usedArgumentCount++;
     }

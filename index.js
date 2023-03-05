@@ -1,4 +1,5 @@
 const { CommandHandler } = require("./Commands.js");
+const Uploader = require("revolt-uploader");
 const { Revoice } = require("revoice.js");
 const { Client } = require("revolt.js");
 const path = require("path");
@@ -30,6 +31,8 @@ class Remix {
     this.settingsMgr = new SettingsManager();
     this.settingsMgr.loadDefaultsSync("./storage/defaults.json");
 
+    this.uploader = new Uploader(this.client);
+
     this.stats = require("./storage/stats.json");
 
     this.client.on("ready", () => {
@@ -39,7 +42,7 @@ class Remix {
       let state = 0;
       let texts = config.presenceContents || ["Ping for prefix", "By RedTech | NoLogicAlan", "Servers: $serverCount"]
       setInterval(() => {
-          this.client.users.edit({
+        this.client.users.edit({
           status: {
             text: texts[state].replace(/\$serverCount/g, this.client.servers.size),
             presence: "Online"
@@ -133,6 +136,17 @@ class Remix {
     } else {
       this.client.login(config.login);
     }
+
+    Object.defineProperty(this.client, "allServers", {
+      get: function() {
+        var servers = [];
+        var iterator = this.servers.entries();
+        for (let v = iterator.next(); !v.done; v = iterator.next()) {
+          servers.push(v.value[1]);
+        };
+        return servers
+      }
+    })
 
     return this;
   }

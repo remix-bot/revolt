@@ -146,7 +146,7 @@ class Remix {
         };
         return servers
       }
-    })
+    });
 
     return this;
   }

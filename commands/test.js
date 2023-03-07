@@ -6,28 +6,15 @@ module.exports = {
     .setDescription("A test command used for various purposes.")
     .addRequirement(r =>
       r.setOwnerOnly(true)
+    ).addStringOption(o =>
+      o.setName("string")
+        .setRequired(true)
     ).addNumberOption(o =>
       o.setName("number")
         .setRequired(true)),
-  run: function(msg, data) {
-    /*const arrows = ["⬅️", "➡️"];
-    var page = data.get("number").value;
-    msg.reply({
-      content: this.paginate("test\ntest1\ntest2\ntest3\ntest4", 2, data.get("number").value).join("\n"),
-      interactions: {
-        restrict_reactions: true,
-        reactions: arrows
-      }
-    }, false).then(m => {
-      const oid = this.observeReactions(m, arrows, (e, ms) => {
-        let change = (e.emoji_id == arrows[0]) ? -1 : 1;
-        page += change;
-        const c = this.paginate("test\ntest1\ntest2\ntest3\ntest4", 2, page).join("\n");
-        if (!c) return page -= change;
-        ms.edit({ content: c });
-        //m.clearReactions();
-      });
-    })*/
-    this.pagination("This is a paginated list (page $currPage/$maxPage):\n\n$content", "test\ntest1\ntest2\ntest3\ntest4", msg)
+  run: async function(msg, data) {
+    msg.reply(this.em(data.get("string").value, msg), false);
+    let e = { embeds: [{ media: await this.uploader.uploadFile("./storage/test.jpg"), ...this.em(data.get("number").value, msg).embeds[0] }] };
+    msg.reply(e, false);
   }
 }

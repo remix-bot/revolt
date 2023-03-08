@@ -117,6 +117,9 @@ class CommandRequirement {
   }
 }
 class Option {
+  channelRegex = /^<#(?<id>[A-Z0-9]+)>$/;
+  idRegex = /^(?<id>[A-Z0-9]+)$/;
+
   constructor(type="string") {
     this.name = null;
     this.description = null;
@@ -152,6 +155,10 @@ class Option {
   }
   setId(id) {
     this.id = id;
+    return this;
+  }
+  setType(t) {
+    this.type = t;
     return this;
   }
   addFlagAliases(...a) {
@@ -193,10 +200,13 @@ class Option {
         // check if string is empty
         return !!i;
       case "channel":
-        const channelRegex = /^<#(?<id>[A-Z0-9]+)>$/;
-        const idRegex = /^(?<id>[A-Z0-9]+)$/;
+        return this.channelRegex.test(i) || this.idRegex.test(i) || message.channel.server.channels.some(c => c.name == i);
+      case "voiceChannel":
+        const results = this.channelRegex.exec(i) ?? this.idRegex.exec(i);
 
-        return channelRegex.test(i) || idRegex.test(i) || message.channel.server.channels.some(c => c.name == i);
+        const channel = message.channel.server.channels.find(c => c.name == i);
+        const cObj = (results) ? message.channel.server.channels.find(c => c._id == results.groups["id"]) : (channel) ? channel._id : null;
+        return (cObj) ? cObj.channel_type === "VoiceChannel" : null;
       // TODO: Add roles
     }
   }
@@ -219,6 +229,11 @@ class Option {
 
         const channel = msg.channel.server.channels.find(c => c.name == i);
         return (results) ? results.groups["id"] : (channel) ? channel._id : null;
+      case "voiceChannel":
+        const r = this.channelRegex.exec(i) ?? this.idRegex.exec(i);
+
+        const c = msg.channel.server.channels.find(c => c.name == i && c.channel_type == "VoiceChannel");
+        return (r) ? r.groups["id"] : (c) ? c._id : null;
     }
   }
   get typeError() {
@@ -230,7 +245,7 @@ class Option {
         e += "\nSchematic: `$previousCmd <$optionType>`";
         return e;
       case "channel":
-        return "Invalid value '$currValue'. The option `$optionName` has to be a channel mention or id.\nSchematic: `$previousCmd <$optionType>`";
+        return "Invalid value '$currValue'. The option `$optionName` has to be a channel mention, id, or name (capitalisation matters!). You can specify channel names with multiple words using quotes - \"Channel Name\"\n\nSchematic: `$previousCmd <$optionType>`";
       default:
         return "Invalid value '$currValue'. The option `$optionName` has to be of type `$optionType`.\nSchematic: `$previousCmd <$optionType>`";;
     }
@@ -494,7 +509,7 @@ class CommandHandler extends EventEmitter {
         previous += " " + args[argIndex];
         var value = args[++argIndex];
         // text quote wrapping
-        if ((value || "").startsWith('"') && (op.type == "string" || op.type == "text")) {
+        if ((value || "").startsWith('"') && (["string", "text", "channel"].includes(op.type))) {
           const data = collectArguments(argIndex, value, [value]);
           if (!data) return this.textWrapError; // TODO: this
           argIndex += data.index - argIndex;
@@ -517,7 +532,7 @@ class CommandHandler extends EventEmitter {
         continue;
       }
       var value = args[argIndex];
-      if ((args[argIndex] || "").startsWith('"') && (o.type == "string" || o.type == "text")) {
+      if ((args[argIndex] || "").startsWith('"') && (["string", "text", "channel"].includes(o.type))) {
         const data = collectArguments(argIndex, args[argIndex], [args[argIndex]]);
         if (!data) return this.textWrapError;
         argIndex += data.index - argIndex;

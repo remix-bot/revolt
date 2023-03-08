@@ -167,8 +167,8 @@ class Remix {
               m.reply(this.em("Cancelled!", m), false);
               return res(false);
             }
-            if (!this.handler.validateString(m.content, m, "channel")) return m.reply(this.em("Invalid channel. Please try again! (`x` to cancel)", m), false);
-            const channel = this.handler.formatString(m.content, m, "channel");
+            if (!this.handler.validateString(m.content, m, "voiceChannel")) return m.reply(this.em("Invalid channel. Please try again and check capitalisation! (`x` to cancel)", m), false);
+            const channel = this.handler.formatString(m.content, m, "voiceChannel");
             this.unobserveUser(observer);
             this.joinChannel(m, channel, () => {
               res(channel);

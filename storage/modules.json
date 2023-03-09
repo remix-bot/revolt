@@ -1,0 +1,7 @@
+[
+  {
+    "name": "wb-dashboard",
+    "index": "./dashboard/index.js",
+    "enabled": true
+  }
+]

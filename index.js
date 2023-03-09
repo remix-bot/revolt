@@ -21,6 +21,7 @@ class Remix {
     this.client = new Client();
     this.client.config = config;
     this.config = config;
+    this.modules = require("./storage/modules.json");
     this.spotifyConfig = config.spotify;
     this.announceSong = config.songAnnouncements;
     this.presenceInterval = config.presenceInterval || 7000;
@@ -32,6 +33,11 @@ class Remix {
     this.settingsMgr.loadDefaultsSync("./storage/defaults.json");
 
     this.uploader = new Uploader(this.client);
+
+    this.loadedModules = new Map();
+    this.modules.forEach(m => {
+      if (m.enabled) this.loadedModules.set(m.name, require(m.index))
+    });
 
     this.stats = require("./storage/stats.json");
 

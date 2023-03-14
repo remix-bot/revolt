@@ -242,8 +242,6 @@ class RevoltPlayer extends EventEmitter {
     if (!connection) return "Not connected!";
     if (!connection.media) return "There's nothing playing at the moment...";
   
-    if (isNaN(v) || v < 0 || v > 1) return "Invalid volume value. Please enter a value between 0 and 1.";
-    
     this.connection.preferredVolume = v;
     connection.media.setVolume(v);
     
@@ -282,20 +280,25 @@ class RevoltPlayer extends EventEmitter {
     if (this.connection.preferredVolume) connection.media.setVolume(this.connection.preferredVolume);
     this.announceSong(this.data.current);
   }
-  async leave() {
-    try {
-      if (!this.connection) return false;
-      if (this.connection.state === Revoice.State.OFFLINE) return false;
-      
-      await this.connection.disconnect();
-      this.voice.connections.delete(this.connection.channelId);
-      this.data.current = null;
-      this.data.queue = [];
-      return true;
-    } catch (error) {
-      console.error(error);
+  leave() {
+    if (!this.connection || !Revoice || !Revoice.State) {
       return false;
     }
+    
+    try {
+      if (this.connection.state !== Revoice.State.OFFLINE) {
+        this.connection.state = Revoice.State.OFFLINE;
+        this.leaving = true;
+        this.connection.leave();
+        this.voice.connections.delete(this.connection.channelId);
+        this.data.current = null;
+        this.data.queue = [];
+      }
+    } catch (error) {
+      return false;
+    }
+    
+    return true;
   }  
   destroy() {
     return this.connection.destroy();

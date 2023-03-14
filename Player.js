@@ -236,23 +236,18 @@ class RevoltPlayer extends EventEmitter {
     });
   }
   setVolume(v) {
-    if (!this.voice || !this.connection) {
-      return "Not connected to a voice channel.";
-    }
+    if (!this.voice || !this.connection) return "Not connected to a voice channel.";
     
     const connection = this.voice.getVoiceConnection(this.connection.channelId);
-    if (!connection?.media) {
-      return "There's nothing playing at the moment...";
-    }
+    if (!connection) return "Not connected!";
+    if (!connection.media) return "There's nothing playing at the moment...";
   
-    if (isNaN(v) || v < 0 || v > 1) {
-      return "Invalid volume value. Please enter a value between 0 and 1.";
-    }
+    if (isNaN(v) || v < 0 || v > 1) return "Invalid volume value. Please enter a value between 0 and 1.";
     
     this.connection.preferredVolume = v;
     connection.media.setVolume(v);
     
-    return "Volume changed.";
+    return "Volume changed to `" + v + "%`.";
   }  
   announceSong(s) {
     var author = (!s.artists) ? "[" + s.author.name + "](" + s.author.url + ")" : s.artists.map(a => `[${a.name}](${a.url})`).join(" & ");
@@ -289,13 +284,10 @@ class RevoltPlayer extends EventEmitter {
   }
   async leave() {
     try {
-      if (!this.connection) {
-        return false;
-      }
-      if (this.connection.state === Revoice.State.OFFLINE) {
-        return false;
-      }
-      await this.connection?.disconnect();
+      if (!this.connection) return false;
+      if (this.connection.state === Revoice.State.OFFLINE) return false;
+      
+      await this.connection.disconnect();
       this.voice.connections.delete(this.connection.channelId);
       this.data.current = null;
       this.data.queue = [];

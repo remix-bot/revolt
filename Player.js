@@ -247,7 +247,7 @@ class RevoltPlayer extends EventEmitter {
     this.connection.preferredVolume = v;
     connection.media.setVolume(v);
     
-    return "Volume changed to `" + v + "%`.";
+    return "Volume changed to `" + (v * 100) + "%`.";
   }  
   announceSong(s) {
     var author = (!s.artists) ? "[" + s.author.name + "](" + s.author.url + ")" : s.artists.map(a => `[${a.name}](${a.url})`).join(" & ");

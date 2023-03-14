@@ -236,12 +236,24 @@ class RevoltPlayer extends EventEmitter {
     });
   }
   setVolume(v) {
+    if (!this.voice || !this.connection) {
+      return "Not connected to a voice channel.";
+    }
+    
     const connection = this.voice.getVoiceConnection(this.connection.channelId);
-    if (!connection.media) return "There's nothing playing at the moment...";
+    if (!connection?.media) {
+      return "There's nothing playing at the moment...";
+    }
+  
+    if (isNaN(v) || v < 0 || v > 1) {
+      return "Invalid volume value. Please enter a value between 0 and 1.";
+    }
+    
     this.connection.preferredVolume = v;
     connection.media.setVolume(v);
+    
     return "Volume changed.";
-  }
+  }  
   announceSong(s) {
     var author = (!s.artists) ? "[" + s.author.name + "](" + s.author.url + ")" : s.artists.map(a => `[${a.name}](${a.url})`).join(" & ");
     this.emit("message", "Now playing [" + s.title + "](" + s.url + ") by " + author);
@@ -275,17 +287,24 @@ class RevoltPlayer extends EventEmitter {
     if (this.connection.preferredVolume) connection.media.setVolume(this.connection.preferredVolume);
     this.announceSong(this.data.current);
   }
-  leave() {
-    if (!this.connection) return false;
-    if (this.connection.state === Revoice.State.OFFLINE) return false;
-    this.connection.state = Revoice.State.OFFLINE;
-    this.leaving = true;
-    this.connection.leave();
-    this.voice.connections.delete(this.connection.channelId);
-    this.data.current = null;
-    this.data.queue = [];
-    return true;
-  }
+  async leave() {
+    try {
+      if (!this.connection) {
+        return false;
+      }
+      if (this.connection.state === Revoice.State.OFFLINE) {
+        return false;
+      }
+      await this.connection?.disconnect();
+      this.voice.connections.delete(this.connection.channelId);
+      this.data.current = null;
+      this.data.queue = [];
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }  
   destroy() {
     return this.connection.destroy();
   }

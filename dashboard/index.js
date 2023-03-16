@@ -5,9 +5,11 @@ const server = http.createServer(app);
 const path = require("path");
 
 class Dashboard {
+  port;
   constructor(client) {
-    server.listen(client.config.webPort || 3000, () => {
-      console.log("Listening on port 3000");
+    this.port = client.config.webPort || 3000;
+    server.listen(this.port, () => {
+      console.log("Listening on port " + this.port);
     });
 
     app.use(express.static(path.join(__dirname + "/static")))

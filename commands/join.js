@@ -48,7 +48,7 @@ module.exports = {
     .setId("join")
     .addChannelOption((option) =>
       option.setName("Channel ID")
-        .setType("voice")
+        .setType("voiceChannel")
         .setDescription("Specify the channel, the bot should join. This is necessary due to (current) Revolt limitations.")
         .setRequired(true)
     ),

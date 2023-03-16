@@ -10,6 +10,6 @@ module.exports = {
     const version = ":building_construction: Build: [`" + this.comHash + "` :link:](" + this.comLink + ")";
     const time = this.prettifyMS(Math.round(process.uptime()) * 1000);
     const footer = this.config.customStatsFooter || "";
-    message.channel.sendMessage(this.em(`__**Stats:**__\n\n:open_file_folder: Server Count: \`${this.client.servers.size}\`\n:mega: Player Count: \`${this.revoice.connections.size}\`\n🏓 Ping: \`${this.client.websocket.ping}ms\`\n⌚️ Uptime: \`${time}\`\n${reason}${version}${footer}`, message));
+    message.channel.sendMessage(this.em(`__**Stats:**__\n\n:open_file_folder: Server Count: \`${this.client.servers.size}\`\n:adult: User Count: \`${this.client.users.size}\`\n:mega: Player Count: \`${this.revoice.connections.size}\`\n🏓 Ping: \`${this.client.websocket.ping}ms\`\n⌚️ Uptime: \`${time}\`\n${reason}${version}${footer}`, message));
   }
 }

@@ -205,7 +205,7 @@ class Option {
         const results = this.channelRegex.exec(i) ?? this.idRegex.exec(i);
 
         const channel = message.channel.server.channels.find(c => c.name == i);
-        const cObj = (results) ? message.channel.server.channels.find(c => c._id == results.groups["id"]) : (channel) ? channel._id : null;
+        const cObj = (results) ? message.channel.server.channels.find(c => c._id == results.groups["id"]) : (channel) ? channel : null;
         return (cObj) ? cObj.channel_type === "VoiceChannel" : null;
       // TODO: Add roles
     }

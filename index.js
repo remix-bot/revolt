@@ -5,7 +5,7 @@ const { Client } = require("revolt.js");
 const path = require("path");
 const fs = require("fs");
 const { SettingsManager } = require("./settings/Settings.js");
-if (!process.execArgv.includes("--inspect")) require('console-stamp')(console, '[HH:MM:ss.l]');
+if (!process.execArgv.includes("--inspect")) require('console-stamp')(console, 'HH:MM:ss.l');
 
 let config;
 if (fs.existsSync("./config.json")) {
@@ -34,10 +34,15 @@ class Remix {
 
     this.uploader = new Uploader(this.client);
 
+    console.log("Starting");
+    console.log("Loading optional modules...");
     this.loadedModules = new Map();
     this.modules.forEach(m => {
-      if (m.enabled) this.loadedModules.set(m.name, require(m.index))
+      if (!m.enabled) return;
+      const mod = { instance: new (require(m.index))(this), c: require(m.index) };
+      this.loadedModules.set(m.name, mod);
     });
+    console.log(`Loaded ${this.loadedModules.size} module(s): ${Array.from(this.loadedModules).map(m=>m[0]).join(", ")}`)
 
     this.stats = require("./storage/stats.json");
 
@@ -56,6 +61,8 @@ class Remix {
         });
         if (state == texts.length - 1) {state = 0} else {state++}
       }, this.presenceInterval);
+      this.fetchUsers();
+      setInterval(() => this.fetchUsers, 60 * 1000 * 30);
     });
     this.client.on("message", (m) => {
       if (!this.observedUsers.has(m.author_id + ";" + m.channel_id)) return;
@@ -70,6 +77,7 @@ class Remix {
       observer.cb(event, message);
     });
 
+    console.log("Loading command files...");
     this.handler = new CommandHandler(this.client, config.prefix);
     this.handler.setReplyHandler((t, msg) => {
       msg.reply(this.em(t, msg), false);
@@ -108,6 +116,7 @@ class Remix {
         this.runnables.get(data.command.uid).call(this, data.message, data);
       }
     });
+    console.log("Done!\n");
 
     if (process.argv[2] == "usage") {
       fs.writeFile("cmdUsage.md", this.handler.generateCommandOverviewMD(),()=>{ console.log("Done!"); process.exit(1) });
@@ -155,6 +164,15 @@ class Remix {
     });
 
     return this;
+  }
+  async fetchUsers() {
+    const promises = [];
+    for (const server of this.client.servers) {
+      promises.push(server[1].fetchMembers());
+    }
+
+    await Promise.allSettled(promises);
+    console.log(this.client.users.size);
   }
   request(d) {
     switch(d.type) {

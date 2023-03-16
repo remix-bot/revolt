@@ -51,7 +51,9 @@ class Remix {
     });
     this.client.once("ready", () => {
       let state = 0;
-      let texts = config.presenceContents || ["Ping for prefix", "By RedTech | NoLogicAlan", "Servers: $serverCount"]
+      let def = ["Ping for prefix", "By RedTech | NoLogicAlan", "Servers: $serverCount"];
+      let texts = config.presenceContents || def;
+      if (texts.length == 0) texts = def;
       setInterval(() => {
         this.client.users.edit({
           status: {

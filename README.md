@@ -37,7 +37,7 @@ Below is a table of all of Remix's commands.
 |remove|Remove a specific song from the queue.|%remove 'index: number'|remove|
 |resume|Resume the playback in your voice channel|%resume|resume|
 |search|Display the search results for a given query|%search 'query: text'|search|
-|settings|Change/Get settings in the current server.|settings <set \| get>|settings, s|
+|settings|Change/Get settings in the current server.|%settings <set \| get>|settings, s|
 |shuffle|Re-orders the queue randomly.|%shuffle|shuffle|
 |skip|Skip the current playing song.|%skip|skip|
 |stats|Display stats about the bot like the uptime.|%stats|stats, info|

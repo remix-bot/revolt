@@ -236,12 +236,17 @@ class RevoltPlayer extends EventEmitter {
     });
   }
   setVolume(v) {
+    if (!this.voice || !this.connection) return "Not connected to a voice channel.";
+    
     const connection = this.voice.getVoiceConnection(this.connection.channelId);
+    if (!connection) return "Not connected!";
     if (!connection.media) return "There's nothing playing at the moment...";
+  
     this.connection.preferredVolume = v;
     connection.media.setVolume(v);
-    return "Volume changed.";
-  }
+    
+    return "Volume changed to `" + (v * 100) + "%`.";
+  }  
   announceSong(s) {
     var author = (!s.artists) ? "[" + s.author.name + "](" + s.author.url + ")" : s.artists.map(a => `[${a.name}](${a.url})`).join(" & ");
     this.emit("message", "Now playing [" + s.title + "](" + s.url + ") by " + author);
@@ -276,16 +281,25 @@ class RevoltPlayer extends EventEmitter {
     this.announceSong(this.data.current);
   }
   leave() {
-    if (!this.connection) return false;
-    if (this.connection.state === Revoice.State.OFFLINE) return false;
-    this.connection.state = Revoice.State.OFFLINE;
-    this.leaving = true;
-    this.connection.leave();
-    this.voice.connections.delete(this.connection.channelId);
-    this.data.current = null;
-    this.data.queue = [];
+    if (!this.connection || !Revoice || !Revoice.State) {
+      return false;
+    }
+    
+    try {
+      if (this.connection.state !== Revoice.State.OFFLINE) {
+        this.connection.state = Revoice.State.OFFLINE;
+        this.leaving = true;
+        this.connection.leave();
+        this.voice.connections.delete(this.connection.channelId);
+        this.data.current = null;
+        this.data.queue = [];
+      }
+    } catch (error) {
+      return false;
+    }
+    
     return true;
-  }
+  }  
   destroy() {
     return this.connection.destroy();
   }

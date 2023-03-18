@@ -1,19 +1,20 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const http = require('http');
-const server = http.createServer(app);
 const path = require("path");
 
-class Dashboard {
-  port;
-  constructor(client) {
-    this.port = client.config.webPort || 80;
-    server.listen(this.port, () => {
-      console.log("Listening on port " + this.port);
-    });
+// set view engine
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
-    app.use(express.static(path.join(__dirname + "/static")))
-  }
-}
+// static
+app.use(express.static(path.join(__dirname + "/static")))
 
-module.exports = Dashboard;
+// home page
+app.get("/", async (req, res) => {
+    res.render("index");
+});
+
+// connect
+app.listen(8080, () => {
+    console.log("Dashboard running on http://localhost:8080/");
+});

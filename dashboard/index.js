@@ -7,7 +7,7 @@ const path = require("path");
 class Dashboard {
   port;
   constructor(client) {
-    this.port = client.config.webPort || 3000;
+    this.port = client.config.webPort || 80;
     server.listen(this.port, () => {
       console.log("Listening on port " + this.port);
     });

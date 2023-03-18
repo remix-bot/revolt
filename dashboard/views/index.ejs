@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Remix is Revolt's first music bot. Play music from YouTube and other popular streaming services, create playlists, and customize the bot's settings and behavior.">
+    <meta name="keywords" content="Remix, Revolt, music bot, YouTube, playlists, commands, settings">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script>
+    <title>Remix - Official Website</title>
+</head>
+<style>
+    .floating { 
+        animation-name: floating;
+        animation-duration: 3s;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-in-out;
+    }
+    @keyframes floating {
+        0% { transform: translate(0,  0px); }
+        50%  { transform: translate(0, 15px); }
+        100%   { transform: translate(0, -0px); }   
+    }
+</style>
+<body class="bg-gray-900">
+    <!-- navbar -->
+    <%- include("components/navbar"); -%>
+
+    <!-- main -->
+    <section class="mt-32">
+        <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-12">
+            <img src="assets/icon.png" class="h-44 sm:h-44 rounded-full shadow mx-auto mb-4" alt="Remix Logo" />
+            <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+                Remix
+            </h1>
+            <p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
+                Revolt's first music bot
+            </p>
+            <div class="flex flex-col mb-8 lg:mb-16 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
+                <a href="#" class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-pink-600 hover:bg-pink-700 focus:ring-4 focus:ring-pink-300 dark:focus:ring-pink-900">
+                    Invite Remix
+                </a>
+                <a href="#" class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                    Get Started
+                    <svg class="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                </a>  
+            </div>
+        </div>
+        <!-- floaty arrow thingy -->
+        <div class="flex flex-col justify-center items-center text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 floating">
+                <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" clip-rule="evenodd" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- about -->
+    <section id="about" class="bg-white dark:bg-gray-900 mt-96">
+        <div class="py-8 px-4 max-w-full lg:py-16 lg:px-6">
+            <div class="max-w-full text-gray-500 sm:text-lg dark:text-gray-400 text-center">
+                <h2 class="mb-4 text-4xl tracking-tight font-bold text-gray-900 dark:text-white">
+                    About
+                </h2>
+                <p class="mb-4 font-normal">
+                    An advanced music bot that supports YouTube, Spotify, and SoundCloud - All the power just a click away ;)
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- divider -->
+    <div class="flex justify-center mt-24 mb-24">
+        <hr class="w-96 border-b border-gray-500">
+    </div>
+
+    <!-- projects -->
+    <section id="projects" class="bg-white dark:bg-gray-900">
+        <div class="py-8 px-4 max-w-full lg:py-16 lg:px-6">
+            <div class="max-w-full justify-center text-gray-500 sm:text-lg dark:text-gray-400">
+                <h2 class="mb-4 text-4xl text-center tracking-tight font-bold text-gray-900 dark:text-white">
+                    Projects
+                </h2>
+                <div class="flex justify-center">
+                    <p class="mb-4 font-normal">
+                        <div class="w-64 justify-center rounded shadow dark:bg-gray-800 dark:border-gray-700">
+                            <a href="#">
+                                <img class="rounded-t-lg" src="assets/icon.png" />
+                            </a>
+                            <div class="p-5">
+                                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Remix</h5>
+                                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    An advanced music bot that supports Youtube, Spotify, and Soundcloud - All the power just a click away ;)
+                                </p>
+                                <a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-pink-600 rounded-lg hover:bg-pink-700 focus:ring-4 focus:outline-none focus:ring-pink-300 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800">
+                                    Click me!
+                                    <svg aria-hidden="true" class="w-4 h-4 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- footer -->
+    <%- include("components/footer"); -%>
+</body>
+</html>

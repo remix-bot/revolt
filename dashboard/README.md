@@ -4,4 +4,4 @@ Control Remix through a web interface and set server settings and similar.
 
 Installation instructions will follow soon:tm:
 
-Credits for Website design: NoLogicAlan
+Credits for Website design: NoLogicAlan, ophx

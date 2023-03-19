@@ -1,21 +1,22 @@
 const express = require("express");
 const app = express();
 const path = require("path");
+const Remix = require("../index.js");
 
-class Dashboard {
-  port;
-  constructor(client) {
-    this.port = client.config.webPort || 8080;
-    app.set("view engine", "ejs");
-    app.set("views", path.join(__dirname, "views"));
-    app.use(express.static(path.join(__dirname + "/views")));
-    app.get("/", async (req, res) => {
-      res.render("index");
-    });
-    app.listen(this.port, () => {
-      console.log(`Dashboard running on http://localhost:${this.port}/`);
-    });
-  }
-}
+// set view engine
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
-module.exports = Dashboard;
+// static
+app.use(express.static(path.join(__dirname + "/static")))
+
+// home page
+app.get("/", async (req, res) => {
+    res.render("index");
+    console.log(Remix.client.servers.count + " servers.");
+});
+
+// connect
+app.listen(8080, () => {
+    console.log("Dashboard running on http://localhost:8080/");
+});

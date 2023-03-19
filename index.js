@@ -385,5 +385,3 @@ process.on("uncaughtExceptionMonitor", (err, origin) => {
   console.log(" [Error_Handling] :: Uncaught Exception/Catch (MONITOR)");
   console.log(err, origin);
 });
-
-module.exports = Remix;

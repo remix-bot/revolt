@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description"
+          content="Remix is Revolt's first music bot. Play music from YouTube and other popular streaming services, create playlists, and customize the bot's settings and behavior.">
+      <meta name="keywords" content="Remix, Revolt, music bot, YouTube, playlists, commands, settings">
+      <link rel="icon" href="/assets/icon.png" alt="Remix icon">
+      <link rel="stylesheet" href="/styles/style.css" />
+      <script src="https://cdn.tailwindcss.com"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script>
+      <title>Remix - Official Website | Login</title>
+  </head>
+  <body>
+    <%- include("components/navbar"); -%>
+    <section class="content">
+      <h1>WIP</h1>
+
+      <div>
+        <input type="text" placeholder="User ID" />
+        <button onclick="submit(this.parentElement.children[0].value)">Login</button>
+      </div>
+    </section>
+    <%- include("components/footer"); -%>
+    <script>
+    function submit(id) {
+      console.log(id);
+    }
+    </script>
+  </body>
+</html>

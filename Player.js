@@ -127,7 +127,7 @@ class RevoltPlayer extends EventEmitter {
 
   // music controls
   shuffle() {
-    if (this.data.queue.length == 0) return "The is nothing to shuffle in the queue.";
+    if (this.data.queue.length == 0) return "There is nothing to shuffle in the queue.";
     this.data.queue = this.shuffleArr(this.data.queue);
     return;
   }
@@ -237,16 +237,16 @@ class RevoltPlayer extends EventEmitter {
   }
   setVolume(v) {
     if (!this.voice || !this.connection) return "Not connected to a voice channel.";
-    
+
     const connection = this.voice.getVoiceConnection(this.connection.channelId);
     if (!connection) return "Not connected!";
     if (!connection.media) return "There's nothing playing at the moment...";
-  
+
     this.connection.preferredVolume = v;
     connection.media.setVolume(v);
-    
+
     return "Volume changed to `" + (v * 100) + "%`.";
-  }  
+  }
   announceSong(s) {
     var author = (!s.artists) ? "[" + s.author.name + "](" + s.author.url + ")" : s.artists.map(a => `[${a.name}](${a.url})`).join(" & ");
     this.emit("message", "Now playing [" + s.title + "](" + s.url + ") by " + author);
@@ -284,7 +284,7 @@ class RevoltPlayer extends EventEmitter {
     if (!this.connection || !Revoice || !Revoice.State) {
       return false;
     }
-    
+
     try {
       if (this.connection.state !== Revoice.State.OFFLINE) {
         this.connection.state = Revoice.State.OFFLINE;
@@ -297,9 +297,9 @@ class RevoltPlayer extends EventEmitter {
     } catch (error) {
       return false;
     }
-    
+
     return true;
-  }  
+  }
   destroy() {
     return this.connection.destroy();
   }

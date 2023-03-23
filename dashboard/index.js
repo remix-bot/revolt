@@ -1,20 +1,22 @@
 const express = require("express");
-const app = express();
 const path = require("path");
 
 class Dashboard {
   port;
+  app = express();
   constructor(client) {
-    this.port = client.config.webPort || 8080;
-    app.set("view engine", "ejs");
-    app.set("views", path.join(__dirname, "views"));
-    app.use(express.static(path.join(__dirname + "/views")));
-    app.get("/", async (req, res) => {
-      res.render("index");
+    this.port = client.config.webPort || 3000;
+    this.app.set("view engine", "ejs");
+    this.app.set("views", [path.join(__dirname, "views")]);
+    this.app.use(express.static(path.join(__dirname + "/views")));
+    this.app.get("/", async (_req, res) => {
+      res.render("index.ejs");
     });
-    app.listen(this.port, () => {
+    this.app.get("/login", (_req, res) => {
+      res.render("login/index.ejs")
+    })
+    this.app.listen(this.port, () => {
       console.log(`Dashboard running on http://localhost:${this.port}/`);
-      console.log(this.client.users.size);
     });
   }
 }

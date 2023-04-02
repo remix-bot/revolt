@@ -284,8 +284,10 @@ class Remix {
         page += change;
         const c = paginated[page].join("\n");
         ms.edit(messageFormatter(c));
+        clearTimeout(currTime);
+        currTime = setTimeout(() => { finish() }, 60*1000);
       });
-      setTimeout(() => {
+      const finish = () => {
         this.unobserveReactions(oid);
         m.edit({
           content: "Session Closed",
@@ -293,7 +295,8 @@ class Remix {
             this.embedify(lastEmbed.description + "\nSession closed - Changing pages **won't work** from here.", "red")
           ]
         });
-      }, 60*1000);
+      }
+      var currTime = setTimeout(() => { finish() }, 60*1000);
     })
   }
 

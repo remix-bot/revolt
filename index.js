@@ -63,6 +63,7 @@ class Remix {
         });
         if (state == texts.length - 1) {state = 0} else {state++}
       }, this.presenceInterval);
+      if (!this.config.fetchUsers) return;
       this.fetchUsers();
       setInterval(() => this.fetchUsers, 60 * 1000 * 30);
     });

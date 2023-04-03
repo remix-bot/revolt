@@ -84,6 +84,10 @@ class YTUtils extends EventEmitter {
     var videos;
     try {
       videos = await this.fetchPlaylist(playlist);
+      videos = videos.map((v) => {
+        v.url = "https://music.youtube.com/watch?v=" + v.videoId;
+        return v;
+      });
     } catch (e) {
       this.error(e);
       this.emit("message", "Failed to load playlist. Maybe it's private?");

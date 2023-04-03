@@ -259,6 +259,7 @@ class Remix {
     return pages;
   }
   pagination(form, content, message, maxLinesPerPage=2) {
+    if (!message.channel.server.member.hasPermission(message.channel, "React")) return message.reply({ content: " ", embeds: [this.embedify("I need reaction permissions to work. Please contact a server administrator to address this.")] }, true);
     const arrows = [ "⬅️", "➡️" ];
     var page = 0;
     const paginated = this.pages(content, maxLinesPerPage);

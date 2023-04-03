@@ -22,6 +22,8 @@ class RevoltPlayer extends EventEmitter {
     this.spotify = new Spotify(opts.spotify);
     this.spotifyConfig = opts.spotify;
 
+    this.gClient = opts.geniusClient || new (require("genius-lyrics")).Client();
+
     this.port = 3050 + (opts.portOffset || 0);
     this.updateHandler = (content, msg) => {
       msg.edit({ content: content });
@@ -185,6 +187,11 @@ class RevoltPlayer extends EventEmitter {
   }
   list() {
     return this.listQueue();
+  }
+  async lyrics() {
+    if (!this.data.current) return [];
+    const results = await this.gClient.songs.search(this.data.current.title);
+    return await results[0].lyrics();
   }
   loop(choice) {
     if (!["song", "queue"].includes(choice)) return "'" + choice + "' is not a valid option. Valid are: `song`, `queue`";

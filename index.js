@@ -103,6 +103,7 @@ class Remix {
     const dir = path.join(__dirname, "commands");
     const files = fs.readdirSync(dir).filter(f => f.endsWith(".js"));
     this.runnables = new Map();
+    this.commandFiles = new Map();
 
     // load command files
     files.forEach(commandFile => {
@@ -111,6 +112,7 @@ class Remix {
       const builder = (typeof cData.command == "function") ? cData.command.call(this) : cData.command;
       if (cData.export) this[cData.export.name] = cData.export.object;
       this.handler.addCommand(builder);
+      this.commandFiles.set(builder.uid, file);
       if (cData.run) {
         this.runnables.set(builder.uid, cData.run);
         builder.subcommands.forEach(sub => {

@@ -608,6 +608,16 @@ class CommandHandler extends EventEmitter {
 
     return this.commands;
   }
+  removeCommand(builder) {
+    builder.aliases.forEach(a => {
+      const idx = this.commandNames.findIndex(n => n == a);
+      if (idx === -1) return;
+      this.commandNames.splice(idx, 1);
+    });
+    const idx = this.commands.findIndex(c => c.uid == builder.uid);
+    if (idx == -1) return;
+    this.commands.splice(idx, 1);
+  }
   getHelpPages(cmdLimit=5) {
     return Math.ceil(this.commands.length / cmdLimit);
   }

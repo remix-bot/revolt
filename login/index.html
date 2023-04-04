@@ -4,6 +4,51 @@
     <section>
       <h1>WIP</h1>
       <a href="../dashboard/index.html" class="main-btn">Test Dashboard </a>
+
+      <div>
+        <input type="text" placeholder="Revold user ID"></input>
+        <button onclick="start(this)">Submit</button>
+      </div>
+      <div id="success" style="display: none">
+        <p>
+          Login process started! In a server that has Remix, run <code id="command"></code>! (You may need to edit the prefix depending on the server)
+        </p>
+        <button onclick="check(this)">
+          Check for verification
+        </button>
+      </div>
     </section>
+    <script>
+    function check(btn) {
+      btn.disabled = true;
+      fetch("/api/login/verify").then(res => res.json()).then(res => {
+        if (res) window.location.href = "/dashboard";
+      });
+    }
+    function start(btn) {
+      const input = btn.parentElement.children[0];
+      const container = btn.parentElement;
+      const uid = input.value;
+      btn.disabled = true;
+
+      fetch("/api/login", {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId: uid })
+      }).then(async res => {
+        btn.disabled = false;
+        const id = await res.json();
+        container.style.display = "none";
+        document.getElementById("command").innerText = "%login " + id;
+        document.getElementById("success").style.display = "block";
+      }).catch(e => {
+        console.error(e);
+        btn.disabled = false;
+      });
+    }
+    </script>
   </body>
 </html>

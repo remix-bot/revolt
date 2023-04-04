@@ -259,7 +259,12 @@ class Remix {
     return pages;
   }
   pagination(form, content, message, maxLinesPerPage=2) {
-    if (!message.channel.server.member.hasPermission(message.channel, "React")) return message.reply({ content: " ", embeds: [this.embedify("I need reaction permissions to work. Please contact a server administrator to address this.")] }, true);
+    if (!message.channel.havePermission("React")) {
+      if (!message.channel.havePermission("SendMessage")) return message.member.user.openDM().then(dm => {
+        dm.sendMessage({ content: " ", embeds: [this.embedify("I am unable to send messages in <#" + message.channel._id + ">. Please contact a server administrator and grant me the \"SendMessage\" permission.")]})
+      }).catch(() => {});
+      return message.reply({ content: " ", embeds: [this.embedify("I need reaction permissions to work. Please contact a server administrator to address this.")] }, true);
+    }
     const arrows = [ "⬅️", "➡️" ];
     var page = 0;
     const paginated = this.pages(content, maxLinesPerPage);

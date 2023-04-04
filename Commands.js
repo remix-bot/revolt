@@ -266,6 +266,8 @@ class CommandHandler extends EventEmitter {
   paginateHelp = false;
   paginationHandler = null;
 
+  requiredPermissions = ["SendMessage"];
+
   invalidFlagError = "Invalid flag `$invalidFlag`. It doesn't match any options on this command.\n`$previousCmd $invalidFlag`";
 
   constructor(client, prefix="!") {
@@ -298,6 +300,18 @@ class CommandHandler extends EventEmitter {
     if (!this.customPrefixes.has(guildId)) return this.prefix;
     return this.customPrefixes.get(guildId);
   }
+  checkPermissions(message) {
+    for (let i = 0; i < this.requiredPermissions.length; i++) {
+      let perm = this.requiredPermissions[i];
+      if (!message.channel.havePermission(perm)) {
+        message.member.user.openDM().then(dm => {
+          dm.sendMessage("Please grant me the `" + perm + "` permission in <#" + message.channel._id + "> or contact a server administrator. I am unable to operate without this.");
+        }).catch(() => {});
+        return false;
+      }
+    }
+    return true;
+  }
   messageHandler(msg) {
     if (!msg || !msg.content) return;
     if (!this.cachedGuilds.includes(msg.channel.server_id)) {
@@ -309,12 +323,14 @@ class CommandHandler extends EventEmitter {
     }
     if (msg.mention_ids) {
       if (msg.mention_ids.includes(this.client.user._id) && msg.content.trim().toUpperCase() == `<@${this.client.user._id}>`) {
+        if (!this.checkPermissions(msg)) return;
         return this.onPing(msg);
       }
     }
     const prefix = this.getPrefix(msg.channel.server_id);
     const ping = `<@${this.client.user._id}> `;
     if (!(msg.content.startsWith(prefix) || msg.content.startsWith(ping))) return;
+    if (!this.checkPermissions(msg)) return;
     const len = (msg.content.startsWith(prefix)) ? prefix.length : ping.length;
     const args = msg.content
       .slice(len)

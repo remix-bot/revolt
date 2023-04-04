@@ -1,4 +1,5 @@
 node_modules/
+storage/data
 config.json
 settings.json
 cmdUsage.md

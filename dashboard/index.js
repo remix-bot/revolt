@@ -78,6 +78,7 @@ class Dashboard {
   async login(uid, user) {
     const login = await this.db.get("login.tokens." + user._id);
     if (!login) return "Unknown user or invalid token!";
+    if (uid !== login.id) return "Wrong Token";
     if (Date.now() - 1000 * 60 * 60 * 6 > login.time) return "Login Expired";
 
     login.verified = true;

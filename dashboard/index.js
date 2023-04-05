@@ -4,13 +4,12 @@ const http = require('http');
 const server = http.createServer(app);
 const path = require("path");
 const session = require("express-session");
-
-const Josh = require('@joshdb/core');
-const JoshJSON = require('@joshdb/json');
+const mysql = require("mysql");
 
 class Dashboard {
   port;
   remix;
+  expiryTime = 1000 * 60 * 60 * 6; // 6 hours
   constructor(remix) {
     this.port = remix.config.webPort || 80;
     server.listen(this.port, () => {
@@ -18,18 +17,12 @@ class Dashboard {
     });
     this.remix = remix;
 
-    this.db = new Josh({
-      name: 'remix',
-      provider: JoshJSON,
-      providerOptions: {
-        dataDir: path.join(__dirname, "../storage/data")
-      },
+    this.db = mysql.createConnection({
+      ...this.remix.config.mysql
     });
-    this.db.defer.then(async () => {
-      console.log("Database connected. " + (await this.db.size) + " rows loaded.");
-      if (!(await this.db.has("login.tokens"))) {
-        this.db.set("login", { tokens: {} })
-      }
+    this.db.connect((err) => {
+      if (err) console.error("Mysql Error: ", err);
+      console.log("Database connected! ID: " + this.db.threadId);
     });
 
     app.use(express.json());
@@ -47,10 +40,11 @@ class Dashboard {
       req.session.user = user;
       req.session.token = id;
       res.send(JSON.stringify(id));
-      // TODO: security risk!
     });
     app.get("/api/login/verify", async (req, res) => {
-      res.send(JSON.stringify(!!(await this.verifySession(req.session))))
+      const v = !!(await this.verifySession(req.session));
+      if (v) req.session.verified = true;
+      res.send(JSON.stringify(v));
     });
 
     app.get("/dashboard", async (req, res) => {
@@ -66,33 +60,41 @@ class Dashboard {
     };
     return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
   }
-  async verifySession(session) {
-    if (!session.user || !session.token) return false;
-    const login = await this.db.get("login.tokens." + session.user);
-    if (!login) return false;
-    return login.verified.some(t => t.id == session.token);
+  verifySession(session) {
+    return new Promise(async res => {
+      if (session.verified) return res(true);
+      if (!session.user || !session.token) return res(false);
+      this.db.query("SELECT token FROM logins WHERE user=" + this.db.escape(session.user) + " AND token=" + this.db.escape(session.token), (e, results) => {
+        if (e) console.error("SELECT error: ", e);
+        res(results.length > 0);
+      });
+    });
   }
-  async createLogin(id, session) {
-    if (session.token) return session.token;
-    const existing = await this.db.get("login.tokens." + id);
-    if (!existing) await this.db.set("login.tokens." + id, { user: id, tokens: [], verified: [] });
-    const uid = this.guid();
-    const token = { id: uid, time: Date.now() };
-    this.db.push("login.tokens." + id + ".tokens", token);
-    return uid;
+ createLogin(id, session) {
+    return new Promise((res) => {
+      if (session.token) return session.token;
+      const uid = this.guid();
+      this.db.query(`INSERT INTO logins (user, token, verified, createdAt) VALUES (${this.db.escape(id)}, ${this.db.escape(uid)}, false, NOW())`, (error) => {
+        this.db.query("DELETE FROM logins WHERE createdAt<" + this.db.escape(new Date(Date.now() - this.expiryTime)), (e) => {if (e) console.error("Cleanup mysql error: ", e)});
+        if (error) {console.log("Insert statement error: ", error); res(false)}
+        res(uid);
+      });
+    });
   }
   async login(uid, user) {
-    const login = await this.db.get("login.tokens." + user._id);
-    if (!login) return "Unknown user or invalid token!";
-    const idx = login.tokens.findIndex(t => t.id == uid);
-    if (idx == -1) return "Wrong Token";
-    if (Date.now() - 1000 * 60 * 60 * 6 > login.tokens[idx].time) return "Login Expired";
+    return new Promise(res => {
+      this.db.query("SELECT * FROM logins WHERE user=" + this.db.escape(user._id) + " AND token=" + this.db.escape(uid), (e, results) => {
+        if (e) return res("Unexpected Error");
+        if (results.length === 0) return res("Unknown user or wrong token");
+        const login = results[0];
+        if (login.token != uid) return res("Wrong Token"); // this shouldn't happpen -.-
+        if (Date.now() - this.expiryTime > (new Date(login.createdAt)).getTime()) return res("Login token expired");
+        this.db.query("UPDATE logins SET verified=true WHERE token=" + this.db.escape(uid), () => {
+          res(true);
+        });
+      });
+    });
 
-    const token = login.tokens.splice(idx, 1);
-    login.verified.push(token[0]);
-    await this.db.update("login.tokens." + user._id, login);
-
-    return true;
   }
 }
 

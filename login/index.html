@@ -7,11 +7,15 @@
 
       <div>
         <input type="text" placeholder="Revold user ID"></input>
+        <input type="checkbox">Stay signed in.</input>
         <button onclick="start(this)">Submit</button>
       </div>
       <div id="success" style="display: none">
         <p>
           Login process started! In a server that has Remix, run <code id="command"></code>! (You may need to edit the prefix depending on the server)
+        </p>
+        <p>
+          Do <b>NOT</b> close this browser window, as this login is only valid in the current browser session (unless you opted in to stay logged in).
         </p>
         <button onclick="check(this)">
           Check for verification
@@ -33,6 +37,7 @@
       const input = btn.parentElement.children[0];
       const container = btn.parentElement;
       const uid = input.value;
+      const ksi = btn.parentElement.children[1];
       btn.disabled = true;
 
       fetch("/api/login", {

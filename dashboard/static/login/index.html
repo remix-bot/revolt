@@ -22,7 +22,11 @@
     function check(btn) {
       btn.disabled = true;
       fetch("/api/login/verify").then(res => res.json()).then(res => {
-        if (res) window.location.href = "/dashboard";
+        if (res) {
+          window.location.href = "/dashboard";
+        } else {
+          btn.disabled = false;
+        }
       });
     }
     function start(btn) {

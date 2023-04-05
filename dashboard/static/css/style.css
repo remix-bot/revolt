@@ -37,7 +37,23 @@ header {
     font-size: 1.7em;
 }
 
+label {
+    font-size: 20px;
+    color: #e9196c;
+    text-shadow: 2px 2px #000000;
+    font-weight: 500;
+    white-space: nowrap;
+}
 
+input[type="text"] {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+}
 
 .navigation a {
     color: #e9196c;
@@ -107,7 +123,7 @@ section {
     text-shadow: 2px 2px #000000;
     font-weight: 500;
     white-space: nowrap;
-  }
+}
 
 .main-btn {
     color: #ffffff;

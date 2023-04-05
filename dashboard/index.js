@@ -17,13 +17,22 @@ class Dashboard {
     });
     this.remix = remix;
 
-    this.db = mysql.createConnection({
-      ...this.remix.config.mysql
-    });
-    this.db.connect((err) => {
-      if (err) console.error("Mysql Error: ", err);
-      console.log("Database connected! ID: " + this.db.threadId);
-    });
+    const reconnect = () => {
+      this.db = mysql.createConnection({
+        ...this.remix.config.mysql
+      });
+      this.db.connect((err) => {
+        if (err) {
+          console.error("Mysql Error: ", err);
+          if (err.code == "PROTOCOL_CONNECTION_LOST") {
+            console.error("Connection to database lost. Attempting reconnect in 4 seconds...");
+            return setTimeout(() => {console.log("Connecting..."); reconnect()}, 4000);
+          }
+        }
+        console.log("Database connected! ID: " + this.db.threadId);
+      });
+    }
+    reconnect();
 
     app.use(express.json());
     app.use(express.urlencoded());
@@ -72,7 +81,7 @@ class Dashboard {
   }
  createLogin(id, session) {
     return new Promise((res) => {
-      if (session.token) return session.token;
+      if (session.token) return res(session.token);
       const uid = this.guid();
       this.db.query(`INSERT INTO logins (user, token, verified, createdAt) VALUES (${this.db.escape(id)}, ${this.db.escape(uid)}, false, NOW())`, (error) => {
         this.db.query("DELETE FROM logins WHERE createdAt<" + this.db.escape(new Date(Date.now() - this.expiryTime)), (e) => {if (e) console.error("Cleanup mysql error: ", e)});

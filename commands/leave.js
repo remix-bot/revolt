@@ -4,7 +4,7 @@ module.exports = {
   command: new CommandBuilder()
     .setName("leave")
     .setDescription("Make the bot leave your current voice channel")
-    .addAlias("l"),
+    .addAliases("l", "stop"),
   run: async function(msg) {
     const p = await this.getPlayer(msg, false);
     if (!p) return;

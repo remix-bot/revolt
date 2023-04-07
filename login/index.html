@@ -1,5 +1,48 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <style>
+    .tooltip-container {
+      position: relative;
+      display: inline-block;
+      border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+    }
+    .tooltip-container .tooltip {
+      visibility: hidden;
+      width: 120px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      padding: 5px 0;
+      border-radius: 6px;
+
+      /* Position the tooltip text */
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -60px;
+
+      /* Fade in tooltip */
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .tooltip-container .tooltip::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #555 transparent transparent transparent;
+    }
+    .tooltip-container:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+    </style>
+  </head>
   <body>
     <section>
       <h1>WIP</h1>
@@ -12,7 +55,7 @@
       </div>
       <div id="success" style="display: none">
         <p>
-          Login process started! In a server that has Remix, run <code id="command"></code>! (You may need to edit the prefix depending on the server)
+          Login process started! In a server that has Remix, run <span class="tooltip-container"><span class="tooltip">Click to copy</span><code id="command"></code></span>! (You may need to edit the prefix depending on the server)
         </p>
         <p>
           Do <b>NOT</b> close this browser window, as this login is only valid in the current browser session (unless you opted in to stay logged in).
@@ -23,6 +66,15 @@
       </div>
     </section>
     <script>
+    const tooltip = document.querySelector(".tooltip");
+    tooltip.parentElement.addEventListener("mouseleave", () => {
+      tooltip.innerText = "Click to copy"
+    });
+    document.getElementById("command").addEventListener("click", (e) => {
+      navigator.clipboard.writeText(e.target.innerText).then(() => {
+        tooltip.innerText = "Copied!";
+      });
+    });
     function check(btn) {
       btn.disabled = true;
       fetch("/api/login/verify").then(res => res.json()).then(res => {
@@ -37,7 +89,7 @@
       const input = btn.parentElement.children[0];
       const container = btn.parentElement;
       const uid = input.value;
-      const ksi = btn.parentElement.children[1];
+      const ksi = btn.parentElement.children[1].checked;
       btn.disabled = true;
 
       fetch("/api/login", {
@@ -46,12 +98,12 @@
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ userId: uid })
+        body: JSON.stringify({ userId: uid, ksi })
       }).then(async res => {
         btn.disabled = false;
-        const id = await res.json();
+        const r = await res.json();
         container.style.display = "none";
-        document.getElementById("command").innerText = "%login " + id;
+        document.getElementById("command").innerText = "%login " + r.id + ";" + r.token;
         document.getElementById("success").style.display = "block";
       }).catch(e => {
         console.error(e);

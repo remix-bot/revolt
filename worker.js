@@ -68,7 +68,7 @@ class YTUtils extends EventEmitter {
           let r = {...result};
           r.title = result.name
           r.url = `https://music.youtube.com/watch?v=${result.videoId}`;
-          r.thumbnail = Array.from(result.thumbnails).sort((a, b) => b.width - a.width)[0].url;
+          r.thumbnail = (Array.from(result.thumbnails).sort((a, b) => b.width - a.width)[0] || {}).url;
           r.artists = ((Array.isArray(result.artist)) ?Array.from(result.artist) : [result.artist]).map(a => (a.url = `https://music.youtube.com/channel/${a.browseId}`, a))
           return r;
         }).slice(0, Math.min(limit, results.length));

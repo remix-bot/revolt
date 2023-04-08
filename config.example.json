@@ -11,6 +11,13 @@
     "clientId": "your spotify client id",
     "clientSecret": "your spotify client secret"
   },
+  "mysql": {
+    "host": "https:your-mysql-host.com",
+    "port": 3306,
+    "user": "youruser",
+    "password": "password of your user",
+    "database": "name of the target database"
+  },
   "geniusToken": "Genius access token (Used for lyrics); optional",
   "owners": ["not necessary unless you want to use testing commands", "another user id"],
   "playerAFKTimeout": 60000,

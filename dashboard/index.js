@@ -66,13 +66,16 @@ class Dashboard {
       res.send(JSON.stringify(v));
     });
 
-    app.get("/logout", (req, res) => {
-      // TODO: delete entries from db
+    app.get("/logout", async (req, res) => {
+      if (req.session.tId) {
+        await this.query("DELETE FROM logins WHERE id=" + this.db.escape(req.session.tId) + " AND user=" + this.db.escape(req.session.user));
+      }
       req.session.user = null;
       req.session.tId = null;
       req.session.token = null;
       req.session.verified = false;
       if (req.cookies.ksiId) {
+        await this.query("DELETE FROM ksiTokens WHERE id=" + this.db.escape(req.cookies.ksiId));
         res.cookie("ksiId", null, { expires: new Date(0) })
         res.cookie("ksiToken", null, { expires: new Date(0) })
       }
@@ -106,12 +109,7 @@ class Dashboard {
           return this.db.query("SELECT * FROM ksiTokens WHERE id=" + this.db.escape(cookies.ksiId), async (error, results) => {
             if (error) console.error("SELECT error; ksi: ", error);
             if (results.length == 0) return res(false);
-            // TODO: make ksi session only valid if regular session verified
             if (!(await this.compareHash(cookies.ksiToken, results[0].token))) return res(false);
-            //const r = this.createLogin(results[0].user, req, true);
-            //session.user = results[0].user;
-            //session.token = r.token;
-            //session.tId = r.id;
             session.verified = true;
             res(true);
           });

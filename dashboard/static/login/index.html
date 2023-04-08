@@ -58,7 +58,8 @@
           Login process started! In a server that has Remix, run <span class="tooltip-container"><span class="tooltip">Click to copy</span><code id="command"></code></span>! (You may need to edit the prefix depending on the server)
         </p>
         <p>
-          Do <b>NOT</b> close this browser window, as this login is only valid in the current browser session (unless you opted in to stay logged in).
+          Do <b>NOT</b> close this browser window, as this login is only valid in the current browser session.<br />
+          If you chose to stay logged in, there will be a login cookie created as soon as you verify the login through the button below.
         </p>
         <button onclick="check(this)">
           Check for verification
@@ -75,9 +76,17 @@
         tooltip.innerText = "Copied!";
       });
     });
+    var ksi = false;
     function check(btn) {
       btn.disabled = true;
-      fetch("/api/login/verify").then(res => res.json()).then(res => {
+      fetch("/api/login/verify", {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ksi })
+      }).then(res => res.json()).then(res => {
         if (res) {
           window.location.href = "/dashboard";
         } else {
@@ -89,7 +98,7 @@
       const input = btn.parentElement.children[0];
       const container = btn.parentElement;
       const uid = input.value;
-      const ksi = btn.parentElement.children[1].checked;
+      ksi = btn.parentElement.children[1].checked;
       btn.disabled = true;
 
       fetch("/api/login", {
@@ -98,7 +107,7 @@
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ userId: uid, ksi })
+        body: JSON.stringify({ userId: uid })
       }).then(async res => {
         btn.disabled = false;
         const r = await res.json();

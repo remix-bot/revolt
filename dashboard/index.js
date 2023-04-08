@@ -49,24 +49,36 @@ class Dashboard {
     app.post("/api/login", async (req, res) => {
       const user = req.body.userId;
       const ksi = req.body.ksi;
-      const r = await this.createLogin(user, req, ksi);
+      const r = await this.createLogin(user, req);
       req.session.user = user;
       req.session.token = r.token;
       req.session.tId = r.id;
-      if (r.kId) {
-        res.cookie("ksiId", r.kId, { maxAge: 1000 * 60 * 60 * 24 * 62 })
-        res.cookie("ksiToken", r.kToken, { maxAge: 1000 * 60 * 60 * 24 * 62 })
-      }
       res.send(JSON.stringify({ id: r.id, token: r.token, ksi: !!ksi }));
     });
-    app.get("/api/login/verify", async (req, res) => {
+    app.post("/api/login/verify", async (req, res) => {
       const v = await this.verifySession(req.session, req.cookies, req);
+      if (v && req.body.ksi) {
+        const r = await this.createKsiSession(req.session.user);
+        res.cookie("ksiId", r.id, { maxAge: 1000 * 60 * 60 * 24 * 62 });
+        res.cookie("ksiToken", r.token, { maxAge: 1000 * 60 * 60 * 24 * 62 });
+      }
       if (v) req.session.verified = true;
       res.send(JSON.stringify(v));
     });
 
+    app.get("/logout", (req, res) => {
+      // TODO: delete entries from db
+      req.session.user = null;
+      req.session.tId = null;
+      req.session.token = null;
+      req.session.verified = false;
+      if (req.cookies.ksiId) {
+        res.cookie("ksiId", null, { expires: new Date(0) })
+        res.cookie("ksiToken", null, { expires: new Date(0) })
+      }
+      res.send("Logged out. <a href='/'>Home</a>");
+    });
     app.get("/dashboard", async (req, res) => {
-      console.log("dash");
       if (!(await this.verifySession(req.session, req.cookies, req))) return res.status(403).send("Unauthorized");
       res.sendFile(path.join(__dirname, "/dynamic/dashboard/index.html"));
     });
@@ -86,7 +98,7 @@ class Dashboard {
       });
     })
   }
-  verifySession(session, cookies, req) {
+  verifySession(session, cookies) {
     return new Promise(async res => {
       if (session.verified) return res(true);
       if (!session.user || !session.token) {
@@ -96,7 +108,7 @@ class Dashboard {
             if (results.length == 0) return res(false);
             // TODO: make ksi session only valid if regular session verified
             if (!(await this.compareHash(cookies.ksiToken, results[0].token))) return res(false);
-            //const r = this.createLogin(results[0].user, req, false, true);
+            //const r = this.createLogin(results[0].user, req, true);
             //session.user = results[0].user;
             //session.token = r.token;
             //session.tId = r.id;
@@ -114,23 +126,25 @@ class Dashboard {
       });
     });
   }
- createLogin(id, req, ksi=false, verified=false) {
+  createKsiSession(id) {
+    return new Promise(async (res) => {
+      const kId = this.guid();
+      const kToken = await this.randToken();
+      this.db.query(`INSERT INTO ksiTokens (user, id, token, createdAt) VALUES (${this.db.escape(id)}, ${this.db.escape(kId)}, ${this.db.escape(await this.hash(kToken))}, NOW())`, (error) => {
+        if (error) console.error("KSI error: ", error);
+        res({ token: kToken, id: kId });
+      });
+    });
+  }
+  createLogin(id, req, verified=false) {
     return new Promise(async (res) => {
       if (req.session.token && req.session.user == id) return res({ id: req.session.tId, token: req.session.token, kId: req.cookies.ksi, kToken: req.cookies.ksiToken });
-      var kId = null, kToken = null;
-      if (ksi) {
-        kId = this.guid();
-        kToken = await this.randToken();
-        this.db.query(`INSERT INTO ksiTokens (user, id, token, createdAt) VALUES (${this.db.escape(id)}, ${this.db.escape(kId)}, ${this.db.escape(await this.hash(kToken))}, NOW())`, (error) => {
-          if (error) console.error("KSI error: ", error);
-        });
-      }
       const uid = this.guid();
       const token = await this.randToken();
       this.db.query(`INSERT INTO logins (user, id, token, verified, createdAt) VALUES (${this.db.escape(id)}, ${this.db.escape(uid)}, ${this.db.escape(await this.hash(token))}, ${verified}, NOW())`, (error) => {
         this.db.query("DELETE FROM logins WHERE createdAt<" + this.db.escape(new Date(Date.now() - this.expiryTime)), (e) => {if (e) console.error("Cleanup mysql error: ", e)});
         if (error) {console.log("Insert statement error: ", error); res(false)}
-        res({ token: token, id: uid, kId, kToken });
+        res({ token: token, id: uid });
       });
     });
   }

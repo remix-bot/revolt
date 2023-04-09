@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Remix - Commands</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../commands/style.css">
     <link rel="icon" href="../assets/icon.png" alt="Remix icon">
 </head>
 
@@ -16,8 +16,8 @@
         <h1><a href="../index.html">Remix</a></h1>
         <nav class="navigation">
             <a href="../index.html" title="Go to home section">Home</a>
-            <a href="http://remix.fairuse.org/#AboutMe" title="Go to AboutMe section">About</a>
-            <a href="http://remix.fairuse.org/#Projects" title="Go to Projects section">Projects</a>
+            <a href="https://remix.fairuse.org/#AboutMe" title="Go to AboutMe section">About</a>
+            <a href="https://remix.fairuse.org/#Projects" title="Go to Projects section">Projects</a>
             <a href="#commands" title="Go to Commands">Commands</a>
             <a href="../login/index.html" title="Go to Login">Login</a>
         </nav>
@@ -30,17 +30,19 @@
 
     <nav class="mobile-nav">
         <a href="../index.html" title="Go to home section">Home</a>
-        <a href="http://remix.fairuse.org/#AboutMe" title="Go to AboutMe section">About</a>
-        <a href="http://remix.fairuse.org/#Projects" title="Go to Projects section">Projects</a>
+        <a href="https://remix.fairuse.org/#AboutMe" title="Go to AboutMe section">About</a>
+        <a href="https://remix.fairuse.org/#Projects" title="Go to Projects section">Projects</a>
         <a href="#commands" title="Go to Commands">Commands</a>
         <a href="../login/index.html" title="Go to Login">Login</a>
     </nav>
-
+    <br>
     <section class="main" id="commands">
         <div>
-            <input type="text" id="search" onkeyup="searchCmds()" placeholder="Search commands...">
             <table id="cmd-table">
+                <br>
+                <br>
                 <thead>
+                    <input type="text" id="search" onkeyup="searchCmds()" placeholder="Search commands...">
                     <tr>
                         <th>Name</th>
                         <th>Description</th>
@@ -111,12 +113,6 @@
                         <td>playnext, pn</td>
                     </tr>
                     <tr class="music">
-                        <td>queue</td>
-                        <td>Alias for %list</td>
-                        <td>%queue</td>
-                        <td>queue</td>
-                    </tr>
-                    <tr class="music">
                         <td>remove</td>
                         <td>Remove a specific song from the queue.</td>
                         <td>%remove 'index: integer'</td>
@@ -127,6 +123,18 @@
                         <td>Resume the playback in your voice channel</td>
                         <td>%resume</td>
                         <td>resume</td>
+                    </tr>
+                    <tr class="music">
+                        <td>search</td>
+                        <td>Display the search results for a given query</td>
+                        <td>%search 'query: text'</td>
+                        <td>search</td>
+                    </tr>
+                    <tr class="music">
+                        <td>settings</td>
+                        <td>Change/Get settings in the current server.</td>
+                        <td>%settings 'set | get'</td>
+                        <td>settings, s</td>
                     </tr>
                     <tr class="music">
                         <td>shuffle</td>
@@ -141,10 +149,16 @@
                         <td>skip, s</td>
                     </tr>
                     <tr class="music">
-                        <td>stop</td>
-                        <td>Stop the playback and clear the queue in your voice channel.</td>
-                        <td>%stop</td>
-                        <td>stop</td>
+                        <td>stats</td>
+                        <td>Display stats about the bot like the uptime.</td>
+                        <td>%stats</td>
+                        <td>stats, info</td>
+                    </tr>
+                    <tr class="music">
+                        <td>thumbnail</td>
+                        <td>Request the thumbnail of the currently playing song.</td>
+                        <td>%thumbnail</td>
+                        <td>thumbnail, thumb</td>
                     </tr>
                     <tr class="music">
                         <td>volume</td>
@@ -154,11 +168,11 @@
                         <td>volume, v</td>
                     </tr>
                 </tbody>
-
+                <br>
             </table>
         </div>
+        <br>
     </section>
-
     <footer class="footer">
         <p class="footer-title">Copyrights @ <span>Remix</span></p>
         <div class="social-icons">

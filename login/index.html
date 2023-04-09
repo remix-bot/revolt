@@ -16,8 +16,8 @@
     <h1><a href="./index.html">Remix</a></h1>
     <nav class="navigation">
       <a href="../index.html" title="Go to home section">Home</a>
-      <a href="http://remix.fairuse.org/#AboutMe" title="Go to AboutMe section">About</a>
-      <a href="http://remix.fairuse.org/#Projects" title="Go to Projects section">Projects</a>
+      <a href="https://remix.fairuse.org/#AboutMe" title="Go to AboutMe section">About</a>
+      <a href="https://remix.fairuse.org/#Projects" title="Go to Projects section">Projects</a>
       <a href="../commands/index.html" title="Go to Commands">Commands</a>
       <a href="../login/index.html" title="Go to Login">Login</a>
     </nav>
@@ -30,34 +30,40 @@
 
   <nav class="mobile-nav">
     <a href="./index.html" title="Go to home section">Home</a>
-    <a href="http://remix.fairuse.org/#AboutMe" title="Go to AboutMe section">About</a>
-    <a href="http://remix.fairuse.org/#Projects" title="Go to Projects section">Projects</a>
+    <a href="https://remix.fairuse.org/#AboutMe" title="Go to AboutMe section">About</a>
+    <a href="https://remix.fairuse.org/#Projects" title="Go to Projects section">Projects</a>
     <a href="../../static/commands/index.html" title="Go to Commands">Commands</a>
     <a href="../login/index.html" title="Go to Login">Login</a>
   </nav>
 
   <section class="main">
     <div>
-      <sections>
+      <section>
         <h1>Login</h1>
         <div>
           <input type="text" placeholder="Revold user ID"></input>
-          <input type="checkbox">Stay signed in.</input>
+          <label>
+            <input type="checkbox">
+            <span style="margin-left: 145px;">Stay signed in.</span>
+          </label>          
           <button onclick="start(this)">Submit</button>
         </div>
         <div id="success" style="display: none">
           <p>
-            Login process started! In a server that has Remix, run <span class="tooltip-container"><span class="tooltip">Click to copy</span><code id="command"></code></span>! (You may need to edit the prefix depending on the server)
+            Login process started! In a server that has Remix, run <span class="tooltip-container"><span
+                class="tooltip">Click to copy</span><code id="command"></code></span>! (You may need to edit the prefix
+            depending on the server)
           </p>
           <p>
             Do <b>NOT</b> close this browser window, as this login is only valid in the current browser session.<br />
-            If you chose to stay logged in, there will be a login cookie created as soon as you verify the login through the button below.
+            If you chose to stay logged in, there will be a login cookie created as soon as you verify the login through
+            the button below.
           </p>
           <button onclick="check(this)">
             Check for verification
           </button>
         </div>
-      </sections>
+      </section>
     </div>
   </section>
 

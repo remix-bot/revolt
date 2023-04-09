@@ -1,33 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-      <meta charset="UTF-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="description"
-          content="Remix is Revolt's first music bot. Play music from YouTube and other popular streaming services, create playlists, and customize the bot's settings and behavior.">
-      <meta name="keywords" content="Remix, Revolt, music bot, YouTube, playlists, commands, settings">
-      <link rel="icon" href="/assets/icon.png" alt="Remix icon">
-      <link rel="stylesheet" href="/styles/style.css" />
-      <script src="https://cdn.tailwindcss.com"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script>
-      <title>Remix - Official Website | Login</title>
-  </head>
-  <body>
-    <%- include("components/navbar"); -%>
-    <section class="content">
-      <h1>WIP</h1>
 
-      <div>
-        <input type="text" placeholder="User ID" />
-        <button onclick="submit(this.parentElement.children[0].value)">Login</button>
-      </div>
-    </section>
-    <%- include("components/footer"); -%>
-    <script>
-    function submit(id) {
-      console.log(id);
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remix - Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="icon" href="../assets/icon.png" alt="Remix icon">
+</head>
+<body>
+  <%- include("components/navbar"); -%>
+  <section class="content">
+    <div>
+      <section>
+        <h1>Login</h1>
+        <div>
+          <input type="text" placeholder="Revold user ID"></input>
+          <label>
+            <input type="checkbox">
+            <span style="margin-left: 145px;">Stay signed in.</span>
+          </label>
+          <button onclick="start(this)">Submit</button>
+        </div>
+        <div id="success" style="display: none">
+          <p>
+            Login process started! In a server that has Remix, run <span class="tooltip-container"><span
+                class="tooltip">Click to copy</span><code id="command"></code></span>! (You may need to edit the prefix
+            depending on the server)
+          </p>
+          <p>
+            Do <b>NOT</b> close this browser window, as this login is only valid in the current browser session.<br />
+            If you chose to stay logged in, there will be a login cookie created as soon as you verify the login through
+            the button below.
+          </p>
+          <button onclick="check(this)">
+            Check for verification
+          </button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <%- include("components/footer"); -%>
+  <script>
+
+    const menu_btn = document.querySelector('.hamburger');
+    const mobile_menu = document.querySelector('.mobile-nav');
+
+
+
+    menu_btn.addEventListener('click', function () {
+      menu_btn.classList.toggle('is-active')
+      mobile_menu.classList.toggle('is-active')
+    })
+
+    document.querySelectorAll('.mobile-navB').forEach(item => {
+      item.addEventListener('click', event => {
+        menu_btn.classList.toggle('is-active')
+        mobile_menu.classList.toggle('is-active')
+      })
+    })
+
+
+    let mybutton = document.getElementById("myBtn");
+
+    const tooltip = document.querySelector(".tooltip");
+    tooltip.parentElement.addEventListener("mouseleave", () => {
+      tooltip.innerText = "Click to copy"
+    });
+    document.getElementById("command").addEventListener("click", (e) => {
+      navigator.clipboard.writeText(e.target.innerText).then(() => {
+        tooltip.innerText = "Copied!";
+      });
+    });
+    var ksi = false;
+    function check(btn) {
+      btn.disabled = true;
+      fetch("/api/login/verify", {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ksi })
+      }).then(res => res.json()).then(res => {
+        if (res) {
+          window.location.href = "/dashboard";
+        } else {
+          btn.disabled = false;
+        }
+      });
     }
-    </script>
-  </body>
+    function start(btn) {
+      const input = btn.parentElement.children[0];
+      const container = btn.parentElement;
+      const uid = input.value;
+      ksi = btn.parentElement.children[1].checked;
+      btn.disabled = true;
+
+      fetch("/api/login", {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId: uid })
+      }).then(async res => {
+        btn.disabled = false;
+        const r = await res.json();
+        container.style.display = "none";
+        document.getElementById("command").innerText = "%login " + r.id + ";" + r.token;
+        document.getElementById("success").style.display = "block";
+      }).catch(e => {
+        console.error(e);
+        btn.disabled = false;
+      });
+    }
+  </script>
+</body>
 </html>

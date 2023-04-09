@@ -52,6 +52,9 @@ class Dashboard {
       // TODO: implement ejs system (maybe)
       res.render("index.ejs");
     });
+    app.get("/login", (_req, res) => {
+      res.render("login/index.ejs");
+    })
 
     app.use(express.json());
     app.use(express.urlencoded());

@@ -17,9 +17,9 @@ class RevoltPlayer extends EventEmitter {
     this.connection = {
       state: Revoice.State.OFFLINE
     }
-    this.upload = new Uploader(opts.client, true);
+    this.upload = opts.uploader || new Uploader(opts.client, true);
 
-    this.spotify = new Spotify(opts.spotify);
+    this.spotify = opts.spotifyClient || new Spotify(opts.spotify);
     this.spotifyConfig = opts.spotify;
 
     this.gClient = opts.geniusClient || new (require("genius-lyrics")).Client();
@@ -39,7 +39,6 @@ class RevoltPlayer extends EventEmitter {
     this.startedPlaying = null;
 
     this.searches = new Map();
-    this.volumeTransformer = new prism.VolumeTransformer({ type: "s16le", volume: 1 });
 
     this.data = {
       queue: [],

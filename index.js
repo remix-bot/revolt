@@ -8,6 +8,7 @@ const { SettingsManager } = require("./settings/Settings.js");
 if (!process.execArgv.includes("--inspect")) require('console-stamp')(console, 'HH:MM:ss.l');
 
 const Genius = require("genius-lyrics");
+const Spotify = require('spotifydl-core').default;
 
 let config;
 if (fs.existsSync("./config.json")) {
@@ -37,6 +38,7 @@ class Remix {
     this.uploader = new Uploader(this.client);
 
     this.geniusClient = new Genius.Client(this.config.geniusToken);
+    this.spotify = new Spotify(this.spotifyConfig)
 
     console.log("Starting");
     console.log("Loading optional modules...");

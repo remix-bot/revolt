@@ -19,7 +19,9 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
     portOffset: pOff,
     client: this.client,
     spotify: this.spotifyConfig,
+    uploader: this.uploader,
     settings: settings,
+    spotifyClient: this.spotify,
     geniusClient: this.geniusClient
   });
   p.on("autoleave", async () => {

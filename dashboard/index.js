@@ -117,7 +117,7 @@ class Dashboard {
       if (!session.user || !session.token) {
         if (cookies.ksiId) {
           return this.db.query("SELECT * FROM ksiTokens WHERE id=" + this.db.escape(cookies.ksiId), async (error, results) => {
-            if (error) console.error("SELECT error; ksi: ", error);
+            if (error) {console.error("SELECT error; ksi: ", error); return res(false)}
             if (results.length == 0) return res(false);
             if (!(await this.compareHash(cookies.ksiToken, results[0].token))) return res(false);
             session.verified = true;

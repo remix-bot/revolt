@@ -1,7 +1,5 @@
 const express = require('express');
-const app = express();
-const http = require('http');
-const server = http.createServer(app);
+const fs = require("fs");
 const path = require("path");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
@@ -13,6 +11,18 @@ class Dashboard {
   remix;
   expiryTime = 1000 * 60 * 60 * 6; // 6 hours
   constructor(remix) {
+    const http = require('http' + ((remix.config.ssl.useSSL) ? "s" : ""));
+    const app = express();
+    var server;
+    if (remix.config.ssl.useSSL) {
+      server = http.createServer({
+        key: fs.readFileSync(remix.config.ssl.private),
+        cert: fs.readFileSync(remix.config.ssl.cert)
+      }, app);
+    } else {
+      server = http.createServer(app);
+    }
+
     this.port = remix.config.webPort || 80;
     server.listen(this.port, () => {
       console.log("Listening on port " + this.port);

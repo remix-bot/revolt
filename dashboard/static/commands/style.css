@@ -37,7 +37,84 @@ header {
     font-size: 1.7em;
 }
 
+br {
+    background-color: #172333;
+}
 
+/* style for the search input */
+#search {
+    background-color: #e9196c;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+#search::placeholder {
+    color: white;
+  }
+  
+/* style for the category filter buttons */
+#category-filters {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+#category-filters button {
+    background-color: #e9196c;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+#category-filters button:hover {
+    background-color: #e9196c;
+}
+
+#category-filters button.active {
+    background-color: #e9196c;
+}
+
+/* style for the command table */
+#cmd-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#cmd-table th,
+#cmd-table td {
+    color: white;
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#cmd-table th {
+    background-color: #e9196c;
+    color: white;
+}
+
+/* style for the command rows */
+#cmd-table tbody tr {
+    transition: background-color 0.3s;
+}
+
+#cmd-table tbody tr:hover {
+    background-color: #e9196c;
+}
+
+/* styles for the different command categories */
+tr.music {
+    background-color: #172333;
+}
 
 .navigation a {
     color: #e9196c;
@@ -52,129 +129,8 @@ header {
     color: #e9196c;
 }
 
-body {
-    background-color: #172333;
-  }
-
 section {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-input[type="text"],
-input[type="checkbox"],
-button {
-    margin: 10px;
-    padding: 15px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    width: 100%;
-    max-width: 400px;
-    font-family: 'Open Sans', sans-serif;
-    transition: all 0.2s ease-in-out;
-}
-
-input[type="text"],
-input[type="checkbox"] {
-    background-color: #f8f8f8;
-    border: 1px solid #ddd;
-}
-
-input[type="text"]:hover,
-input[type="text"]:focus,
-input[type="checkbox"]:hover,
-input[type="checkbox"]:focus {
-    background-color: #fff;
-    border-color: #bbb;
-}
-
-input[type="checkbox"] {
-    display: inline-block;
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
-label {
-    align-items: center;
-}
-
-button {
-    background-color: #e9196c;
-    color: #fff;
-    cursor: pointer;
-    font-weight: bold;
-    text-transform: uppercase;
-    transition: all 0.2s ease-in-out;
-}
-
-button:hover {
-    background-color: #172333;
-}
-
-.tooltip-container {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-}
-
-.tooltip-container:hover .tooltip {
-    visibility: visible;
-}
-
-.tooltip-container .tooltip {
-    visibility: hidden;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    position: absolute;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1;
-}
-
-/* Additional CSS for the new HTML code */
-section a {
-    margin-bottom: 20px;
-}
-
-section input[type="text"],
-section input[type="checkbox"],
-section button {
-    margin: 10px 0;
-}
-
-#success {
-    margin-top: 20px;
     text-align: center;
-}
-
-#success p {
-    margin: 10px 0;
-}
-
-#success button {
-    margin-top: 20px;
-    background-color: #555;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-#success button:hover {
-    background-color: #333;
 }
 
 .main {
@@ -251,6 +207,7 @@ section button {
 
 }
 
+
 .Icon {
     color: #ffffff;
     font-size: 1.7em;
@@ -261,6 +218,7 @@ section button {
 .Icon :hover {
     transform: scale(1.1);
 }
+
 
 .title {
     font-size: 2em;
@@ -284,6 +242,15 @@ a:active {
 a {
     color: #e9196c;
     text-decoration: none;
+}
+
+.Here {
+    text-decoration: none;
+    color: #e9196c;
+}
+
+.Here:hover {
+    color: #e9196c;
 }
 
 #myBtn {
@@ -333,6 +300,33 @@ a {
     animation: none;
     transform: scale(1.2);
     opacity: 1;
+}
+
+.content .C-Card {
+    box-shadow: 0 5px 25px rgba(1, 1, 1, 50%);
+    border-radius: 15px;
+}
+
+.C-Card {
+    background-color: #ffffff;
+    border: 1px solid #ffffff;
+    min-height: 6em;
+    width: 17em;
+    overflow: hidden;
+    border-radius: 10px;
+    transition: 0.7s ease;
+    margin-bottom: 60PX;
+}
+
+.C-Card:hover {
+    transform: scale(1.1);
+}
+
+
+.Contact-title {
+    display: inline-block;
+    letter-spacing: 1px;
+    padding: 1em 2em;
 }
 
 .footer {

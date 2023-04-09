@@ -46,6 +46,13 @@ class Dashboard {
     }
     reconnect();
 
+    app.set("view engine", "ejs");
+    app.set("views", [path.join(__dirname, "views")]);
+    app.get("/", (_req, res) => {
+      // TODO: implement ejs system (maybe)
+      res.render("index.ejs");
+    });
+
     app.use(express.json());
     app.use(express.urlencoded());
     app.use(express.static(path.join(__dirname, "/static")));

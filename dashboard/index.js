@@ -23,7 +23,7 @@ class Dashboard {
       server = http.createServer(app);
     }
 
-    if (remix.config.useSSL) {
+    if (remix.config.ssl.useSSL) {
       const httpServer = express();
       httpServer.get("*", function(req, res) {
         res.redirect('https://' + req.headers.host + req.url);

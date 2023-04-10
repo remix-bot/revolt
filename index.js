@@ -137,6 +137,7 @@ class Remix {
     }
 
     this.revoice = new Revoice(config.token || config.login);
+    this.observedVoiceUsers = new Map();
 
     try {
       this.comHash = require('child_process')
@@ -227,6 +228,24 @@ class Remix {
       }
       return res(this.playerMap.get(cid));
     });
+  }
+  observeUserVoice(user, cb) {
+    const cid = Math.random();
+    const arr = (this.observedVoiceUsers.get(user) || []);
+    arr.push({ cid, cb});
+    this.observedVoiceUsers.set(user, arr);
+    return user + ";" + cid;
+  }
+  unobserveUserVoice(i) {
+    const user = i.split(";")[0];
+    const cid = i.split(";")[1];
+    if (!this.observedVoiceUsers.has(user)) return;
+    const a = this.observedVoiceUsers.get(user);
+    const idx = a.findIndex(e => e.cid == cid);
+    if (idx == -1) return;
+    a.splice(idx, 1);
+    if (a.length == 0) return this.observedVoiceUsers.delete(user);
+    this.observedVoiceUsers.set(user, a);
   }
   getSettings(message) {
     const serverId = message.channel.server_id;

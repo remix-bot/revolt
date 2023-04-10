@@ -5,11 +5,13 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const mysql = require("mysql");
 const bcrypt = require("bcrypt");
+const { Server } = require("socket.io");
 
 class Dashboard {
   port;
   remix;
   expiryTime = 1000 * 60 * 60 * 6; // 6 hours
+  observedPlayers = new Map();
   constructor(remix) {
     const http = require('http' + ((remix.config.ssl.useSSL) ? "s" : ""));
     const app = express();
@@ -22,6 +24,8 @@ class Dashboard {
     } else {
       server = http.createServer(app);
     }
+    const io = new Server(server);
+    io.on("connection", (socket) => this.socketHandler(socket));
 
     if (remix.config.ssl.useSSL) {
       const httpServer = express();
@@ -62,7 +66,7 @@ class Dashboard {
     app.use(session({
       secret: remix.config.sessionSecret || this.guid(),
       resave: false,
-      secure: !!remix.config.useSSL,
+      secure: !!remix.config.ssl.useSSL,
       saveUninitialized: false
     }));
 
@@ -72,8 +76,8 @@ class Dashboard {
       // TODO: implement ejs system (maybe)
       res.render("index.ejs");
     });
-    app.get("/login", (req, res) => {
-      if (req.session.verified) return res.redirect("/dashboard");
+    app.get("/login", async (req, res) => {
+      if (await this.verifySession(req.session, req.cookies)) return res.redirect("/dashboard");
       const opts = (!req.session.verified) ? { id: req.session.tId, token: req.session.token} : {};
       opts.prefix = remix.config.prefix;
       res.render("login/index.ejs", opts);
@@ -114,13 +118,74 @@ class Dashboard {
       }
       res.send("Logged out. <a href='/'>Home</a>");
     });
-    app.get("/dashboard", async (req, res) => {
-      if (!(await this.verifySession(req.session, req.cookies, req))) return res.status(403).send("Unauthorized");
-      res.sendFile(path.join(__dirname, "/dynamic/dashboard/index.html"));
+
+    const secured = new express.Router();
+    secured.use(async (req, res, next) => {
+      if (!(await this.verifySession(req.session, req.cookies))) return res.status(403).send("Unauthorized");
+      req.data = {
+        user: remix.client.users.get(req.session.user),
+      }
+      next();
     });
-    app.get("/dashboard/style.css", (_req, res) => res.sendFile(path.join(__dirname, "/dynamic/dashboard/style.css")))
-    app.get("/dashboard/index.js", (_req, res) => res.sendFile(path.join(__dirname, "/dynamic/dashboard/index.js")))
+    app.use(secured);
+
+    secured.get("/dashboard", async (req, res) => {
+      res.render("dashboard/index.ejs", req.data);
+    });
   }
+  getUserData(id) {
+    const connection = (this.remix.revoice.getUser(id) || {}).connection;
+    return {
+      voice: connection,
+      player: (connection) ? this.remix.playerMap.get(connection.channelId) : null
+    }
+  }
+  socketHandler(socket) {
+    socket.on("info", (uid) => {
+      const d = this.getUserData(uid);
+      const con = d.voice || {};
+      socket.emit("info", { connected: !!d.voice, channel: con.channelId });
+      const oid = this.remix.observeUserVoice(uid, (event, ...data) => {
+        switch (event) {
+          case "joined":
+            let player = data[0];
+            let channel = this.remix.client.channels.get(data[0].connection.channelId);
+            socket.emit("joined", {
+              channel: {
+                name: channel.name,
+                icon: (channel.icon) ? `https://autumn.revolt.chat/icon/${channel.icon._id}` : null,
+              },
+              server: {
+                name: channel.server.name,
+                icon: (channel.server.icon) ? `https://autumn.revolt.chat/icon/${channel.server.icon._id}` : null,
+              }
+            });
+
+            let startPlayHandler = song => {
+              socket.emit("startplay", {
+                videoId: song.videoId,
+                title: song.title,
+                url: song.url,
+                description: song.description,
+                thumbnail: song.thumbnail,
+                duration: player.getDuration(song.duration),
+                author: song.author
+              });
+            }
+            player.on("startplay", startPlayHandler);
+            socket.on("disconnect", () => {
+              player.removeListener("startplay", startPlayHandler);
+            });
+            this.remix.unobserveUserVoice(oid);
+            break;
+          case "left":
+            socket.emit("left");
+            break;
+        }
+      });
+    });
+  }
+
   guid() {
     var S4 = function() {
        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
@@ -143,6 +208,7 @@ class Dashboard {
             if (error) {console.error("SELECT error; ksi: ", error); return res(false)}
             if (results.length == 0) return res(false);
             if (!(await this.compareHash(cookies.ksiToken, results[0].token))) return res(false);
+            session.user = results[0].user;
             session.verified = true;
             res(true);
           });
@@ -151,9 +217,12 @@ class Dashboard {
       };
 
       this.db.query("SELECT token FROM logins WHERE user=" + this.db.escape(session.user) + " AND id=" + this.db.escape(session.tId), async (e, results) => {
-        if (e) console.error("SELECT error: ", e);
+        if (e) {console.error("SELECT error: ", e); return res(false);}
         if (results.length == 0) return res(false);
-        return res(await this.compareHash(session.token, results[0].token));
+        if (!(await this.compareHash(session.token, results[0].token))) res(false);
+        session.verified = true;
+        session.user = results[0].user;
+        res(true);
       });
     });
   }

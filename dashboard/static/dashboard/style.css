@@ -60,17 +60,18 @@ section {
     width: 100%;
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    padding-top: 20px;
+    /*align-items: center;*/
     /* background: url(images/background1.png) no-repeat; */
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    background-color: #172333;
+    /*background-color: #172333;*/
     background-repeat: no-repeat;
     justify-content: center;
 }
 
-.main h2 {
+/*.main h2 {
     font-size: 3rem;
     color: #e9196c;
     text-shadow: 2px 2px #000000;
@@ -98,7 +99,7 @@ section {
     letter-spacing: 1px;
     margin-bottom: 10px;
 
-}
+}*/
 
 #changeText {
     font-family: 'Sacramento', cursive;

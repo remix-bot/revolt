@@ -77,7 +77,7 @@
       const input = btn.parentElement.children[0];
       const container = btn.parentElement;
       const uid = input.value;
-      ksi = btn.parentElement.children[1].checked;
+      ksi = btn.parentElement.children[1].querySelector("input[type='checkbox']");
       btn.disabled = true;
 
       fetch("/api/login", {

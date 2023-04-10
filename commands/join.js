@@ -32,14 +32,32 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
     this.freed.push(port);
   });
   p.on("message", (m) => {
-    if ((this.settingsMgr.getServer(message.channel.server_id).get("songAnnouncements") + "") == "false") return;
+    if ((this.settingsMgr.getServer(message.channel.server_id).get("songAnnouncements")) == "false") return;
     message.channel.sendMessage(this.em(m, message))
   });
+  p.on("roomfetched", () => {
+    p.connection.users.forEach(user => {
+      if (!this.observedVoiceUsers.has(user.id)) return;
+      const cbs = this.observedVoiceUsers.get(user.id); // .id because this is a revoice user object
+      cbs.forEach(c => c.cb.call(this, "joined", p));
+    });
+  });
   this.playerMap.set(cid, p);
-  message.reply(this.em("Joining Channel...", message), false).then((message) => {
+  message.reply(this.em("Joining Channel...",   message), false).then((message) => {
     p.join(cid).then(() => {
       message.edit(this.em(`:white_check_mark: Successfully joined <#${cid}>`, message));
       cb();
+
+      p.connection.on("userjoin", (user) => {
+        if (!this.observedVoiceUsers.has(user.id)) return;
+        const cbs = this.observedVoiceUsers.get(user.id); // .id because this is a revoice user object
+        cbs.forEach(c => c.cb.call(this, "joined", p));
+      });
+      p.connection.on("userleave", (user) => {
+        if (!this.observedVoiceUsers.has(user.id)) return;
+        const cbs = this.observedVoiceUsers.get(user.id);
+        cbs.forEach(c => c.cb.call(this, "left"));
+      });
     });
   });
 }

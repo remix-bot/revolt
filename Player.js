@@ -6,8 +6,6 @@ const Uploader = require("revolt-uploader");
 const https = require('https');
 const Spotify = require('spotifydl-core').default;
 const scdl = require('soundcloud-downloader').default;
-const { Readable } = require('stream');
-const prism = require("prism-media");
 
 class RevoltPlayer extends EventEmitter {
   constructor(token, opts) {
@@ -285,6 +283,7 @@ class RevoltPlayer extends EventEmitter {
     stream.once("data", () => this.startedPlaying = Date.now());
     if (this.connection.preferredVolume) connection.media.setVolume(this.connection.preferredVolume);
     this.announceSong(this.data.current);
+    this.emit("startplay", this.data.current);
   }
   leave() {
     if (!this.connection || !Revoice || !Revoice.State) {
@@ -337,6 +336,7 @@ class RevoltPlayer extends EventEmitter {
     return new Promise(res => {
       this.voice.join(channel, this.LEAVE_TIMEOUT).then(connection => {
         connection.once("join", res);
+        connection.on("roomfetched", () => { this.emit("roomfetched", connection.users) });
         this.connection = connection;
         this.connection.on("state", (state) => {
           this.state = state;

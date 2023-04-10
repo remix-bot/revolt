@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remix Web Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+  <link rel="stylesheet" href="/dashboard/style.css" />
+  <link rel="icon" href="../assets/icon.png" />
+</head>
+
+<body class="bg-gray-900">
+  <%- include("components/navbar"); -%>
+  <section class="main" id="Home">
+    <div>
+      <h1 style="font-size: 200%" class="self-center text-2xl font-semibold whitespace-nowrap dark:text-pink-600">Remix Dashboard</h2>
+
+      <br />
+
+      <%- include("components/player"); %>
+    </div>
+  </section>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+  const USERID = "<%= user._id %>"; // provided by back-end
+
+  const socket = io();
+  socket.on("info", console.log);
+  socket.on("joined", console.log);
+  socket.on("left", console.log);
+  socket.on("startplay", console.log);
+
+  window.addEventListener("load", () => {
+    socket.emit("info", USERID);
+  });
+  </script>
+
+  <%- include("components/footer"); -%>
+</body>
+
+</html>

@@ -12,18 +12,17 @@
 </head>
 <body>
   <%- include("components/navbar"); -%>
-  <section class="content">
+  <section class="main">
     <div>
       <section>
         <h1>Login</h1>
-        <!--<a href="../dashboard">Dashboard</a>-->
         <div style="display: <%= (locals.id) ? "none" : "block" %>">
           <input type="text" placeholder="Revold user ID"></input>
           <label>
             <input type="checkbox">
             <span style="margin-left: 145px;">Stay signed in.</span>
           </label>
-          <button onclick="start(this)">Submit</button>
+          <button onclick="start(this)" type="button" class="text-white bg-pink-700 hover:bg-pink-800 focus:outline-none focus:ring-4 focus:ring-pink-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800">Submit</button>
         </div>
         <div id="success" style="display: <%= (locals.id) ? "block" : "none" %>">
           <p>
@@ -36,14 +35,11 @@
             If you chose to stay logged in, there will be a login cookie created as soon as you verify the login through
             the button below.
           </p>
-          <button onclick="check(this)">
-            Check for verification
-          </button>
+          <button onclick="start(this)" type="button" class="text-white bg-pink-700 hover:bg-pink-800 focus:outline-none focus:ring-4 focus:ring-pink-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800">Check for verification</button>
         </div>
       </section>
     </div>
   </section>
-
   <%- include("components/footer"); -%>
   <script>
     const tooltip = document.querySelector(".tooltip");

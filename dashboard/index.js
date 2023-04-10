@@ -79,6 +79,8 @@ class Dashboard {
       res.render("login/index.ejs", opts);
     });
 
+    app.get("/commands", (_req, res) => res.render("commands/index.ejs"))
+
     app.post("/api/login", async (req, res) => {
       const user = req.body.userId;
       const ksi = req.body.ksi;

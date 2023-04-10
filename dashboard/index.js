@@ -46,16 +46,6 @@ class Dashboard {
     }
     reconnect();
 
-    app.set("view engine", "ejs");
-    app.set("views", [path.join(__dirname, "views")]);
-    app.get("/", (_req, res) => {
-      // TODO: implement ejs system (maybe)
-      res.render("index.ejs");
-    });
-    app.get("/login", (_req, res) => {
-      res.render("login/index.ejs");
-    })
-
     app.use(express.json());
     app.use(express.urlencoded());
     app.use(express.static(path.join(__dirname, "/static")));
@@ -65,6 +55,19 @@ class Dashboard {
       resave: false,
       saveUninitialized: true
     }));
+
+    app.set("view engine", "ejs");
+    app.set("views", [path.join(__dirname, "views")]);
+    app.get("/", (_req, res) => {
+      // TODO: implement ejs system (maybe)
+      res.render("index.ejs");
+    });
+    app.get("/login", (req, res) => {
+      if (req.session.verified) return res.redirect("/dashboard");
+      const opts = (!req.session.verified) ? { id: req.session.tId, token: req.session.token} : {};
+      opts.prefix = remix.config.prefix;
+      res.render("login/index.ejs", opts);
+    });
 
     app.post("/api/login", async (req, res) => {
       const user = req.body.userId;

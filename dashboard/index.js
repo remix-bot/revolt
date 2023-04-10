@@ -23,6 +23,15 @@ class Dashboard {
       server = http.createServer(app);
     }
 
+    if (remix.config.useSSL) {
+      const httpServer = express();
+      httpServer.get("*", function(req, res) {
+        res.redirect('https://' + req.headers.host + req.url);
+      });
+
+      httpServer.listen(remix.config.ssl.httpPort);
+    }
+
     this.port = remix.config.webPort || 80;
     server.listen(this.port, () => {
       console.log("Listening on port " + this.port);
@@ -51,9 +60,10 @@ class Dashboard {
     app.use(express.static(path.join(__dirname, "/static")));
     app.use(cookieParser());
     app.use(session({
-      secret: this.guid(),
+      secret: remix.config.sessionSecret || this.guid(),
       resave: false,
-      saveUninitialized: true
+      secure: !!remix.config.useSSL,
+      saveUninitialized: false
     }));
 
     app.set("view engine", "ejs");

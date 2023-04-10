@@ -21,8 +21,11 @@
   "webPort": 80,
   "ssl": {
     "private": "path-to-private-key.pem",
-    "cert": "path-to-certificate.pem"
+    "cert": "path-to-certificate.pem",
+    "useSSL": false,
+    "httpPort": 80
   },
+  "sessionSecret": "secret for the expressjs session middleware; https://www.npmjs.com/package/express-session#user-content-secret",
   "geniusToken": "Genius access token (Used for lyrics); optional",
   "owners": ["not necessary unless you want to use testing commands", "another user id"],
   "playerAFKTimeout": 60000,

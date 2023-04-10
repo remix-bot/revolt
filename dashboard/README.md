@@ -23,6 +23,10 @@ Installation instructions will follow soon:tm:
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
   ```
 2. Fill out the connection details in `config.json` in the remix root directory (See `config.example.json`)
-3. SSL setup: TODO
+3. SSL setup:
+  - Create a certificate. For example [using Let's Encrypt](https://letsencrypt.org/de/getting-started/)
+  - Find the path to your private key and certificate pem files. Certbot uses `/etc/letsencrypt/live/remix.fairuse.org/privkey.pem` for the private key and `/etc/letsencrypt/live/remix.fairuse.org/fullchain.pem` for the certificate file. Fill in the paths in the config file
+  - set `useSSL` in `config.json` to `true`
+  - Make sure to configure the ports correctly. HTTPS connects to port `443` so make sure to set `webPort` accordingly.
 
 Credits for Website design: NoLogicAlan, ophx

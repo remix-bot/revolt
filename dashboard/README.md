@@ -29,4 +29,8 @@ Installation instructions will follow soon:tm:
   - set `useSSL` in `config.json` to `true`
   - Make sure to configure the ports correctly. HTTPS connects to port `443` so make sure to set `webPort` accordingly.
 
-Credits for Website design: NoLogicAlan, ophx
+Credits for Website design:
+- NoLogicAlan 
+- ophx
+- ShadowLp174
+- Fantic

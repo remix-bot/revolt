@@ -8,7 +8,7 @@
   <h1 style="padding-bottom: 1.5rem; font-size: 200%; color: white">Currently Playing</h1>
 
   <div style="height: 10rem; position: relative; overflow: hidden">
-    <img id="thumbnail" style="border-radius: 5px; object-fit: cover; object-position: left center; aspect-ratio: 4 / 1; height: 100%" src="http://localhost/api/imageProxy?url=https%3A%2F%2Fi.ytimg.com%2Fvi%2FhJqYc62NCKo%2Fhq720.jpg" />
+    <img id="thumbnail" style="border-radius: 5px; object-fit: contain; object-position: left center; aspect-ratio: 4 / 1; height: 100%" src="http://localhost/api/imageProxy?url=https%3A%2F%2Fi.ytimg.com%2Fvi%2FhJqYc62NCKo%2Fhq720.jpg" />
     <div style="display: flex; align-items: center; flex-direction: column; justify-content: center; box-shadow: -6px 0px 12px 5px rgba(255,255,255,0.6); border-radius: 0 5px 5px 0; height: 100%; aspect-ratio: 3 / 1; background-color: rgba(255, 255, 255, 0.6); position: absolute; right: 0; top: 0">
       <p>
         Play | Pause | Placeholder
@@ -37,7 +37,12 @@ bgrdImg.onload = (e) => {
   const rgbArray = buildRgb(imageData.data);
   const quantColors = quantization(rgbArray, 0);
 
-  const colors = buildPalette(quantColors);
+  let i = ~~(quantColors.length / 2);
+  pBgrd.style.backgroundColor = `rgba(${quantColors[i].r}, ${quantColors[i].g}, ${quantColors[i].b}, 0.6)`;
+  pBgrd.style.color = (isLight(quantColors[i])) ? "black" : "white";
+  pBgrd.style.boxShadow = `-6px 0px 12px 5px rgba(${quantColors[i].r}, ${quantColors[i].g}, ${quantColors[i].b},0.6)`;
+
+  /*const colors = buildPalette(quantColors); // gradient version (might look better with less colours in the gradient)
   console.log("gradient: ", createGradient(colors));
   /*pBgrd.style.background = createGradient(colors);
   pBgrd.style.color = (isLight(colors[~~(colors.length / 2)])) ? "black" : "white";*/

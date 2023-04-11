@@ -77,7 +77,7 @@ const buildPalette = (colorsList) => {
   for (let i = 0; i < orderedByColor.length; i++) {
     const hexColor = rgbToHex(orderedByColor[i]);
 
-    if (i > 0) {
+    /*if (i > 0) {
       const difference = calculateColorDifference(
         orderedByColor[i],
         orderedByColor[i - 1]
@@ -87,7 +87,7 @@ const buildPalette = (colorsList) => {
       if (difference < 120) {
         continue;
       }
-    }
+    }*/
     palette.push(hexColor);
   }
   return palette;

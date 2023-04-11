@@ -26,16 +26,18 @@
         </div>
         <div id="success" style="display: <%= (locals.id) ? "block" : "none" %>">
           <p>
-            Login process started! In a server that has Remix, run <span class="tooltip-container"><span
-                class="tooltip">Click to copy</span><code id="command"><%= (locals.id) ? prefix + "login " + id + ";" + token : "" %></code></span>! (You may need to edit the prefix
-            depending on the server)
+            Login process started! In a server that has Remix, run
+            <span class="tooltip-container">
+              <span class="tooltip">Click to copy</span>
+              <code id="command"><%= (locals.id) ? prefix + "login " + id + ";" + token : "" %></code>
+            </span>! (You may need to edit the prefix depending on the server)
           </p>
           <p>
             Do <b>NOT</b> close this browser window, as this login is only valid in the current browser session.<br />
             If you chose to stay logged in, there will be a login cookie created as soon as you verify the login through
             the button below.
           </p>
-          <button onclick="start(this)" type="button" class="text-white bg-pink-700 hover:bg-pink-800 focus:outline-none focus:ring-4 focus:ring-pink-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800">Check for verification</button>
+          <button onclick="check(this)" type="button" class="text-white bg-pink-700 hover:bg-pink-800 focus:outline-none focus:ring-4 focus:ring-pink-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800">Check for verification</button>
         </div>
       </section>
     </div>

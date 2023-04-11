@@ -87,12 +87,11 @@ class Dashboard {
 
     app.post("/api/login", async (req, res) => {
       const user = req.body.userId;
-      const ksi = req.body.ksi;
       const r = await this.createLogin(user, req);
       req.session.user = user;
       req.session.token = r.token;
       req.session.tId = r.id;
-      res.send(JSON.stringify({ id: r.id, token: r.token, ksi: !!ksi }));
+      res.send(JSON.stringify({ id: r.id, token: r.token }));
     });
     app.post("/api/login/verify", async (req, res) => {
       const v = await this.verifySession(req.session, req.cookies, req);
@@ -107,7 +106,11 @@ class Dashboard {
 
     app.get("/logout", async (req, res) => {
       if (req.session.tId) {
-        await this.query("DELETE FROM logins WHERE id=" + this.db.escape(req.session.tId) + " AND user=" + this.db.escape(req.session.user));
+        try {
+          await this.query("DELETE FROM logins WHERE id=" + this.db.escape(req.session.tId) + " AND user=" + this.db.escape(req.session.user));
+        } catch(e) {
+          console.log("delete failed", e);
+        }
       }
       req.session.user = null;
       req.session.tId = null;
@@ -135,7 +138,7 @@ class Dashboard {
 
     const secured = new express.Router();
     secured.use(async (req, res, next) => {
-      if (!(await this.verifySession(req.session, req.cookies))) return res.status(403).send("Unauthorized");
+      if (!(await this.verifySession(req.session, req.cookies))) return res.status(403).send("Unauthorized. <a href='/login'>Log in</a>");
       req.data = {
         user: remix.client.users.get(req.session.user),
       }
@@ -234,7 +237,7 @@ class Dashboard {
         return res(false)
       };
 
-      this.db.query("SELECT token FROM logins WHERE user=" + this.db.escape(session.user) + " AND id=" + this.db.escape(session.tId), async (e, results) => {
+      this.db.query("SELECT * FROM logins WHERE user=" + this.db.escape(session.user) + " AND id=" + this.db.escape(session.tId), async (e, results) => {
         if (e) {console.error("SELECT error: ", e); return res(false);}
         if (results.length == 0) return res(false);
         if (!(await this.compareHash(session.token, results[0].token))) res(false);

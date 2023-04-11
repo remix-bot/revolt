@@ -155,25 +155,29 @@ class Dashboard {
     }
   }
   socketHandler(socket) {
+    const currInfo = (channel) => {
+      if (!channel) return { channel: undefined };
+      return {
+        channel: {
+          name: channel.name,
+          icon: (channel.icon) ? `https://autumn.revolt.chat/icon/${channel.icon._id}` : null,
+        },
+        server: {
+          name: channel.server.name,
+          icon: (channel.server.icon) ? `https://autumn.revolt.chat/icon/${channel.server.icon._id}` : null,
+        }
+      }
+    }
     socket.on("info", (uid) => {
       const d = this.getUserData(uid);
       const con = d.voice || {};
-      socket.emit("info", { connected: !!d.voice, channel: con.channelId });
+      socket.emit("info", { connected: !!d.voice, ...currInfo(this.remix.client.channels.get(con.channelId)) });
       const oid = this.remix.observeUserVoice(uid, (event, ...data) => {
         switch (event) {
           case "joined":
             let player = data[0];
             let channel = this.remix.client.channels.get(data[0].connection.channelId);
-            socket.emit("joined", {
-              channel: {
-                name: channel.name,
-                icon: (channel.icon) ? `https://autumn.revolt.chat/icon/${channel.icon._id}` : null,
-              },
-              server: {
-                name: channel.server.name,
-                icon: (channel.server.icon) ? `https://autumn.revolt.chat/icon/${channel.server.icon._id}` : null,
-              }
-            });
+            socket.emit("joined", currInfo(channel));
 
             let startPlayHandler = song => {
               socket.emit("startplay", {
@@ -190,13 +194,13 @@ class Dashboard {
             socket.on("disconnect", () => {
               player.removeListener("startplay", startPlayHandler);
             });
-            this.remix.unobserveUserVoice(oid);
             break;
           case "left":
             socket.emit("left");
             break;
         }
       });
+      socket.on("disconnect", () => {this.remix.unobserveUserVoice(oid);});
     });
   }
 

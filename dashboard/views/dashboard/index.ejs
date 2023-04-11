@@ -31,7 +31,9 @@
   socket.on("info", console.log);
   socket.on("joined", console.log);
   socket.on("left", console.log);
-  socket.on("startplay", console.log);
+  socket.on("startplay", (vid) => {
+    update(vid.thumbnail);
+  });
 
   window.addEventListener("load", () => {
     socket.emit("info", USERID);

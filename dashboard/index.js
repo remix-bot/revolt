@@ -121,6 +121,18 @@ class Dashboard {
       res.send("Logged out. <a href='/'>Home</a>");
     });
 
+    app.get("/api/imageProxy", (req, res) => {
+      const { URL } = require("url");
+      var url = new URL(req.query.url);
+      var externalReq = http.request({
+        hostname: url.hostname,
+        path: url.pathname + url.search,
+      }, function(externalRes) {
+        externalRes.pipe(res);
+      });
+      externalReq.end();
+    });
+
     const secured = new express.Router();
     secured.use(async (req, res, next) => {
       if (!(await this.verifySession(req.session, req.cookies))) return res.status(403).send("Unauthorized");

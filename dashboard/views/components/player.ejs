@@ -1,22 +1,37 @@
 <div style="
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   padding: 1.5rem;
   border-radius: 5px;
-  background-color: #1F2937;
-  border-color: #374151;
-  diplay: flex;
-  justify-content: center">
-  <h1 style="padding-bottom: 1.5rem; font-size: 200%; color: white">Currently Playing</h1>
-
-  <div style="height: 10rem; position: relative; overflow: hidden">
-    <img id="thumbnail" style="border-radius: 5px; object-fit: contain; object-position: left center; aspect-ratio: 4 / 1; height: 100%" src="http://localhost/api/imageProxy?url=https%3A%2F%2Fi.ytimg.com%2Fvi%2FhJqYc62NCKo%2Fhq720.jpg" />
-    <div style="display: flex; align-items: center; flex-direction: column; justify-content: center; box-shadow: -6px 0px 12px 5px rgba(255,255,255,0.6); border-radius: 0 5px 5px 0; height: 100%; aspect-ratio: 3 / 1; background-color: rgba(255, 255, 255, 0.6); position: absolute; right: 0; top: 0">
-      <p>
-        Play | Pause | Placeholder
-      </p>
-      <p>
-        WIP
-      </p>
+  background-color: #181818;
+  border: 1px solid #282828;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 1rem;">
+  
+  <div style="width: 12rem; height: 12rem; margin-right: 2rem;">
+    <img id="thumbnail" style="border-radius: 5px; object-fit: cover; height: 100%; width: 100%;" src="http://localhost/api/imageProxy?url=https%3A%2F%2Fi.ytimg.com%2Fvi%2FhJqYc62NCKo%2Fhq720.jpg" />
+  </div>
+  
+  <div style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+    <h1 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">Currently Playing</h1>
+    <p style="font-size: 1rem; margin-bottom: 1rem;">Artist - Song</p>
+    <div style="display: flex; flex-direction: row; justify-content: center;">
+      <button class="btn btn-play" style="margin-right: 0.5rem;">
+        <svg viewBox="0 0 100 100" width="24" height="24">
+          <path d="M20 5 L80 50 L20 95 Z" fill="#e9196c"/>
+        </svg>
+      </button>
+      <button class="btn btn-pause">
+        <svg viewBox="0 0 100 100" width="24" height="24">
+          <rect x="20" y="10" width="25" height="80" fill="#e9196c"/>
+          <rect x="55" y="10" width="25" height="80" fill="#e9196c"/>
+        </svg>
+      </button>
     </div>
+  </div>
   </div>
 </div>
 <script>

@@ -42,22 +42,10 @@ class Dashboard {
     });
     this.remix = remix;
 
-    const reconnect = () => {
-      this.db = mysql.createConnection({
-        ...this.remix.config.mysql
-      });
-      this.db.connect((err) => {
-        if (err) {
-          console.error("Mysql Error: ", err);
-          if (err.code == "PROTOCOL_CONNECTION_LOST") {
-            console.error("Connection to database lost. Attempting reconnect in 4 seconds...");
-            return setTimeout(() => {console.log("Connecting..."); reconnect()}, 4000);
-          }
-        }
-        console.log("Database connected! ID: " + this.db.threadId);
-      });
-    }
-    reconnect();
+    this.db = mysql.createPool({
+      connectionLimit : 15,
+      ...this.remix.config.mysql
+    });
 
     app.use(express.json());
     app.use(express.urlencoded());

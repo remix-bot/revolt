@@ -28,11 +28,14 @@
   const USERID = "<%= user._id %>"; // provided by back-end
 
   const socket = io();
-  socket.on("info", console.log);
+  socket.on("info", (info) => {
+    console.log(info);
+    if (info.currSong) update(info.currSong);
+  });
   socket.on("joined", console.log);
   socket.on("left", console.log);
   socket.on("startplay", (vid) => {
-    update(vid.thumbnail);
+    update(vid);
   });
 
   window.addEventListener("load", () => {

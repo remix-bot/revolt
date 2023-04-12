@@ -4,20 +4,20 @@
   align-items: center;
   padding: 1.5rem;
   border-radius: 5px;
-  background-color: #181818;
-  border: 1px solid #282828;
+  background-color: rgb(31, 41, 55);
+  /*border: 1px solid #282828;*/
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
   color: #fff;
   font-family: 'Helvetica Neue', sans-serif;
   font-size: 1rem;">
-  
+
   <div style="width: 12rem; height: 12rem; margin-right: 2rem;">
     <img id="thumbnail" style="border-radius: 5px; object-fit: cover; height: 100%; width: 100%;" src="http://localhost/api/imageProxy?url=https%3A%2F%2Fi.ytimg.com%2Fvi%2FhJqYc62NCKo%2Fhq720.jpg" />
   </div>
-  
+
   <div style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
     <h1 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">Currently Playing</h1>
-    <p style="font-size: 1rem; margin-bottom: 1rem;">Artist - Song</p>
+    <p style="font-size: 1rem; margin-bottom: 1rem;"><span id="song">Song</span> - <span id="artist">Artist</span></p>
     <div style="display: flex; flex-direction: row; justify-content: center;">
       <button class="btn btn-play" style="margin-right: 0.5rem;">
         <svg viewBox="0 0 100 100" width="24" height="24">
@@ -36,7 +36,11 @@
 </div>
 <script>
 const bgrdImg = document.getElementById("thumbnail");
-const pBgrd = bgrdImg.parentElement.children[1];
+const pBgrd = bgrdImg.parentElement.parentElement;
+
+const song = document.getElementById("song");
+const artist = document.getElementById("artist");
+
 bgrdImg.onload = (e) => {
   const img = e.target;
   const canvas = document.createElement("canvas");
@@ -53,9 +57,11 @@ bgrdImg.onload = (e) => {
   const quantColors = quantization(rgbArray, 0);
 
   let i = ~~(quantColors.length / 2);
-  pBgrd.style.backgroundColor = `rgba(${quantColors[i].r}, ${quantColors[i].g}, ${quantColors[i].b}, 0.6)`;
-  pBgrd.style.color = (isLight(quantColors[i])) ? "black" : "white";
-  pBgrd.style.boxShadow = `-6px 0px 12px 5px rgba(${quantColors[i].r}, ${quantColors[i].g}, ${quantColors[i].b},0.6)`;
+  (document.body.style || pBgrd.style).backgroundColor = `rgba(${quantColors[i].r}, ${quantColors[i].g}, ${quantColors[i].b}, 1)`; // TODO: prevent very light colours
+  //(document.body.style || pBgrd.style).background = createGradientRGB([quantColors[i], quantColors[i + 1]]);
+
+  //pBgrd.style.color = (isLight(quantColors[i])) ? "black" : "white";
+  //pBgrd.style.boxShadow = `-6px 0px 12px 5px rgba(${quantColors[i].r}, ${quantColors[i].g}, ${quantColors[i].b},0.6)`;
 
   /*const colors = buildPalette(quantColors); // gradient version (might look better with less colours in the gradient)
   console.log("gradient: ", createGradient(colors));
@@ -78,6 +84,14 @@ const hexToRgbA = (hex, a) => {
     return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',' + a + ')';
   }
   throw new Error('Bad Hex');
+}
+const createGradientRGB = (colors) => {
+  var gradient = "linear-gradient(30deg";
+  colors.forEach((color, i) => {
+    const a = (i/colors.length) * 3;
+    gradient += `, rgb(${color.r}, ${color.g}, ${color.b}) ${i/colors.length * 100}%`;
+  });
+  return gradient += ")";
 }
 const createGradient = (colors) => {
   var gradient = "linear-gradient(30deg";
@@ -351,7 +365,9 @@ const quantization = (rgbValues, depth) => {
   ];
 };
 
-function update(url) {
-  bgrdImg.src = "/api/imageProxy?url=" + encodeURIComponent(url);
+function update(vid) {
+  bgrdImg.src = "/api/imageProxy?url=" + encodeURIComponent(vid.thumbnail);
+  artist.innerText = vid.author.name;
+  song.innerText = vid.title;
 }
 </script>

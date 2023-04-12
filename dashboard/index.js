@@ -159,10 +159,36 @@ class Dashboard {
         }
       }
     }
+    const getSongData = (song, player) => {
+      if (!song) return;
+      return {
+        videoId: song.videoId,
+        title: song.title,
+        url: song.url,
+        description: song.description,
+        thumbnail: song.thumbnail,
+        duration: player.getDuration(song.duration),
+        author: song.author
+      }
+    };
+    const subscribePlayer = (player, socket) => {
+      let startPlayHandler = song => {
+        socket.emit("startplay", getSongData(song, player));
+      }
+      player.on("startplay", startPlayHandler);
+      socket.on("disconnect", () => {
+        player.removeListener("startplay", startPlayHandler);
+      });
+    }
     socket.on("info", (uid) => {
       const d = this.getUserData(uid);
       const con = d.voice || {};
-      socket.emit("info", { connected: !!d.voice, ...currInfo(this.remix.client.channels.get(con.channelId)) });
+      socket.emit("info", {
+        connected: !!d.voice,
+        ...currInfo(this.remix.client.channels.get(con.channelId)),
+        currSong: (!!d.voice) ? getSongData(d.player.data.current, d.player) : null
+      });
+      if (!!d.voice) subscribePlayer(d.player, socket);
       const oid = this.remix.observeUserVoice(uid, (event, ...data) => {
         switch (event) {
           case "joined":
@@ -170,21 +196,7 @@ class Dashboard {
             let channel = this.remix.client.channels.get(data[0].connection.channelId);
             socket.emit("joined", currInfo(channel));
 
-            let startPlayHandler = song => {
-              socket.emit("startplay", {
-                videoId: song.videoId,
-                title: song.title,
-                url: song.url,
-                description: song.description,
-                thumbnail: song.thumbnail,
-                duration: player.getDuration(song.duration),
-                author: song.author
-              });
-            }
-            player.on("startplay", startPlayHandler);
-            socket.on("disconnect", () => {
-              player.removeListener("startplay", startPlayHandler);
-            });
+            subscribePlayer(player, socket);
             break;
           case "left":
             socket.emit("left");

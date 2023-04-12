@@ -255,6 +255,7 @@ class Dashboard {
       this.db.query("SELECT * FROM logins WHERE user=" + this.db.escape(session.user) + " AND id=" + this.db.escape(session.tId), async (e, results) => {
         if (e) {console.error("SELECT error: ", e); return res(false);}
         if (results.length == 0) return res(false);
+        if (!results[0].verified) return res(false);
         if (!(await this.compareHash(session.token, results[0].token))) res(false);
         session.verified = true;
         session.user = results[0].user;

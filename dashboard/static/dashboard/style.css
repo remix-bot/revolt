@@ -59,7 +59,7 @@ section {
 .main {
     width: 100%;
     min-height: 100vh;
-    display: flex;
+    /*display: flex;*/
     padding-top: 20px;
     /*align-items: center;*/
     /* background: url(images/background1.png) no-repeat; */
@@ -69,6 +69,7 @@ section {
     /*background-color: #172333;*/
     background-repeat: no-repeat;
     justify-content: center;
+    flex-direction: column;
 }
 
 /*.main h2 {

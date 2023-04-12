@@ -9,16 +9,55 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
   <link rel="stylesheet" href="/dashboard/style.css" />
   <link rel="icon" href="../assets/icon.png" />
+  <style>
+  .main-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    color: white;
+  }
+  .remix-player {
+    flex-grow: 3;
+  }
+  .sidebar {
+    flex-grow: 2;
+    background-color: rgb(31, 41, 55);
+    border-radius: 5px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+    padding: 1rem;
+  }
+  .sidebar > ul {
+    list-style: inside;
+  }
+  .sidebar > h1 {
+    font-size: 130%;
+  }
+  </style>
 </head>
 
 <body class="bg-gray-900">
   <%- include("components/navbar"); -%>
-  <section class="main" id="Home">
-    <div>
-      <h1 style="font-size: 200%" class="self-center text-2xl font-semibold whitespace-nowrap dark:text-pink-600">Remix Dashboard</h2>
-
-      <br />
-
+  <section class="main">
+    <h1 style="font-size: 200%" class="self-center text-2xl font-semibold whitespace-nowrap dark:text-pink-600">Remix Dashboard</h2>
+    <br />
+    <div class="main-container">
+      <div class="sidebar">
+        <h1>Your Servers</h1>
+        <ul>
+          <li>
+            Server A
+          </li>
+          <li>
+            Server B
+          </li>
+          <li>
+            Server C
+          </li>
+        </ul>
+      </div>
       <%- include("components/player"); %>
     </div>
   </section>

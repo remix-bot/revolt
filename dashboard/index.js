@@ -134,8 +134,23 @@ class Dashboard {
     });
     app.use(secured);
 
-    secured.get("/dashboard", async (req, res) => {
+    secured.get("/dashboard", (req, res) => {
       res.render("dashboard/index.ejs", req.data);
+    });
+    secured.post("/api/dashboard/control", (req, res) => {
+      const d = this.getUserData(req.data.user._id);
+      if (["pause", "skip", "resume"].includes(req.body.action) && !d.voice) return res.status(422).send({ message: "Not in a voice channel." });
+      switch (req.body.action) {
+        case "pause":
+          res.status(200).send({ message: d.player.pause() || "Successfully paused"});
+          break;
+        case "resume":
+          res.status(200).send({ message: d.player.resume() || "Successfully resumed"});
+          break;
+        default:
+          res.status(400).send({ message: "Invalid aciton" });
+          break;
+      }
     });
   }
   getUserData(id) {

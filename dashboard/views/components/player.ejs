@@ -9,7 +9,7 @@
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
   color: #fff;
   font-family: 'Helvetica Neue', sans-serif;
-  font-size: 1rem;">
+  font-size: 1rem;" class="remix-player">
 
   <div style="width: 12rem; height: 12rem; margin-right: 2rem;">
     <img id="thumbnail" style="border-radius: 5px; object-fit: cover; height: 100%; width: 100%;" src="http://localhost/api/imageProxy?url=https%3A%2F%2Fi.ytimg.com%2Fvi%2FhJqYc62NCKo%2Fhq720.jpg" />
@@ -19,12 +19,12 @@
     <h1 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">Currently Playing</h1>
     <p style="font-size: 1rem; margin-bottom: 1rem;"><span id="song">Song</span> - <span id="artist">Artist</span></p>
     <div style="display: flex; flex-direction: row; justify-content: center;">
-      <button class="btn btn-play" style="margin-right: 0.5rem;">
+      <button class="btn btn-play" style="margin-right: 0.5rem;" onclick="post('/api/dashboard/control', { action: 'resume' });">
         <svg viewBox="0 0 100 100" width="24" height="24">
           <path d="M20 5 L80 50 L20 95 Z" fill="#e9196c"/>
         </svg>
       </button>
-      <button class="btn btn-pause">
+      <button class="btn btn-pause" onclick="post('/api/dashboard/control', { action: 'pause' });">
         <svg viewBox="0 0 100 100" width="24" height="24">
           <rect x="20" y="10" width="25" height="80" fill="#e9196c"/>
           <rect x="55" y="10" width="25" height="80" fill="#e9196c"/>
@@ -40,6 +40,17 @@ const pBgrd = bgrdImg.parentElement.parentElement;
 
 const song = document.getElementById("song");
 const artist = document.getElementById("artist");
+
+window.post = (url, payload) => {
+  return fetch(url, {
+    method: "post",
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+}
 
 bgrdImg.onload = (e) => {
   const img = e.target;

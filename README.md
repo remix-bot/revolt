@@ -8,9 +8,9 @@
         <br>
         <a href="https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW">Invite to your server</a>
         ·
-        <a href="https://app.revolt.chat/invite/qvJEsmPt">Report bug</a>
+        <a href="https://app.revolt.chat/invite/Remix">Report bug</a>
         ·
-        <a href="https://app.revolt.chat/invite/qvJEsmPt"> Request Feature</a>
+        <a href="https://app.revolt.chat/invite/Remix"> Request Feature</a>
     <a/>
 
 
@@ -62,4 +62,4 @@ If you're intending on self-hosting, please make it clear that it is **not the m
 
 ## Contact
 
-If you have any questions or would like to talk with other Remix users you can join our <a href="https://app.revolt.chat/invite/qvJEsmPt"> Revolt server here</a>.
+If you have any questions or would like to talk with other Remix users you can join our <a href="https://app.revolt.chat/invite/Remix"> Revolt server here</a>.

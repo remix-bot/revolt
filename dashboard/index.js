@@ -140,17 +140,37 @@ class Dashboard {
     secured.post("/api/dashboard/control", (req, res) => {
       const d = this.getUserData(req.data.user._id);
       if (["pause", "skip", "resume"].includes(req.body.action) && !d.voice) return res.status(422).send({ message: "Not in a voice channel." });
+      var message;
       switch (req.body.action) {
         case "pause":
-          res.status(200).send({ message: d.player.pause() || "Successfully paused"});
+          message = d.player.pause();
+          res.status(200).send({ message: message || ":white_check_mark: Successfully paused", success: !message });
+          this.sendMessage(d.player.messageChannel, req, "[Web] " + (message || "Paused Successfully"));
           break;
         case "resume":
-          res.status(200).send({ message: d.player.resume() || "Successfully resumed"});
+          message = d.player.resume();
+          res.status(200).send({ message: message || ":white_check_mark: Successfully resumed", success: !message });
+          if (!message) this.sendMessage(d.player.messageChannel, req, "[Web] " + (message || "Resumed Successfully"));
+          break;
+        case "skip":
+          message = d.player.skip();
+          res.status(200).send({ message: message || ":white_check_mark: Successfully skipped", success: !message });
+          if (!message) this.sendMessage(d.player.messageChannel, req, "[Web] " + (message || "Skipped Successfully"));
           break;
         default:
-          res.status(400).send({ message: "Invalid aciton" });
+          res.status(400).send({ message: "Invalid aciton", success: false });
           break;
       }
+    });
+  }
+  sendMessage(channel, req, content) {
+    return channel.sendMessage({
+      content: " ",
+      embeds: [this.remix.embedify((!channel.havePermission("Masquerade")) ? content + `\n\n###### Requested by <@${req.data.user._id}>` : content)],
+      masquerade: (channel.havePermission("Masquerade")) ? {
+        name: req.data.user.username,
+        avatar: req.data.user.avatarURL || req.data.user.defaultAvatarURL
+      } : null
     });
   }
   getUserData(id) {

@@ -19,12 +19,12 @@
     <h1 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">Currently Playing</h1>
     <p style="font-size: 1rem; margin-bottom: 1rem;"><span id="song">Song</span> - <span id="artist">Artist</span></p>
     <div style="display: flex; flex-direction: row; justify-content: center;">
-      <button class="btn btn-play" style="margin-right: 0.5rem;" onclick="post('/api/dashboard/control', { action: 'resume' });">
+      <button class="btn btn-play" style="margin-right: 0.5rem;" onclick="pushAction(this)" action="resume">
         <svg viewBox="0 0 100 100" width="24" height="24">
           <path d="M20 5 L80 50 L20 95 Z" fill="#e9196c"/>
         </svg>
       </button>
-      <button class="btn btn-pause" onclick="post('/api/dashboard/control', { action: 'pause' });">
+      <button class="btn btn-pause" onclick="pushAction(this)" action="pause">
         <svg viewBox="0 0 100 100" width="24" height="24">
           <rect x="20" y="10" width="25" height="80" fill="#e9196c"/>
           <rect x="55" y="10" width="25" height="80" fill="#e9196c"/>
@@ -50,6 +50,9 @@ window.post = (url, payload) => {
     },
     body: JSON.stringify(payload)
   });
+}
+const pushAction = (btn) => {
+  return post('/api/dashboard/control', { action: btn.getAttribute("action") });
 }
 
 bgrdImg.onload = (e) => {

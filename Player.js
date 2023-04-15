@@ -26,6 +26,7 @@ class RevoltPlayer extends EventEmitter {
     this.updateHandler = (content, msg) => {
       msg.edit({ content: content });
     }
+    this.messageChannel = opts.messageChannel;
 
     this.LEAVE_TIMEOUT = opts.lTimeout || 15;
 

@@ -62,6 +62,8 @@
     </div>
   </section>
 
+  <%- include("components/notifications"); %>
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
   const USERID = "<%= user._id %>"; // provided by back-end

@@ -8,7 +8,7 @@ module.exports = {
   run: async function(msg) {
     const p = await this.getPlayer(msg, false);
     if (!p) return;
-    const user = this.revoice.getUser(msg.author_id).user;
+    const user = this.revoice.getUser(msg.authorId).user;
     const cid = user.connectedTo;
     this.playerMap.delete(cid);
     const port = p.port - 3050;

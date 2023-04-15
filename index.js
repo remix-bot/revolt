@@ -61,9 +61,9 @@ class Remix {
       let texts = config.presenceContents || def;
       if (texts.length == 0) texts = def;
       setInterval(() => {
-        this.client.users.edit({
+        this.client.user.edit({
           status: {
-            text: texts[state].replace(/\$serverCount/g, this.client.servers.size),
+            text: texts[state].replace(/\$serverCount/g, this.client.servers.size()),
             presence: "Online"
           },
         });
@@ -73,18 +73,20 @@ class Remix {
       this.fetchUsers();
       setInterval(() => this.fetchUsers, 60 * 1000 * 30);
     });
-    this.client.on("message", (m) => {
-      if (!this.observedUsers.has(m.author_id + ";" + m.channel_id)) return;
-      this.observedUsers.get(m.author_id + ";" + m.channel_id)(m);
+    this.client.on("messageCreate", (m) => {
+      if (!this.observedUsers.has(m.authorId + ";" + m.channelId)) return;
+      this.observedUsers.get(m.authorId + ";" + m.channelId)(m);
     });
-    this.client.on("message/updated", (message, event) => {
-      if (!this.observedReactions.has(message._id)) return;
-      if (event.user_id == this.client.user._id) return;
-      if (!["MessageReact", "MessageUnreact"].includes(event.type)) return; // only reactions
-      const observer = this.observedReactions.get(message._id);
+    const reactionUpdate = (message, user, emoji) => {
+      const event = { user_id: user, emoji_id: emoji };
+      if (!this.observedReactions.has(message.id)) return;
+      if (event.user_id == this.client.user.id) return;
+      const observer = this.observedReactions.get(message.id);
       if (!observer.r.includes(event.emoji_id)) return;
       observer.cb(event, message);
-    });
+    }
+    this.client.on("messageReactionAdd", reactionUpdate);
+    this.client.on("messageReactionRemove", reactionUpdate);
 
     console.log("Loading command files...");
     this.handler = new CommandHandler(this.client, config.prefix);
@@ -189,7 +191,7 @@ class Remix {
   request(d) {
     switch(d.type) {
       case "prefix":
-        return this.settingsMgr.getServer(d.data.channel.server_id).get("prefix");
+        return this.settingsMgr.getServer(d.data.channel.serverId).get("prefix");
     }
   }
   getPlayer(message, promptJoin=true) {
@@ -197,7 +199,7 @@ class Remix {
       return new Promise(res => {
         msg.reply(this.em("Please send the voice channel! (Mention/Id/Name)\nSend 'x' to cancel.", msg), false);
         const join = (msg) => {
-          const observer = this.observeUser(msg.author_id, msg.channel._id, (m) => {
+          const observer = this.observeUser(msg.authorId, msg.channelId, (m) => {
             if (m.content.toLowerCase() == "x") {
               this.unobserveUser(observer);
               m.reply(this.em("Cancelled!", m), false);
@@ -215,7 +217,7 @@ class Remix {
       });
     }
     return new Promise(async res => {
-      const user = this.revoice.getUser(message.author_id).user;
+      const user = this.revoice.getUser(message.authorId).user;
       var cid = (user) ? user.connectedTo : null;
       if (!user || !cid) {
         if (!promptJoin) {
@@ -259,8 +261,8 @@ class Remix {
     return this.observedUsers.delete(i);
   }
   observeReactions(msg, reactions, cb) {
-    this.observedReactions.set(msg._id, { r: reactions, cb });
-    return msg._id;
+    this.observedReactions.set(msg.id, { r: reactions, cb });
+    return msg.id;
   }
   unobserveReactions(i) {
     return this.observedReactions.delete(i);
@@ -284,7 +286,7 @@ class Remix {
   pagination(form, content, message, maxLinesPerPage=2) {
     if (!message.channel.havePermission("React")) {
       if (!message.channel.havePermission("SendMessage")) return message.member.user.openDM().then(dm => {
-        dm.sendMessage({ content: " ", embeds: [this.embedify("I am unable to send messages in <#" + message.channel._id + ">. Please contact a server administrator and grant me the \"SendMessage\" permission.")]})
+        dm.sendMessage({ content: " ", embeds: [this.embedify("I am unable to send messages in <#" + message.channelId + ">. Please contact a server administrator and grant me the \"SendMessage\" permission.")]})
       }).catch(() => {});
       return message.reply({ content: " ", embeds: [this.embedify("I need reaction permissions to work. Please contact a server administrator to address this.")] }, true);
     }

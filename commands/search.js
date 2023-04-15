@@ -1,7 +1,7 @@
 const { CommandBuilder } = require("../Commands.js");
 
 function awaitMessage(msg, count, player) {
-  const oid = this.observeUser(msg.author_id, msg.channel_id, (m) => {
+  const oid = this.observeUser(msg.authorId, msg.channelId, (m) => {
     if (m.content.trim().toLowerCase() == "x") {
       this.unobserveUser(oid);
       return m.reply(this.em("Cancelled!", m));
@@ -9,7 +9,7 @@ function awaitMessage(msg, count, player) {
     let c = parseInt(m.content.trim().replace(/\./g, ""));
     if (isNaN(c)) return m.reply(this.em("Invalid number! (Send 'x' to cancel)", m));
     if (c < 0 || c > count) return m.reply(this.em("Index out of range! (`1 - " + count + "`)", m));
-    let v = player.playResult(msg.author_id, c - 1);
+    let v = player.playResult(msg.authorId, c - 1);
     m.reply(this.em((typeof v == "string") ? v : `Added [${v.title}](${v.url}) to the queue!`, m));
     this.unobserveUser(oid);
   });
@@ -36,7 +36,7 @@ module.exports = {
     let query = data.get("query").value;
     let provider = data.get("provider").value;
     msg.reply(this.em("Loading results...", msg)).then(async m => {
-      let res = await p.fetchResults(query, msg.author_id, provider);
+      let res = await p.fetchResults(query, msg.authorId, provider);
       m.edit(this.em(res.m, msg));
       awaitMessage.call(this, msg, res.count, p);
     });

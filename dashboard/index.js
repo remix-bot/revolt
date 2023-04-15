@@ -138,7 +138,7 @@ class Dashboard {
       res.render("dashboard/index.ejs", req.data);
     });
     secured.post("/api/dashboard/control", (req, res) => {
-      const d = this.getUserData(req.data.user._id);
+      const d = this.getUserData(req.data.user.id);
       if (["pause", "skip", "resume"].includes(req.body.action) && !d.voice) return res.status(422).send({ message: "Not in a voice channel." });
       var message;
       switch (req.body.action) {
@@ -166,7 +166,7 @@ class Dashboard {
   sendMessage(channel, req, content) {
     return channel.sendMessage({
       content: " ",
-      embeds: [this.remix.embedify((!channel.havePermission("Masquerade")) ? content + `\n\n###### Requested by <@${req.data.user._id}>` : content)],
+      embeds: [this.remix.embedify((!channel.havePermission("Masquerade")) ? content + `\n\n###### Requested by <@${req.data.user.id}>` : content)],
       masquerade: (channel.havePermission("Masquerade")) ? {
         name: req.data.user.username,
         avatar: req.data.user.avatarURL || req.data.user.defaultAvatarURL
@@ -186,11 +186,11 @@ class Dashboard {
       return {
         channel: {
           name: channel.name,
-          icon: (channel.icon) ? `https://autumn.revolt.chat/icon/${channel.icon._id}` : null,
+          icon: channel.iconURL,
         },
         server: {
           name: channel.server.name,
-          icon: (channel.server.icon) ? `https://autumn.revolt.chat/icon/${channel.server.icon._id}` : null,
+          icon: channel.server.iconURL,
         }
       }
     }
@@ -310,7 +310,7 @@ class Dashboard {
       uid = uid.split(";");
       const id = uid[0];
       const token = uid[1];
-      this.db.query("SELECT * FROM logins WHERE user=" + this.db.escape(user._id) + " AND id=" + this.db.escape(id), async (e, results) => {
+      this.db.query("SELECT * FROM logins WHERE user=" + this.db.escape(user.id) + " AND id=" + this.db.escape(id), async (e, results) => {
         if (e) { console.error("SELECT error; login: ", e); return res("Unexpected Error"); }
         if (results.length === 0) return res("Unknown user or wrong token");
         const login = results[0];

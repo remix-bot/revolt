@@ -2,7 +2,7 @@ const { CommandBuilder } = require("../Commands.js");
 const RevoltPlayer = require("../Player.js");
 
 function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
-  if (!message.channel.server.channels.some(c => c._id === cid)) {
+  if (!message.channel.server.channels.some(c => c.id === cid)) {
     ecb();
     return message.reply(this.em("Couldn't find the channel `" + cid + "` in this server.\nUse the help command to learn more about this.", message), false)
   }
@@ -12,7 +12,7 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
     return message.reply(this.em("Already joined. <#" + cid + ">", message), false);
   }
   this.channels.push(cid);
-  const settings = this.settingsMgr.getServer(message.channel.server_id);
+  const settings = this.settingsMgr.getServer(message.channel.serverId);
   const pOff = this.freed.shift() || ++this.currPort; // reuse old ports
   const p = new RevoltPlayer(this.config.token, {
     voice: this.revoice,
@@ -33,7 +33,7 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
     this.freed.push(port);
   });
   p.on("message", (m) => {
-    if ((this.settingsMgr.getServer(message.channel.server_id).get("songAnnouncements")) == "false") return;
+    if ((this.settingsMgr.getServer(message.channel.serverId).get("songAnnouncements")) == "false") return;
     message.channel.sendMessage(this.em(m, message))
   });
   p.on("roomfetched", () => {

@@ -66,7 +66,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-  const USERID = "<%= user._id %>"; // provided by back-end
+  const USERID = "<%= user.id %>"; // provided by back-end
 
   const socket = io();
   socket.on("info", (info) => {

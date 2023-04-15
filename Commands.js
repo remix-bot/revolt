@@ -205,8 +205,8 @@ class Option {
         const results = this.channelRegex.exec(i) ?? this.idRegex.exec(i);
 
         const channel = message.channel.server.channels.find(c => c.name == i);
-        const cObj = (results) ? message.channel.server.channels.find(c => c._id == results.groups["id"]) : (channel) ? channel : null;
-        return (cObj) ? cObj.channel_type === "VoiceChannel" : null;
+        const cObj = (results) ? message.channel.server.channels.find(c => c.id == results.groups["id"]) : (channel) ? channel : null;
+        return (cObj) ? cObj.type === "VoiceChannel" : null;
       // TODO: Add roles
     }
   }
@@ -228,12 +228,12 @@ class Option {
         const results = channelRegex.exec(i) ?? idRegex.exec(i);
 
         const channel = msg.channel.server.channels.find(c => c.name == i);
-        return (results) ? results.groups["id"] : (channel) ? channel._id : null;
+        return (results) ? results.groups["id"] : (channel) ? channel.id : null;
       case "voiceChannel":
         const r = this.channelRegex.exec(i) ?? this.idRegex.exec(i);
 
-        const c = msg.channel.server.channels.find(c => c.name == i && c.channel_type == "VoiceChannel");
-        return (r) ? r.groups["id"] : (c) ? c._id : null;
+        const c = msg.channel.server.channels.find(c => c.name == i && c.type == "VoiceChannel");
+        return (r) ? r.groups["id"] : (c) ? c.id : null;
     }
   }
   get typeError() {
@@ -290,7 +290,7 @@ class CommandHandler extends EventEmitter {
       msg.reply(t);
     }
 
-    this.client.on("message", (msg)=>this.messageHandler(msg))
+    this.client.on("messageCreate", (msg)=>this.messageHandler(msg))
 
     return this;
   }
@@ -305,7 +305,7 @@ class CommandHandler extends EventEmitter {
       let perm = this.requiredPermissions[i];
       if (!message.channel.havePermission(perm)) {
         message.member.user.openDM().then(dm => {
-          dm.sendMessage("Please grant me the `" + perm + "` permission in <#" + message.channel._id + "> or contact a server administrator. I am unable to operate without this.");
+          dm.sendMessage("Please grant me the `" + perm + "` permission in <#" + message.channel.id + "> or contact a server administrator. I am unable to operate without this.");
         }).catch(() => {});
         return false;
       }
@@ -314,21 +314,21 @@ class CommandHandler extends EventEmitter {
   }
   messageHandler(msg) {
     if (!msg || !msg.content) return;
-    if (!this.cachedGuilds.includes(msg.channel.server_id)) {
-      this.cachedGuilds.push(msg.channel.server_id);
+    if (!this.cachedGuilds.includes(msg.channel.serverId)) {
+      this.cachedGuilds.push(msg.channel.serverId);
       let cp = this.request("prefix", msg);
       if (cp !== this.prefix) {
-        this.customPrefixes.set(msg.channel.server_id, cp);
+        this.customPrefixes.set(msg.channel.serverId, cp);
       }
     }
-    if (msg.mention_ids) {
-      if (msg.mention_ids.includes(this.client.user._id) && msg.content.trim().toUpperCase() == `<@${this.client.user._id}>`) {
+    if (msg.mentionIds) {
+      if (msg.mentionIds.includes(this.client.user.id) && msg.content.trim().toUpperCase() == `<@${this.client.user.id}>`) {
         if (!this.checkPermissions(msg)) return;
         return this.onPing(msg);
       }
     }
-    const prefix = this.getPrefix(msg.channel.server_id);
-    const ping = `<@${this.client.user._id}> `;
+    const prefix = this.getPrefix(msg.channel.serverId);
+    const ping = `<@${this.client.user.id}> `;
     if (!(msg.content.startsWith(prefix) || msg.content.startsWith(ping))) return;
     if (!this.checkPermissions(msg)) return;
     const len = (msg.content.startsWith(prefix)) ? prefix.length : ping.length;
@@ -337,13 +337,13 @@ class CommandHandler extends EventEmitter {
       .trim()
       .split(" ")
       .map((el) => el.trim())
-    if (args[0] === this.acceptCommand && this.fixMap.has(msg.author_id)) {
+    if (args[0] === this.acceptCommand && this.fixMap.has(msg.authorId)) {
       //if (!this.fixMap.has(msg.author_id)) return this.replyHandler(this.f("No command stored that can be corrected!"));
-      let cmd = this.fixMap.get(msg.author_id);
-      this.fixMap.delete(msg.author_id);
+      let cmd = this.fixMap.get(msg.authorId);
+      this.fixMap.delete(msg.authorId);
       return this.processCommand(cmd.cmd, cmd.args, msg);
     } else if (args[0] === this.helpCommand) {
-      if (!args[1]) return (this.paginateHelp) ? this.genHelp(null, msg) : this.replyHandler(this.f(this.getHelpPage(this.commandLimit, 0, ...this.commands), msg.channel.server_id), msg);
+      if (!args[1]) return (this.paginateHelp) ? this.genHelp(null, msg) : this.replyHandler(this.f(this.getHelpPage(this.commandLimit, 0, ...this.commands), msg.channel.serverId), msg);
 
       if (args.length > 1) {
         // check if a new page is requested
@@ -351,7 +351,7 @@ class CommandHandler extends EventEmitter {
         if (newPage) {
           newPage = parseInt(args[1]);
           if (newPage < 1 || newPage > this.getHelpPages()) return this.replyHandler("`" + newPage + "` is not a valid page number!", msg);
-          return this.replyHandler(this.f(this.getHelpPage(this.commandLimit, newPage - 1, ...this.commands), msg.channel.server_id), msg);
+          return this.replyHandler(this.f(this.getHelpPage(this.commandLimit, newPage - 1, ...this.commands), msg.channel.serverId), msg);
         }
       }
 
@@ -362,14 +362,14 @@ class CommandHandler extends EventEmitter {
           let a = args.slice(1)[i];
           let curr = (currCmd) ? currCmd.subcommands : this.commands;
           let idx = curr.findIndex(e => e.name.toLowerCase() == a.toLowerCase());
-          if (idx === -1) return this.replyHandler(this.f("Unknown command `$prefix" + prefix + a + "`!", msg.channel.server_id), msg);
+          if (idx === -1) return this.replyHandler(this.f("Unknown command `$prefix" + prefix + a + "`!", msg.channel.serverId), msg);
           currCmd = curr[idx];
           prefix += a + " ";
         }
         return this.replyHandler(this.genCommandHelp(currCmd), msg);
       } else {
         let idx = this.commands.findIndex(e => e.name.toLowerCase() == args[1].toLowerCase());
-        if (idx === -1) return this.replyHandler(this.f("Unknown command `$prefix" + args[1] + "`!", msg.channel.server_id), msg);
+        if (idx === -1) return this.replyHandler(this.f("Unknown command `$prefix" + args[1] + "`!", msg.channel.serverId), msg);
         return this.replyHandler(this.genCommandHelp(this.commands[idx]), msg);
       }
     }
@@ -388,10 +388,10 @@ class CommandHandler extends EventEmitter {
 
       // match found, suggest to user
       let cmd = this.commands.find(e => e.aliases.includes(matches[0].command));
-      this.fixMap.set(msg.author_id, { cmd: cmd, args: args });
+      this.fixMap.set(msg.authorId, { cmd: cmd, args: args });
 
       let fixed = matches[0].command + " " + args.slice(1).join(" ");
-      this.replyHandler(this.f("Did you mean `$prefix" + fixed + "`? (Type `$prefix$accept` to run this)", msg.channel.server_id), msg);
+      this.replyHandler(this.f("Did you mean `$prefix" + fixed + "`? (Type `$prefix$accept` to run this)", msg.channel.serverId), msg);
       return;
     }
     return this.processCommand(this.commands.find(e => e.aliases.includes(args[0].toLowerCase())), args, msg);
@@ -476,14 +476,14 @@ class CommandHandler extends EventEmitter {
       const server = msg.member.server;
       for (let i = 0; i < cmd.requirements.length; i++) {
         let req = cmd.requirements[i];
-        if (req.ownerOnly && !this.owners.includes(msg.author_id)) return;
+        if (req.ownerOnly && !this.owners.includes(msg.authorId)) return;
         for (let j = 0; j < req.getPermissions().length; j++) {
           let p = req.getPermissions()[j];
-          if (!msg.member.hasPermission(server, p) && !this.owners.includes(msg.author_id)) return this.replyHandler(req.permissionError, msg);
+          if (!msg.member.hasPermission(server, p) && !this.owners.includes(msg.authorId)) return this.replyHandler(req.permissionError, msg);
         }
       }
     }
-    if (previous === false) previous = this.f("$prefix" + cmd.name, msg.channel.server_id);
+    if (previous === false) previous = this.f("$prefix" + cmd.name, msg.channel.serverId);
     if (!cmd) return console.warn("Something sus is going on... [CommandHandler.processCommand]");
     this.emit("command", { command: cmd, message: msg });
     if (cmd.subcommands.length != 0) {

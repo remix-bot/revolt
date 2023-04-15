@@ -53,7 +53,7 @@ module.exports = {
         for (key in d) {
           msg += "- " + key + ": `" + d[key] + "`\n";
         }
-        message.reply(this.iconem("Settings", msg.trim(), (message.channel.server.icon) ? "https://autumn.revolt.chat/icons/" + message.channel.server.icon._id : null, message), false);
+        message.reply(this.iconem("Settings", msg.trim(), message.channel.server.iconURL, message), false);
       break;
     }
   }

@@ -2,9 +2,9 @@ const { CommandBuilder } = require("../Commands.js");
 const RevoltPlayer = require("../Player.js");
 
 function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
-  if (!message.channel.server.channels.some(c => c.id === cid)) {
+  if (!this.client.channels.has(cid)) {
     ecb();
-    return message.reply(this.em("Couldn't find the channel `" + cid + "` in this server.\nUse the help command to learn more about this.", message), false)
+    return message.reply(this.em("Couldn't find the channel `" + cid + "`\nUse the help command to learn more about this. (`%help join`)", message), false)
   }
 
   if (this.playerMap.has(cid)) {

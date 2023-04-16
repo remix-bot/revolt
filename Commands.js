@@ -180,7 +180,7 @@ class Option {
     if (i == undefined) return true;
     return (!i && !i.contains("0")); // check if string is empty
   }
-  validateInput(i, message, type) {
+  validateInput(i, client, type) {
     switch(type || this.type) {
       case "text":
       case "string":
@@ -200,17 +200,17 @@ class Option {
         // check if string is empty
         return !!i;
       case "channel":
-        return this.channelRegex.test(i) || this.idRegex.test(i) || message.channel.server.channels.some(c => c.name == i);
+        return this.channelRegex.test(i) || this.idRegex.test(i) || client.channels.some(c => c.name == i);
       case "voiceChannel":
         const results = this.channelRegex.exec(i) ?? this.idRegex.exec(i);
 
-        const channel = message.channel.server.channels.find(c => c.name == i);
-        const cObj = (results) ? message.channel.server.channels.find(c => c.id == results.groups["id"]) : (channel) ? channel : null;
+        const channel = client.channels.find(c => c.name == i);
+        const cObj = (results) ? client.channels.find(c => c.id == results.groups["id"]) : (channel) ? channel : null;
         return (cObj) ? cObj.type === "VoiceChannel" : null;
       // TODO: Add roles
     }
   }
-  formatInput(i, msg, type) {
+  formatInput(i, client, type) {
     switch (type || this.type) {
       case "text":
       case "string":
@@ -227,12 +227,12 @@ class Option {
         const idRegex = /^(?<id>[A-Z0-9]+)$/;
         const results = channelRegex.exec(i) ?? idRegex.exec(i);
 
-        const channel = msg.channel.server.channels.find(c => c.name == i);
+        const channel = client.channels.find(c => c.name == i);
         return (results) ? results.groups["id"] : (channel) ? channel.id : null;
       case "voiceChannel":
         const r = this.channelRegex.exec(i) ?? this.idRegex.exec(i);
 
-        const c = msg.channel.server.channels.find(c => c.name == i && c.type == "VoiceChannel");
+        const c = client.channels.find(c => c.name == i && c.type == "VoiceChannel");
         return (r) ? r.groups["id"] : (c) ? c.id : null;
     }
   }
@@ -458,11 +458,11 @@ class CommandHandler extends EventEmitter {
         r.ownerOnly
       ) === -1);
   }
-  validateString(s, msg, type) {
-    return (new Option()).validateInput(s, msg, type);
+  validateString(s, type) {
+    return (new Option()).validateInput(s, this.client, type);
   }
-  formatString(s, msg, type) {
-    return (new Option()).formatInput(s, msg, type);
+  formatString(s, type) {
+    return (new Option()).formatInput(s, this.client, type);
   }
 
   f(text, i) { // text format function
@@ -533,7 +533,7 @@ class CommandHandler extends EventEmitter {
         }
         argIndex++;
         i--; // check current option next time
-        let valid = op.validateInput(value, msg);
+        let valid = op.validateInput(value, this.client);
         if (!valid && (op.required || !op.empty(value))) {
           let e = op.typeError.replace(/\$optionType/gi, op.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, value).replace(/\$optionName/gi, op.name);
           return this.replyHandler(e, msg);
@@ -541,7 +541,7 @@ class CommandHandler extends EventEmitter {
         usedArgumentCount += 2;
         previous += " " + value;
         opts.push({
-          value: op.formatInput(value, msg),
+          value: op.formatInput(value, this.client),
           name: op.name,
           id: op.id
         });
@@ -555,14 +555,14 @@ class CommandHandler extends EventEmitter {
         value = data.args.join(" ");
         value = value.slice(1, value.length - 1);
       }
-      let valid = o.validateInput(value, msg); // argIndex starts at 1 to exclude command itself
+      let valid = o.validateInput(value, this.client); // argIndex starts at 1 to exclude command itself
       if (!valid && (o.required || !o.empty(value))) {
         let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, value).replace(/\$optionName/gi, o.name);
         return this.replyHandler(e, msg);
       }
 
       opts.push({
-        value: o.formatInput(value, msg),
+        value: o.formatInput(value, this.client),
         name: o.name,
         id: o.id
       });
@@ -573,7 +573,7 @@ class CommandHandler extends EventEmitter {
     if (texts.length > 0) {
       let o = texts[0];
       let text = args.slice(usedArgumentCount + 1).join(" ");
-      if (o.required && !o.validateInput(text, msg)) {
+      if (o.required && !o.validateInput(text, this.client)) {
         let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, text).replace(/\$optionName/gi, o.name);
         return this.replyHandler(e, msg);
       }

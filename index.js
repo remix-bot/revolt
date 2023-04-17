@@ -207,16 +207,24 @@ class Remix {
         });
         res(servers);
       });
-      /*user.fetchMutual().then((data) => { // doesn't work with bots
-        var servers = data.servers;
-        servers = servers.map(server => {
-          return server.voiceChannels = server.channels.filter(c => c.type == "VoiceChannel");
-        });
-        res(servers);
-      }).catch(e => {
-        console.log(e, e.request);
-      });*/
     })
+  }
+  getVoiceData(server) {
+    return new Promise(async res => {
+      server = this.client.servers.get(server);
+      if (!server) return res(false);
+      const channels = server.channels.filter(c => c.type == "VoiceChannel")
+      res(channels.map(c => {
+        const con = this.revoice.getVoiceConnection(c.id);
+        const data = {
+          name: c.name,
+          id: c.id,
+          users: (con || { users: [] }).users
+        }
+        data.users = data.users.map(u => ({ name: u.username, id: u.id, avatar: u.avatarURL }))
+        return data;
+      }));
+    });
   }
   request(d) {
     switch(d.type) {

@@ -139,14 +139,12 @@ class Dashboard {
     });
     secured.get("/api/servers/", async (req, res) => {
       var servers = await this.remix.getSharedServers(req.data.user);
-      servers.map(s => {
-        return {
-          name: s.name,
-          id: s.id,
-          voiceChannels: s.voiceChannels
-        }
-      });
       res.status(200).send(servers);
+    });
+    secured.get("/api/server/:s/voice", async (req, res) => {
+      const server = req.params.s;
+      const data = await this.remix.getVoiceData(server);
+      res.status(200).send(data);
     });
     secured.post("/api/dashboard/control", (req, res) => {
       const d = this.getUserData(req.data.user.id);

@@ -95,21 +95,21 @@
   });
 
   const serverList = document.getElementById("server-list")
+  const createListItem = (i, c=true) => {
+    const li = document.createElement("li");
+    if (c) {
+      const caret = document.createElement("span");
+      caret.classList.add("caret");
+      li.appendChild(caret);
+    }
+    li.appendChild(document.createTextNode(i.name));
+    li.setAttribute("itemId", i.id);
+
+    return li;
+  }
   window.addEventListener("load", () => {
     socket.emit("info", USERID);
 
-    const createListItem = (i, c=true) => {
-      const li = document.createElement("li");
-      if (c) {
-        const caret = document.createElement("span");
-        caret.classList.add("caret");
-        li.appendChild(caret);
-      }
-      li.appendChild(document.createTextNode(i.name));
-      li.setAttribute("itemId", i.id);
-
-      return li;
-    }
     fetch("/api/servers").then(res => res.json()).then((servers) => {
       serverList.innerHTML = "";
       servers.forEach(s => {
@@ -130,12 +130,29 @@
       const carets = document.getElementsByClassName("caret");
       for (let i = 0; i < carets.length; i++) {
         carets[i].onclick = function() {
+          const state = this.getAttribute("state") || "up";
           this.parentElement.querySelector(".nested").classList.toggle("active");
           this.classList.toggle("caret-down");
+          if (state == "up") fetchVoice(this.parentElement);
+          this.setAttribute("state", (state == "up") ? "down" : "up");
         }
       }
     });
   });
+
+  const fetchVoice = (list) => {
+    fetch("/api/server/" + list.getAttribute("itemid") + "/voice").then(res => res.json()).then(data => {
+      data.forEach(c => {
+        if (c.users.length == 0) return;
+        const l = document.createElement("ul");
+        l.style.listStyle = "inside";
+        l.append(...c.users.map(u => createListItem(u, false)));
+        const cList = list.querySelector("li[itemid='" + c.id + "']");
+        if (cList.children.length > 0) cList.children[0].remove();
+        cList.appendChild(l);
+      });
+    });
+  }
   </script>
 
   <%- include("components/footer"); -%>

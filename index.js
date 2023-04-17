@@ -188,6 +188,36 @@ class Remix {
     await Promise.allSettled(promises);
     console.log(this.client.users.size);
   }
+  getSharedServers(user) {
+    return new Promise((res) => {
+      const id = user.id;
+      const promises = [];
+      this.client.servers.forEach(server => {
+        promises.push({ p: server.fetchMember(id), s: server });
+      });
+      Promise.allSettled(promises.map(ps => ps.p)).then(v => {
+        var servers = v.map(d => d.value).filter(d => !!d);
+        servers = servers.map((_sm, i) => {
+          const s = promises[i].s;
+          return {
+            name: s.name,
+            id: s.id,
+            voiceChannels: s.channels.filter(c => c.type == "VoiceChannel").map(c => ({ name: c.name, id: c.id })) // TODO: fetch users as well
+          }
+        });
+        res(servers);
+      });
+      /*user.fetchMutual().then((data) => { // doesn't work with bots
+        var servers = data.servers;
+        servers = servers.map(server => {
+          return server.voiceChannels = server.channels.filter(c => c.type == "VoiceChannel");
+        });
+        res(servers);
+      }).catch(e => {
+        console.log(e, e.request);
+      });*/
+    })
+  }
   request(d) {
     switch(d.type) {
       case "prefix":

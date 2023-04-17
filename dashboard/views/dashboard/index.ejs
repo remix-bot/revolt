@@ -29,11 +29,34 @@
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
     padding: 1rem;
   }
-  .sidebar > ul {
-    list-style: inside;
+  .sidebar *, ul {
+    /*list-style: inside;*/
+    text-align: left;
+    margin-left: 0.5rem;
   }
   .sidebar > h1 {
     font-size: 130%;
+  }
+
+  .caret {
+    cursor: pointer;
+    user-select: none;
+  }
+  .caret::before {
+    content: "\25B6";
+    color: white;
+    display: inline-block;
+    margin-right: 6px;
+    transition: transform 0.2s;
+  }
+  .caret-down::before {
+    transform: rotate(90deg);
+  }
+  .nested {
+    display: none;
+  }
+  .active {
+    display: block;
   }
   </style>
 </head>
@@ -46,16 +69,8 @@
     <div class="main-container">
       <div class="sidebar">
         <h1>Your Servers</h1>
-        <ul>
-          <li>
-            Server A
-          </li>
-          <li>
-            Server B
-          </li>
-          <li>
-            Server C
-          </li>
+        <ul id="server-list">
+          Loading...
         </ul>
       </div>
       <%- include("components/player"); %>
@@ -79,8 +94,47 @@
     update(vid);
   });
 
+  const serverList = document.getElementById("server-list")
   window.addEventListener("load", () => {
     socket.emit("info", USERID);
+
+    const createListItem = (i, c=true) => {
+      const li = document.createElement("li");
+      if (c) {
+        const caret = document.createElement("span");
+        caret.classList.add("caret");
+        li.appendChild(caret);
+      }
+      li.appendChild(document.createTextNode(i.name));
+      li.setAttribute("itemId", i.id);
+
+      return li;
+    }
+    fetch("/api/servers").then(res => res.json()).then((servers) => {
+      serverList.innerHTML = "";
+      servers.forEach(s => {
+        const server = createListItem(s);
+        if (s.voiceChannels.length == 0) return serverList.appendChild(server);
+
+        const list = document.createElement("ul");
+        list.classList.add("nested");
+        list.style.listStyle = "inside";
+        s.voiceChannels.forEach(c => {
+          const channel = createListItem(c, false);
+          list.appendChild(channel);
+        });
+        server.appendChild(list);
+        serverList.appendChild(server);
+      });
+
+      const carets = document.getElementsByClassName("caret");
+      for (let i = 0; i < carets.length; i++) {
+        carets[i].onclick = function() {
+          this.parentElement.querySelector(".nested").classList.toggle("active");
+          this.classList.toggle("caret-down");
+        }
+      }
+    });
   });
   </script>
 

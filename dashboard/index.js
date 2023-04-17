@@ -137,6 +137,17 @@ class Dashboard {
     secured.get("/dashboard", (req, res) => {
       res.render("dashboard/index.ejs", req.data);
     });
+    secured.get("/api/servers/", async (req, res) => {
+      var servers = await this.remix.getSharedServers(req.data.user);
+      servers.map(s => {
+        return {
+          name: s.name,
+          id: s.id,
+          voiceChannels: s.voiceChannels
+        }
+      });
+      res.status(200).send(servers);
+    });
     secured.post("/api/dashboard/control", (req, res) => {
       const d = this.getUserData(req.data.user.id);
       if (["pause", "skip", "resume"].includes(req.body.action) && !d.voice) return res.status(422).send({ message: "Not in a voice channel." });

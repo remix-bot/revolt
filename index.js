@@ -58,20 +58,21 @@ class Remix {
       console.log("Logged in as " + this.client.user.username);
     });
     this.client.once("ready", () => {
-      let state = 0;
-      let def = ["Ping for prefix", "By RedTech | NoLogicAlan", "Servers: $serverCount"];
-      let texts = config.presenceContents || def;
-      if (texts.length == 0) texts = def;
-      setInterval(() => {
-        this.client.user.edit({
-          status: {
-            text: texts[state].replace(/\$serverCount/g, this.client.servers.size()),
-            presence: "Online"
-          },
-        });
-        if (state == texts.length - 1) {state = 0} else {state++}
-      }, this.presenceInterval);
-      this.mapMembers();
+      this.mapMembers().then(() => {
+        let state = 0;
+        let def = ["Ping for prefix", "By RedTech | NoLogicAlan", "Servers: $serverCount"];
+        let texts = config.presenceContents || def;
+        if (texts.length == 0) texts = def;
+        setInterval(() => {
+          this.client.user.edit({
+            status: {
+              text: texts[state].replace(/\$serverCount/g, this.client.servers.size()),
+              presence: "Online"
+            },
+          });
+          if (state == texts.length - 1) {state = 0} else {state++}
+        }, this.presenceInterval);
+      });
 
       if (!this.config.fetchUsers) return;
       this.fetchUsers();
@@ -207,20 +208,23 @@ class Remix {
     console.log(this.client.users.size);
   }
   mapMembers() {
-    const promises = [];
-    this.client.servers.forEach(server => {
-      promises.push(server.fetchMembers());
-    });
-    Promise.allSettled(promises).then(data => {
-      data = data.map(v => v.value);
-      data.forEach(members => {
-        if (!members) return;
-        members = members.members;
-        const server = members[0].server.id;
-        members = members.map(m => m.id.user);
-        this.memberMap.set(server, members);
+    return new Promise(res => {
+      const promises = [];
+      this.client.servers.forEach(server => {
+        promises.push(server.fetchMembers());
       });
-      console.log("Finished mapping server members!");
+      Promise.allSettled(promises).then(data => {
+        data = data.map(v => v.value);
+        data.forEach(members => {
+          if (!members) return;
+          members = members.members;
+          const server = members[0].server.id;
+          members = members.map(m => m.id.user);
+          this.memberMap.set(server, members);
+        });
+        res();
+        console.log("Finished mapping server members!");
+      });
     });
   }
   mutualServers(user) {
@@ -276,8 +280,8 @@ class Remix {
               m.reply(this.em("Cancelled!", m), false);
               return res(false);
             }
-            if (!this.handler.validateString(m.content, "voiceChannel")) return m.reply(this.em("Invalid voice channel. Please try again and check capitalisation! (`x` to cancel)", m), false); // TODO: more specific error messages
-            const channel = this.handler.formatString(m.content, "voiceChannel");
+            if (!this.handler.validateString(m.content, m, "voiceChannel")) return m.reply(this.em("Invalid voice channel. Please try again and check capitalisation! (`x` to cancel)", m), false); // TODO: more specific error messages
+            const channel = this.handler.formatString(m.content, m, "voiceChannel");
             this.unobserveUser(observer);
             this.joinChannel(m, channel, () => {
               res(channel);

@@ -180,7 +180,7 @@ class Option {
     if (i == undefined) return true;
     return (!i && !i.contains("0")); // check if string is empty
   }
-  validateInput(i, client, type) {
+  validateInput(i, client, msg, type) {
     switch(type || this.type) {
       case "text":
       case "string":
@@ -204,13 +204,13 @@ class Option {
       case "voiceChannel":
         const results = this.channelRegex.exec(i) ?? this.idRegex.exec(i);
 
-        const channel = client.channels.find(c => c.name == i);
+        const channel = client.channels.find(c => c.name == i && c.server.id == msg.channel.server.id);
         const cObj = (results) ? client.channels.find(c => c.id == results.groups["id"]) : (channel) ? channel : null;
         return (cObj) ? cObj.type === "VoiceChannel" : null;
       // TODO: Add roles
     }
   }
-  formatInput(i, client, type) {
+  formatInput(i, client, msg, type) {
     switch (type || this.type) {
       case "text":
       case "string":
@@ -232,7 +232,7 @@ class Option {
       case "voiceChannel":
         const r = this.channelRegex.exec(i) ?? this.idRegex.exec(i);
 
-        const c = client.channels.find(c => c.name == i && c.type == "VoiceChannel");
+        const c = client.channels.find(c => c.name == i && c.type == "VoiceChannel" && c.server.id == msg.channel.server.id);
         return (r) ? r.groups["id"] : (c) ? c.id : null;
     }
   }
@@ -458,11 +458,11 @@ class CommandHandler extends EventEmitter {
         r.ownerOnly
       ) === -1);
   }
-  validateString(s, type) {
-    return (new Option()).validateInput(s, this.client, type);
+  validateString(s, msg, type) {
+    return (new Option()).validateInput(s, this.client, msg, type);
   }
-  formatString(s, type) {
-    return (new Option()).formatInput(s, this.client, type);
+  formatString(s, msg, type) {
+    return (new Option()).formatInput(s, this.client, msg, type);
   }
 
   f(text, i) { // text format function
@@ -533,7 +533,7 @@ class CommandHandler extends EventEmitter {
         }
         argIndex++;
         i--; // check current option next time
-        let valid = op.validateInput(value, this.client);
+        let valid = op.validateInput(value, this.client, msg);
         if (!valid && (op.required || !op.empty(value))) {
           let e = op.typeError.replace(/\$optionType/gi, op.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, value).replace(/\$optionName/gi, op.name);
           return this.replyHandler(e, msg);
@@ -541,7 +541,7 @@ class CommandHandler extends EventEmitter {
         usedArgumentCount += 2;
         previous += " " + value;
         opts.push({
-          value: op.formatInput(value, this.client),
+          value: op.formatInput(value, this.client, msg),
           name: op.name,
           id: op.id
         });
@@ -555,14 +555,14 @@ class CommandHandler extends EventEmitter {
         value = data.args.join(" ");
         value = value.slice(1, value.length - 1);
       }
-      let valid = o.validateInput(value, this.client); // argIndex starts at 1 to exclude command itself
+      let valid = o.validateInput(value, this.client, msg); // argIndex starts at 1 to exclude command itself
       if (!valid && (o.required || !o.empty(value))) {
         let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, value).replace(/\$optionName/gi, o.name);
         return this.replyHandler(e, msg);
       }
 
       opts.push({
-        value: o.formatInput(value, this.client),
+        value: o.formatInput(value, this.client, msg),
         name: o.name,
         id: o.id
       });
@@ -573,7 +573,7 @@ class CommandHandler extends EventEmitter {
     if (texts.length > 0) {
       let o = texts[0];
       let text = args.slice(usedArgumentCount + 1).join(" ");
-      if (o.required && !o.validateInput(text, this.client)) {
+      if (o.required && !o.validateInput(text, this.client, msg)) {
         let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, text).replace(/\$optionName/gi, o.name);
         return this.replyHandler(e, msg);
       }

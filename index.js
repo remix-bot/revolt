@@ -29,6 +29,8 @@ class Remix {
     this.announceSong = config.songAnnouncements;
     this.presenceInterval = config.presenceInterval || 7000;
 
+    this.memberMap = new Map();
+
     this.observedUsers = new Map();
     this.observedReactions = new Map();
 
@@ -69,6 +71,8 @@ class Remix {
         });
         if (state == texts.length - 1) {state = 0} else {state++}
       }, this.presenceInterval);
+      this.mapMembers();
+
       if (!this.config.fetchUsers) return;
       this.fetchUsers();
       setInterval(() => this.fetchUsers, 60 * 1000 * 30);
@@ -87,6 +91,20 @@ class Remix {
     }
     this.client.on("messageReactionAdd", reactionUpdate);
     this.client.on("messageReactionRemove", reactionUpdate);
+    this.client.on("serverMemberJoin", (member) => { // TODO: test
+      const data = this.memberMap.get(member.server.id);
+      if (!data) return;
+      data.push(member.id.user);
+      this.memberMap.set(member.server.id, data);
+    });
+    this.client.on("serverMemberLeave", (member) => {
+      const data = this.memberMap.get(member.server.id);
+      if (!data) return;
+      const idx = data.findIndex(e => e == member.id.user);
+      if (idx == -1) return;
+      data.splice(idx, 1);
+      this.memberMap.set(member.server.id, data);
+    });
 
     console.log("Loading command files...");
     this.handler = new CommandHandler(this.client, config.prefix);
@@ -188,26 +206,41 @@ class Remix {
     await Promise.allSettled(promises);
     console.log(this.client.users.size);
   }
+  mapMembers() {
+    const promises = [];
+    this.client.servers.forEach(server => {
+      promises.push(server.fetchMembers());
+    });
+    Promise.allSettled(promises).then(data => {
+      data = data.map(v => v.value);
+      data.forEach(members => {
+        if (!members) return;
+        members = members.members;
+        const server = members[0].server.id;
+        members = members.map(m => m.id.user);
+        this.memberMap.set(server, members);
+      });
+      console.log("Finished mapping server members!");
+    });
+  }
+  mutualServers(user) {
+    const iterator = this.memberMap.entries();
+    const mutual = [];
+    for (let v = iterator.next(); !v.done; v = iterator.next()) {
+      if (v.value[1].includes(user)) mutual.push(v.value[0]);
+    }
+    return mutual;
+  }
   getSharedServers(user) {
-    return new Promise((res) => {
-      const id = user.id;
-      const promises = [];
-      this.client.servers.forEach(server => {
-        promises.push({ p: server.fetchMember(id), s: server });
-      });
-      Promise.allSettled(promises.map(ps => ps.p)).then(v => {
-        var servers = v.map(d => d.value).filter(d => !!d);
-        servers = servers.map((_sm, i) => {
-          const s = promises[i].s;
-          return {
-            name: s.name,
-            id: s.id,
-            voiceChannels: s.channels.filter(c => c.type == "VoiceChannel").map(c => ({ name: c.name, id: c.id })) // TODO: fetch users as well
-          }
-        });
-        res(servers);
-      });
-    })
+    var servers = this.mutualServers(user.id).map(s => this.client.servers.get(s));
+    servers = servers.map((server) => {
+      return {
+        name: server.name,
+        id: server.id,
+        voiceChannels: server.channels.filter(c => c.type == "VoiceChannel").map(c => ({ name: c.name, id: c.id })) // TODO: fetch users as well
+      }
+    });
+    return servers;
   }
   getVoiceData(server) {
     return new Promise(async res => {

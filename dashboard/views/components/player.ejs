@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 <div style="
   display: flex;
   flex-direction: row;
@@ -20,15 +21,13 @@
     <p style="font-size: 1rem; margin-bottom: 1rem;"><span id="song">Song</span> - <span id="artist">Artist</span></p>
     <div style="display: flex; flex-direction: row; justify-content: center;">
       <button class="btn btn-play" style="margin-right: 0.5rem;" onclick="pushAction(this)" action="resume">
-        <svg viewBox="0 0 100 100" width="24" height="24">
-          <path d="M20 5 L80 50 L20 95 Z" fill="#e9196c"/>
-        </svg>
+        <i class="fa-solid fa-play" style="color: #e9196c"></i>
       </button>
       <button class="btn btn-pause" onclick="pushAction(this)" action="pause">
-        <svg viewBox="0 0 100 100" width="24" height="24">
-          <rect x="20" y="10" width="25" height="80" fill="#e9196c"/>
-          <rect x="55" y="10" width="25" height="80" fill="#e9196c"/>
-        </svg>
+        <i class="fa-solid fa-pause" style="color: #e9196c; margin-right: 0.5rem;"></i>
+      </button>
+      <button class="btn btn-skip" onclick="pushAction(this)" action="skip">
+        <i class="fa-solid fa-forward" style="color: #e9196c"></i>
       </button>
     </div>
   </div>

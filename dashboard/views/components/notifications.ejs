@@ -2,26 +2,52 @@
 .notification {
   position: relative;
   background-color: rgb(31, 41, 55);
-  padding: 0.5rem;
+  /*padding: 0.5rem;
   padding-left: 1rem;
-  padding-right: 1rem;
-  border-radius: 5px;
+  padding-right: 1rem;*/
+  border-radius: 0 3px 3px 0;
   box-shadow: 0px 4px 12px rgb(0 0 0 / 40%);
   color: white;
   display: flex;
+  display: none;
   flex-direction: column;
-  gap: 0.2rem;
+  font-size: 90%;
+  width: 32rem;
 
-  transition: transform 0.2s;
-  transition-timing-function: cubic-bezier(0.43, 0.43, 0.71, 0.71)
+  transition: transform 0.1s;
+  transition-timing-function: linear;
+
+  background-color: #e89d96;
+  color: #7a1200;
+}
+.notification:before {
+  background-color: #d13b2e;
+  content: "";
+  height: 100%;
+  width: 30px;
+  position: absolute;
+  left: -1.5rem;
+  border-radius: 2px 0 0 2px;
 }
 .notif-title {
   font-size: 120%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.notif-content {
+  background-color: rgba(255, 255, 255, 0.3);
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  border-radius: 0 0 3px 0;
 }
 </style>
 
 <div style="
-  display: block;
+  display: none;
   position: fixed;
   top: 0;
   right: 0;
@@ -32,9 +58,9 @@
   flex-direction: row">
   <div class="notification">
     <h1 class="notif-title">test</h1>
-    <p class="notif-content">
+    <div class="notif-content">
       This is a test notification ;>
-    </p>
+    </div>
   </div>
 </div>
 
@@ -42,7 +68,7 @@
 const removeNotif = (el) => {
   setInterval(() => {
     el.remove();
-  }, 200);
+  }, 100);
   el.style.transform = "scale(0.7)";
 }
 </script>

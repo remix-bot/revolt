@@ -58,7 +58,7 @@ class Dashboard {
       saveUninitialized: false
     }));
     app.use((req, _res, next) => {
-      if (!req.session.user) { req.data = {}; return next(); }
+      if (!req.session.user || !req.session.verified) { req.data = {}; return next(); }
       req.data = {
         user: remix.client.users.get(req.session.user),
       }

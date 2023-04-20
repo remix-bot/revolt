@@ -57,21 +57,28 @@ class Dashboard {
       secure: !!remix.config.ssl.useSSL,
       saveUninitialized: false
     }));
+    app.use((req, _res, next) => {
+      if (!req.session.user) { req.data = {}; return next(); }
+      req.data = {
+        user: remix.client.users.get(req.session.user),
+      }
+      next();
+    });
 
     app.set("view engine", "ejs");
     app.set("views", [path.join(__dirname, "views")]);
-    app.get("/", (_req, res) => {
+    app.get("/", (req, res) => {
       // TODO: implement ejs system (maybe)
-      res.render("index.ejs");
+      res.render("index.ejs", req.data);
     });
     app.get("/login", async (req, res) => {
       if (await this.verifySession(req.session, req.cookies)) return res.redirect("/dashboard");
-      const opts = (!req.session.verified) ? { id: req.session.tId, token: req.session.token} : {};
+      const opts = (!req.session.verified) ? { id: req.session.tId, token: req.session.token, ...req.data} : req.data;
       opts.prefix = remix.config.prefix;
       res.render("login/index.ejs", opts);
     });
 
-    app.get("/commands", (_req, res) => res.render("commands/index.ejs"))
+    app.get("/commands", (req, res) => res.render("commands/index.ejs", req.data))
 
     app.post("/api/login", async (req, res) => {
       const user = req.body.userId;

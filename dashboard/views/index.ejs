@@ -27,6 +27,12 @@
       50%  { transform: translate(0, 15px); }
       100%   { transform: translate(0, -0px); }
     }
+    @media screen and (max-width: 740px) {
+      #teamContainer {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
   </style>
 </head>
 <body class="bg-gray-900">
@@ -85,7 +91,7 @@
           <h2 class="mb-4 text-4xl text-center tracking-tight font-bold text-gray-900 dark:text-white">
             Teams
           </h2>
-          <div class="flex justify-center mx-auto">
+          <div class="flex justify-center mx-auto" id="teamContainer">
             <p class="mb-4 font-normal">
               <div style="margin: 10px;" class="w-64 justify-center rounded shadow dark:bg-gray-800 dark:border-gray-700">
                 <a href="#">
@@ -142,7 +148,7 @@
                 </div>
               </div>
             </p>
-          </div>          
+          </div>
       </div>
     </div>
   </section>

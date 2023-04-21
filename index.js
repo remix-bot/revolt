@@ -120,7 +120,7 @@ class Remix {
       msg.reply(m, false)
     });
     this.handler.setPaginationHandler((message, form, contents) => {
-      this.pagination(form, contents, message, 4);
+      this.pagination(form, contents, message, 8);
     });
     this.handler.enableHelpPagination(true);
     const dir = path.join(__dirname, "commands");

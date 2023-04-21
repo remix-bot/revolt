@@ -222,6 +222,11 @@ class Dashboard {
         author: song.author
       }
     };
+    const getPlayerData = (player) => {
+      return {
+        queue: player.getQueue()
+      }
+    }
     const subscribePlayer = (player, socket) => {
       let startPlayHandler = song => {
         socket.emit("startplay", getSongData(song, player));
@@ -237,7 +242,8 @@ class Dashboard {
       socket.emit("info", {
         connected: !!d.voice,
         ...currInfo(this.remix.client.channels.get(con.channelId)),
-        currSong: (!!d.voice) ? getSongData(d.player.data.current, d.player) : null
+        currSong: (!!d.voice) ? getSongData(d.player.data.current, d.player) : null,
+        currData: (!!d.voice) ? getPlayerData(d.player) : null
       });
       if (!!d.voice) subscribePlayer(d.player, socket);
       const oid = this.remix.observeUserVoice(uid, (event, ...data) => {

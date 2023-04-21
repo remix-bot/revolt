@@ -129,6 +129,7 @@ class RevoltPlayer extends EventEmitter {
   shuffle() {
     if (this.data.queue.length == 0) return "There is nothing to shuffle in the queue.";
     this.data.queue = this.shuffleArr(this.data.queue);
+    this.emit("update", "queue");
     return;
   }
   pause() {
@@ -144,10 +145,12 @@ class RevoltPlayer extends EventEmitter {
   skip() {
     if (!this.player || !this.data.current) return `:negative_squared_cross_mark: There's nothing playing at the moment!`;
     this.player.stop();
+    this.emit("update", "queue");
     return;
   }
   clear() {
     this.data.queue.length = 0;
+    this.emit("update", "queue");
   }
   getCurrent() {
     if (!this.data.current) return "There's nothing playing at the moment.";
@@ -186,6 +189,9 @@ class RevoltPlayer extends EventEmitter {
   list() {
     return this.listQueue();
   }
+  getQueue() {
+    return this.data.queue;
+  }
   async lyrics() {
     if (!this.data.current) return [];
     const results = await this.gClient.songs.search(this.data.current.title);
@@ -208,6 +214,7 @@ class RevoltPlayer extends EventEmitter {
     if (!this.data.queue[index]) return "Index out of bounds";
     let title = this.data.queue[index].title;
     this.data.queue.splice(index, 1);
+    this.emit("update", "queue");
     return "Successfully removed **" + title + "** from the queue.";
   }
   getDuration(duration) {

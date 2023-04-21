@@ -204,7 +204,7 @@ class Option {
       case "voiceChannel":
         const results = this.channelRegex.exec(i) ?? this.idRegex.exec(i);
 
-        const channel = client.channels.find(c => c.name == i && c.server.id == msg.channel.server.id);
+        const channel = client.channels.find(c => c.name == i && (msg.channel) ? c.serverId == msg.channel.serverId : false);
         const cObj = (results) ? client.channels.find(c => c.id == results.groups["id"]) : (channel) ? channel : null;
         return (cObj) ? cObj.type === "VoiceChannel" : null;
       // TODO: Add roles

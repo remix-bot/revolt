@@ -11,6 +11,7 @@
     "clientId": "your spotify client id",
     "clientSecret": "your spotify client secret"
   },
+  "mapMembers": true,
   "mysql": {
     "host": "https:your-mysql-host.com",
     "port": 3306,

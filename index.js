@@ -210,9 +210,11 @@ class Remix {
   mapMembers() {
     return new Promise(res => {
       const promises = [];
-      this.client.servers.forEach(server => {
-        promises.push(server.fetchMembers());
-      });
+      if (this.config.mapMembers) {
+        this.client.servers.forEach(server => {
+          promises.push(server.fetchMembers());
+        });
+      }
       Promise.allSettled(promises).then(data => {
         data = data.map(v => v.value);
         data.forEach(members => {

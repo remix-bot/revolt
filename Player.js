@@ -28,7 +28,7 @@ class RevoltPlayer extends EventEmitter {
     }
     this.messageChannel = opts.messageChannel;
 
-    this.LEAVE_TIMEOUT = opts.lTimeout || 15;
+    this.LEAVE_TIMEOUT = opts.lTimeout || 45;
 
     this.YT_API_KEY = opts.ytKey;
     this.token = token;
@@ -279,6 +279,7 @@ class RevoltPlayer extends EventEmitter {
       ytdl("https://www.youtube.com/watch?v=" + songData.videoId, {
         filter: "audioonly",
         quality: "highestaudio",
+        liveBuffer: 5000,
         highWaterMark: 1024 * 1024 * 10, // 10mb
         requestOptions: {
           headers: {

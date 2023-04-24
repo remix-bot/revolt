@@ -47,6 +47,11 @@ class YTUtils extends EventEmitter {
     var match = url.match(regExp);
     return (match && match[7].length == 11) ? match[7] : false;
   }
+  liveParser(url) {
+    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?)|(live\/))\??v?=?([^#&?]*).*/;
+    var match = url.match(regExp);
+    return (match && match[8]) ? match[8] : false;
+  }
   playlistParser(url) {
     var match = url.match(/[&?]list=([^&]+)/i);
     return (match || [0, false])[1];
@@ -124,11 +129,15 @@ class YTUtils extends EventEmitter {
     if (!video) return false;
     return { type: "video", data: video };
   }
-  async getById(parsedId) {
+  async getById(parsedId, live) {
     this.emit("message", "Loading video data...");
     let video = await this.search(parsedId, true);
     if (video) { this.emit("message", "Successfully added to the queue."); } else { this.emit("message", "**There was an error loading the youtube video with the id '" + parsedId + "'!**" ) };
     if (!video) return false;
+    if (live) {
+      video.duration.timestamp = "live";
+      video.url = "https://youtube.com/live/" + parsedId;
+    }
     return { type: "video", data: video };
   }
   async getBySpotifyId(id){
@@ -152,7 +161,11 @@ class YTUtils extends EventEmitter {
     if (playlist) return await this.getPlaylistData(playlist, query);
 
     let parsed = this.youtubeParser(query);
-    if (!parsed) return await this.getByQuery(query); // not a yt id
+    if (!parsed) {
+      const live = this.liveParser(query);
+      if (!live) return await this.getByQuery(query); // not a yt id
+      return await this.getById(live, true);
+    }
     // fetch youtube video data by id
     return await this.getById(parsed);
   }

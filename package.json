@@ -19,7 +19,7 @@
     "spotifydl-core": "^0.2.0",
     "youtube-music-api-fix": "^1.0.6",
     "yt-search": "^2.10.4",
-    "ytdl-core": "https://github.com/ShantanuNair/node-ytdl-core#v4.11.3-patch.1"
+    "ytdl-core": "^4.11.4"
   },
   "scripts": {
     "dev": "node --inspect index.js --trace-warnings",

@@ -275,9 +275,42 @@ class Remix {
   getPlayer(message, promptJoin=true) {
     var askVC = (msg) => {
       return new Promise(res => {
-        msg.reply(this.em("Please send the voice channel! (Mention/Id/Name)\nSend 'x' to cancel.", msg), false);
+        const channels = [];
+        var iterator = msg.channel.server.channels.entries();
+        for (let v = iterator.next(); !v.done; v = iterator.next()) {
+          if (v.value[1].type != "VoiceChannel") continue;
+          channels.push(v.value[1]);
+        }
+        if (channels.length != 0) {
+          var channelSelection = "Please select one of the following channels by clicking on the reactions below\n\n";
+          var reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];//[":one:",":two:",":three:",":four:",":five:",":six:",":seven:",":eight:",":nine:"];
+          channels.slice(0, 9).forEach((c, i) => {
+            channelSelection += (i + 1) + ". " + c.name + "\n";
+          });
+        }
+        const mObj = this.em(((channelSelection) ? channelSelection + "\n**..or**" : "Please") + " send the voice channel! (Mention/Id/Name)\nSend 'x' to cancel.", msg);
+        if (channels.length != 0) {
+          mObj.interactions = {
+            restrict_reactions: true,
+            reactions: reactions.slice(0, Math.min(channels.length, 9))
+          }
+        }
+        var roid;
+        var observer;
+        msg.reply(mObj, false).then(m => {
+          roid = this.observeReactions(m, reactions, (e) => {
+            const idx = reactions.findIndex(r => r == e.emoji_id);
+            const c = channels[idx];
+            this.joinChannel(msg, c.id, () => {
+              res(c);
+            }, () => { m.edit(this.em("Something went wrong. Unable to join <#" + c.id + ">. Do I have the needed permission?", m)); return res(false); });
+
+            this.unobserveUser(observer);
+            this.unobserveReactions(roid);
+          });
+        });
         const join = (msg) => {
-          const observer = this.observeUser(msg.authorId, msg.channelId, (m) => {
+          observer = this.observeUser(msg.authorId, msg.channelId, (m) => {
             if (m.content.toLowerCase() == "x") {
               this.unobserveUser(observer);
               m.reply(this.em("Cancelled!", m), false);

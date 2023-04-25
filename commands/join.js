@@ -9,7 +9,7 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
 
   if (this.playerMap.has(cid)) {
     cb();
-    return message.reply(this.em("Already joined. <#" + cid + ">", message), false);
+    return message.reply(this.em("Already joined <#" + cid + ">.", message), false);
   }
   this.channels.push(cid);
   const settings = this.settingsMgr.getServer(message.channel.serverId);

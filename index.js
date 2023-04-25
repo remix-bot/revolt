@@ -88,6 +88,7 @@ class Remix {
       if (event.user_id == this.client.user.id) return;
       const observer = this.observedReactions.get(message.id);
       if (!observer.r.includes(event.emoji_id)) return;
+      if (observer.user) if (observer.user != user) return;
       observer.cb(event, message);
     }
     this.client.on("messageReactionAdd", reactionUpdate);
@@ -285,7 +286,7 @@ class Remix {
           var channelSelection = "Please select one of the following channels by clicking on the reactions below\n\n";
           var reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];//[":one:",":two:",":three:",":four:",":five:",":six:",":seven:",":eight:",":nine:"];
           channels.slice(0, 9).forEach((c, i) => {
-            channelSelection += (i + 1) + ". " + c.name + "\n";
+            channelSelection += (i + 1) + ". <#" + c.id + ">\n";
           });
         }
         const mObj = this.em(((channelSelection) ? channelSelection + "\n**..or**" : "Please") + " send the voice channel! (Mention/Id/Name)\nSend 'x' to cancel.", msg);
@@ -301,24 +302,30 @@ class Remix {
           roid = this.observeReactions(m, reactions, (e) => {
             const idx = reactions.findIndex(r => r == e.emoji_id);
             const c = channels[idx];
-            this.joinChannel(msg, c.id, () => {
+            this.joinChannel(msg, c.id, (p) => {
+              p.once("roomfetched", () => { // TODO: implement this in %join
+                if (p.connection.users.find(u => u.id == msg.authorId)) return;
+                msg.reply(this.em("You don't seem to be connected to <#" + c.id + ">. Did you forget to join?", msg), true);
+              });
               res(c);
             }, () => { m.edit(this.em("Something went wrong. Unable to join <#" + c.id + ">. Do I have the needed permission?", m)); return res(false); });
 
             this.unobserveUser(observer);
             this.unobserveReactions(roid);
-          });
+          }, msg.author);
         });
         const join = (msg) => {
           observer = this.observeUser(msg.authorId, msg.channelId, (m) => {
             if (m.content.toLowerCase() == "x") {
               this.unobserveUser(observer);
+              this.unobserveReactions(roid);
               m.reply(this.em("Cancelled!", m), false);
               return res(false);
             }
             if (!this.handler.validateString(m.content, m, "voiceChannel")) return m.reply(this.em("Invalid voice channel. Please try again and check capitalisation! (`x` to cancel)", m), false); // TODO: more specific error messages
             const channel = this.handler.formatString(m.content, m, "voiceChannel");
             this.unobserveUser(observer);
+            this.unobserveReactions(roid);
             this.joinChannel(m, channel, () => {
               res(channel);
             }, () => { join(msg); });
@@ -371,8 +378,8 @@ class Remix {
   unobserveUser(i) {
     return this.observedUsers.delete(i);
   }
-  observeReactions(msg, reactions, cb) {
-    this.observedReactions.set(msg.id, { r: reactions, cb });
+  observeReactions(msg, reactions, cb, user) {
+    this.observedReactions.set(msg.id, { r: reactions, user: (user) ? user.id : null, cb });
     return msg.id;
   }
   unobserveReactions(i) {

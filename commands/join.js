@@ -47,7 +47,7 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
   message.reply(this.em("Joining Channel...",   message), false).then((message) => {
     p.join(cid).then(() => {
       message.edit(this.em(`:white_check_mark: Successfully joined <#${cid}>`, message));
-      cb();
+      cb(p);
 
       p.connection.on("userjoin", (user) => {
         if (!this.observedVoiceUsers.has(user.id)) return;

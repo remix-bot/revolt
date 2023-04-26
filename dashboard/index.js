@@ -155,7 +155,8 @@ class Dashboard {
     });
     secured.post("/api/dashboard/control", (req, res) => {
       const d = this.getUserData(req.data.user.id);
-      if (["pause", "skip", "resume"].includes(req.body.action) && !d.voice) return res.status(422).send({ message: "Not in a voice channel." });
+      if (!d.voice) return res.status(422).send({ message: "Not in a voice channel." });
+      if (!["pause", "skip", "resume"].includes(req.body.action)) return res.status(403).send({ message: "Invalid action.", success: false });
       var message;
       switch (req.body.action) {
         case "pause":
@@ -178,16 +179,39 @@ class Dashboard {
           break;
       }
     });
+    secured.post("/api/dashboard/queue", (req, res) => {
+      const d = this.getUserData(req.data.user.id);
+      if (!d.voice) return res.status(403).send({ message: "Not in a voice channel." });
+      if (!["add"].includes(req.body.action)) return res.status(422).send({ message: "Invalid action." });
+
+      var message;
+      switch (req.body.action) {
+        case "add":
+          message = d.player.play(req.body.query);
+          res.status(200).send({ message: "Adding to queue...", success: null })
+          if (message) {
+            this.sendMessage(d.player.messageChannel, req, "Searching...").then(m => {
+              message.on("message", (msg) => {
+                m.edit(this.messageBody(d.player.messageChannel, req, msg));
+              });
+            })
+          }
+          break;
+      }
+    });
   }
-  sendMessage(channel, req, content) {
-    return channel.sendMessage({
+  messageBody(channel, req, content) {
+    return {
       content: " ",
       embeds: [this.remix.embedify((!channel.havePermission("Masquerade")) ? content + `\n\n###### Requested by <@${req.data.user.id}>` : content)],
       masquerade: (channel.havePermission("Masquerade")) ? {
         name: req.data.user.username,
         avatar: req.data.user.avatarURL || req.data.user.defaultAvatarURL
       } : null
-    });
+    }
+  }
+  sendMessage(channel, req, content) {
+    return channel.sendMessage(this.messageBody(channel, req, content));
   }
   getUserData(id) {
     const connection = (this.remix.revoice.getUser(id) || {}).connection;

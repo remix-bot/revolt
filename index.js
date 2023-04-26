@@ -289,7 +289,7 @@ class Remix {
             channelSelection += (i + 1) + ". <#" + c.id + ">\n";
           });
         }
-        const mObj = this.em(((channelSelection) ? channelSelection + "\n**..or**" : "Please") + " send the voice channel! (Mention/Id/Name)\nSend 'x' to cancel.", msg);
+        const mObj = this.em(((channelSelection) ? channelSelection + "\n**..or**" : "Please") + " send a message with the voice channel! (Mention/Id/Name)\nSend 'x' to cancel.", msg);
         if (channels.length != 0) {
           mObj.interactions = {
             restrict_reactions: true,
@@ -307,7 +307,7 @@ class Remix {
                 if (p.connection.users.find(u => u.id == msg.authorId)) return;
                 msg.reply(this.em("You don't seem to be connected to <#" + c.id + ">. Did you forget to join?", msg), true);
               });
-              res(c);
+              res(c.id);
             }, () => { m.edit(this.em("Something went wrong. Unable to join <#" + c.id + ">. Do I have the needed permission?", m)); return res(false); });
 
             this.unobserveUser(observer);

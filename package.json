@@ -13,7 +13,7 @@
     "puppeteer": "^19.8.3",
     "revoice.js": "^0.1.7535",
     "revolt-uploader": "^1.1.0",
-    "revolt.js": "^7.0.0-beta.1",
+    "revolt.js": "^7.0.0-beta.4",
     "socket.io": "^4.6.1",
     "soundcloud-downloader": "^1.0.0",
     "spotifydl-core": "^0.2.0",

@@ -16,7 +16,7 @@
     <img id="thumbnail" style="border-radius: 5px; object-fit: cover; height: 100%; width: 100%;" src="/api/imageProxy?url=https%3A%2F%2Fi.ytimg.com%2Fvi%2FhJqYc62NCKo%2Fhq720.jpg" />
   </div>
 
-  <div style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+  <div style="display: flex; flex-direction: column; justify-content: center; height: 100%; flex-grow: 2">
     <h1 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">Currently Playing</h1>
     <p style="font-size: 1rem; margin-bottom: 1rem;"><span id="song">Song</span> - <span id="artist">Artist</span></p>
     <div style="display: flex; flex-direction: row; justify-content: center;">
@@ -30,9 +30,56 @@
         <i class="fa-solid fa-forward" style="color: #e9196c"></i>
       </button>
     </div>
+    <input type="text" name="search" placeholder="Search..." onkeyup="keyUpSearch(this)"
+      style="margin: 10px;
+        padding: 5px;
+        padding-left: 7px;
+        padding-right: 7px;
+        align-self: center;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        width: 100%;
+        max-width: 400px;
+        background-color: rgb(19, 25, 39);
+        border-color: #bbb;
+        transition: all 0.2s ease-in-out;">
   </div>
   </div>
 </div>
+
+<ul id="completions"></ul>
+
+<script>
+var runningRequest = false;
+const suggestions = document.getElementById("completions");
+const keyUpSearch = async (i) => {
+  if (runningRequest) return;
+  runningRequest = true;
+  const data = await getSuggestions(i.value);
+  suggestions.innerHTML = "";
+  data.forEach(suggestion => {
+    const li = document.createElement("li");
+    li.innerText = suggestion;
+    suggestions.appendChild(li)
+  });
+  runningRequest = false;
+}
+const getSuggestions = (query) => {
+  return new Promise(res => {
+    const script = document.createElement("script");
+    script.async = true;
+    const cname = "suggestion" + (Math.random() + "").replaceAll(".", "");
+    window[cname] = (data) => {
+      res(data[1]);
+      script.remove();
+      delete window[cname];
+    }
+    script.src = "https://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q=" + encodeURIComponent(query) + "&callback=" + cname; // "hl" parameter for locale
+    document.head.appendChild(script);
+  });
+}
+</script>
 <script>
 const bgrdImg = document.getElementById("thumbnail");
 const pBgrd = bgrdImg.parentElement.parentElement;

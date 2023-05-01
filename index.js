@@ -100,7 +100,7 @@ class Remix {
       this.memberMap.set(member.server.id, data);
     });
     this.client.on("serverMemberLeave", (member) => {
-      const data = this.memberMap.get(member.server.id);
+      const data = this.memberMap.get(member.id.server);
       if (!data) return;
       const idx = data.findIndex(e => e == member.id.user);
       if (idx == -1) return;
@@ -199,6 +199,9 @@ class Remix {
 
     return this;
   }
+  static sleep(ms) {
+    return new Promise(res => setTimeout(res, ms));
+  }
   async fetchUsers() {
     const promises = [];
     for (const server of this.client.servers) {
@@ -209,14 +212,9 @@ class Remix {
     console.log(this.client.users.size);
   }
   mapMembers() {
-    return new Promise(res => {
-      const promises = [];
-      if (this.config.mapMembers) {
-        this.client.servers.forEach(server => {
-          promises.push(server.fetchMembers());
-        });
-      }
-      Promise.allSettled(promises).then(data => {
+    return new Promise(async res => {
+      if (!this.config.mapMembers) return res();
+      const evaluate = (data) => {
         data = data.map(v => v.value);
         data.forEach(members => {
           if (!members) return;
@@ -225,9 +223,23 @@ class Remix {
           members = members.map(m => m.id.user);
           this.memberMap.set(server, members);
         });
-        res();
-        console.log("Finished mapping server members!");
-      });
+      }
+
+      const promises = [];
+      const servers = this.client.allServers;
+      console.log("Started mapping server members");
+      for (let i = 0; i < servers.length; i++) {
+        if (i % 30 === 0 && i !== 0) {
+          evaluate(await Promise.allSettled(promises));
+          console.log("Mapped " + Math.round((i / servers.length * 100)) + "%")
+          promises.length = 0;
+          //await Remix.sleep(2000);
+        }
+        promises.push(servers[i].fetchMembers());
+      }
+      if (promises.length !== 0) evaluate(await Promise.allSettled(promises));
+      console.log("Finished mapping server members!");
+      res();
     });
   }
   mutualServers(user) {

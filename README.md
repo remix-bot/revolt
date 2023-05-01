@@ -1,22 +1,24 @@
 <p align="center">
     <a href="https://github.com/remix-bot">
-        <img src="https://i.imgur.com/dt5Ppu6.jpg" alt="Logo" width="80" height="80">
-      </a>
+      <img src="https://i.imgur.com/dt5Ppu6.jpg" alt="Logo" width="80" height="80">
+    </a>
     <h2 align="center">Remix</h2>
     <p align="center">
     The best high quality Revolt music bot.
-        <br>
-        <a href="https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW">Invite to your server</a>
-        ·
-        <a href="https://app.revolt.chat/invite/Remix">Report bug</a>
-        ·
-        <a href="https://app.revolt.chat/invite/Remix"> Request Feature</a>
-    <a/>
-
+    <br>
+    <a href="https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW">Invite to your server</a>
+      ·
+    <a href="https://app.revolt.chat/invite/Remix">Report bug</a>
+      ·
+    <a href="https://app.revolt.chat/invite/Remix"> Request Feature</a>
+  </p>
+</p>
 
 ## About The Project
 
 Remix is a free and open source music bot for Revolt built on [revoice.js](https://github.com/ShadowLp174/revoice.js). All commands on Remix are free and will always be free to use.
+
+[![Wakatime stats](https://wakatime.com/badge/user/810f765c-4ad8-49cc-8be6-0f07dff3733f/project/e79f62e3-4d15-41fc-b239-53d5a30302c7.svg?style=flat)](https://wakatime.com/badge/user/810f765c-4ad8-49cc-8be6-0f07dff3733f/project/e79f62e3-4d15-41fc-b239-53d5a30302c7)
 
 ## Commands  
 
@@ -48,11 +50,13 @@ Below is a table of all of Remix's commands.
 
 ## Getting Started
 
-Firstly, if you have already invited Remix (If not, go ahead and do it now!) and then You can use the (%help) command to get a list of commands that you can use in the bot.
+Firstly, you have to [invite Remix](https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW). Then use the `%help` command to get a list of commands that you can use through the bot.
+
+<!-- TODO: more extensive tutorial -->
 
 ## Hosting The Bot
 
-If you're intending on self-hosting, please make it clear that it is **not the main instance** (or **change the name**) but give credit by **linking to this repo** (for example, in the bot's profile - something like `This bot <is based on/is an instance of> [Remix](https://github.com/remix-bot/revolt)` will suffice).
+If you're self-hosting Remix, please make it clear that it is **not the main instance** (or **change the name**) but give credit by **linking to this repo** (for example, in the bot's profile - something like `This bot <is based on/is an instance of> [Remix](https://github.com/remix-bot/revolt)` will suffice).
 
 -   Clone this repo (`git clone https://github.com/remix-bot/revolt.git)`)
 -   Install the dependencies (`npm install`)

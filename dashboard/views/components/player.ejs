@@ -30,37 +30,61 @@
         <i class="fa-solid fa-forward" style="color: #e9196c"></i>
       </button>
     </div>
-    <input type="text" name="search" placeholder="Search..." onkeyup="keyUpSearch(this)"
-      style="margin: 10px;
-        padding: 5px;
-        padding-left: 7px;
-        padding-right: 7px;
-        align-self: center;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        width: 100%;
-        max-width: 400px;
-        background-color: rgb(19, 25, 39);
-        border-color: #bbb;
-        transition: all 0.2s ease-in-out;">
+    <div style="position: relative; display: flex; flex-direction: column">
+      <input type="text" name="search" placeholder="Search..." onkeyup="keyUpSearch(this)" autocomplete="off"
+        style="margin: 10px 0 0;
+          padding: 5px;
+          padding-left: 7px;
+          padding-right: 7px;
+          align-self: center;
+          border: none;
+          border-radius: 5px;
+          font-size: 16px;
+          width: 100%;
+          max-width: 400px;
+          background-color: rgb(19, 25, 39);
+          border-color: #bbb;
+          transition: all 0.2s ease-in-out;">
+      <div style="position: relative; align-self: center; width: 100%">
+        <ul id="completions" style="
+          background-color: rgb(19, 25, 39);
+          border-radius: 5px;/*0 0 5px 5px;*/
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          algin-self: center;
+          width: 100%;
+          max-width: 400px;
+          padding: 5px">
+          <li>
+            test
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
   </div>
 </div>
 
-<ul id="completions"></ul>
-
 <script>
 var runningRequest = false;
 const suggestions = document.getElementById("completions");
+const reset = (i) => {
+  suggestions.style.display = "none";
+}
 const keyUpSearch = async (i) => {
+  if (i.value == "") reset(i);
   if (runningRequest) return;
   runningRequest = true;
   const data = await getSuggestions(i.value);
   suggestions.innerHTML = "";
+  suggestions.style.display = "block";
+  if (data.length == 0) reset(i);
   data.forEach(suggestion => {
     const li = document.createElement("li");
     li.innerText = suggestion;
+    li.setAttribute("suggestion", suggestion);
     suggestions.appendChild(li)
   });
   runningRequest = false;

@@ -31,7 +31,7 @@
       </button>
     </div>
     <div style="position: relative; display: flex; flex-direction: column">
-      <input type="text" name="search" placeholder="Search..." onkeyup="keyUpSearch(this)" autocomplete="off"
+      <input type="text" name="search" placeholder="Search..." onkeyup="keyUpSearch(this)" onblur="reset(this)" autocomplete="off"
         style="margin: 10px 0 0;
           padding: 5px;
           padding-left: 7px;
@@ -50,6 +50,7 @@
           background-color: rgb(19, 25, 39);
           border-radius: 5px;/*0 0 5px 5px;*/
           position: absolute;
+          display: none;
           top: 0;
           left: 50%;
           transform: translateX(-50%);
@@ -57,9 +58,6 @@
           width: 100%;
           max-width: 400px;
           padding: 5px">
-          <li>
-            test
-          </li>
         </ul>
       </div>
     </div>

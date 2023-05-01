@@ -9,7 +9,6 @@
   box-shadow: 0px 4px 12px rgb(0 0 0 / 40%);
   color: white;
   display: flex;
-  display: none;
   flex-direction: column;
   font-size: 90%;
   width: 32rem;
@@ -29,6 +28,13 @@
   left: -1.5rem;
   border-radius: 2px 0 0 2px;
 }
+.info {
+  background-color: #7ebef7;
+  color: #0e3377;
+}
+.info:before {
+  background-color: #0f82e6;
+}
 .notif-title {
   font-size: 120%;
   padding-left: 1rem;
@@ -44,10 +50,16 @@
   padding-top: 0.5rem;
   border-radius: 0 0 3px 0;
 }
+.closebtn {
+  cursor: pointer;
+  position: absolute;
+  right: 0.5rem;
+  top: 0.25rem;
+}
 </style>
 
 <div style="
-  display: none;
+  display: block;
   position: fixed;
   top: 0;
   right: 0;
@@ -55,20 +67,81 @@
   padding: 1rem;
   max-height: 100vh;
   display: flex;
-  flex-direction: row">
-  <div class="notification">
-    <h1 class="notif-title">test</h1>
-    <div class="notif-content">
-      This is a test notification ;>
-    </div>
-  </div>
+  flex-direction: column;
+  gap: 1rem" id="notifications">
 </div>
 
 <script>
 const removeNotif = (el) => {
+  const idx = notifications.find(e => e.id == el.id);
+  notifications.splice(idx, 1);
   setInterval(() => {
     el.remove();
   }, 100);
   el.style.transform = "scale(0.7)";
+}
+const notifications = [];
+const nContainer = document.getElementById("notifications");
+
+const addNotification = (title, description, time=5000, type="info") => {
+  const container = document.createElement("div");
+  container.classList = "notification " + type;
+  container.id = "notification" + (Math.random() + "").replaceAll(".", "");
+
+  const t = document.createElement("h1");
+  t.classList.add("notif-title");
+  t.innerHTML = title;
+  container.appendChild(t);
+  const desc = document.createElement("div");
+  desc.classList.add("notif-content");
+  desc.innerHTML = description;
+  container.appendChild(desc);
+  const closebtn = document.createElement("div");
+  closebtn.classList.add("closebtn");
+  closebtn.innerHTML = '<i class="fa-solid fa-xmark" onclick="removeNotif(this.parentElement.parentElement)"></i>';
+  container.appendChild(closebtn);
+
+  nContainer.appendChild(container);
+  const notif = {
+    id: container.id,
+    element: container,
+    _title: title,
+    _description: description,
+    _time: time,
+    get title() {
+      return this._title;
+    },
+    set title(t) {
+      this.resetTimer();
+      container.children[0].innerHTML = t;
+      this._title = t;
+    },
+    get description() {
+      return this._description;
+    },
+    set description(d) {
+      this.resetTimer();
+      container.children[1].innerHTML = d;
+      this._description = d;
+    },
+    get time() {
+      return this._time;
+    },
+    set time(t) {
+      this._time = t;
+      this.resetTimer();
+    },
+    resetTimer: function() {
+      if (this.removalTimeout) clearTimeout(this.removalTimeout);
+      this.removalTimeout = setTimeout(() => {
+        removeNotif(this.element);
+      }, this.time)
+    },
+    removalTimeout: null,
+    type: type,
+  }
+  notif.resetTimer();
+  notifications.push(notif);
+  return notif;
 }
 </script>

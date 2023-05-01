@@ -190,9 +190,9 @@ class Dashboard {
           message = d.player.play(req.body.query);
           res.status(200).send({ message: "Adding to queue...", success: null })
           if (message) {
-            this.sendMessage(d.player.messageChannel, req, "Searching...").then(m => {
+            this.sendMessage(d.player.messageChannel, req, "[Web] Searching...").then(m => {
               message.on("message", (msg) => {
-                m.edit(this.messageBody(d.player.messageChannel, req, msg));
+                m.edit(this.messageBody(d.player.messageChannel, req, "[Web] " +  msg));
               });
             })
           }

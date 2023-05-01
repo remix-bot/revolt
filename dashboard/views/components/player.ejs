@@ -30,8 +30,8 @@
         <i class="fa-solid fa-forward" style="color: #e9196c"></i>
       </button>
     </div>
-    <div style="position: relative; display: flex; flex-direction: column">
-      <input type="text" name="search" placeholder="Search..." onkeyup="keyUpSearch(this)" onblur="reset(this)" autocomplete="off"
+    <div style="position: relative; display: flex; flex-direction: column" class="search-container">
+      <input type="text" name="search" placeholder="Search or paste a link" onkeyup="keyUpSearch(this)" autocomplete="off" id="search"
         style="margin: 10px 0 0;
           padding: 5px;
           padding-left: 7px;
@@ -65,12 +65,33 @@
   </div>
   </div>
 </div>
+<style>
+.suggestion-li {
+  cursor: pointer;
+}
+</style>
 
 <script>
 var runningRequest = false;
 const suggestions = document.getElementById("completions");
 const reset = (i) => {
   suggestions.style.display = "none";
+}
+document.getElementById("search").addEventListener("keyup", (event) => {
+  if (event.code == "Enter") {event.preventDefault(); queueSearch(event.target.value); reset(event.target)}
+});
+window.addEventListener("click", (event) => {
+  if (!event.target.matches(".search-container > *")) return reset(event.target);
+});
+const queueSearch = (query) => {
+  const notification = addNotification("Playlist", "Adding to playlist. Watch the current progress in the revolt channel (WIP)", 5000);
+  post("/api/dashboard/queue", { action: "add", query: query }).then(async r => {
+    const d = await r.json()
+    if (r.status !== 200 || (d.success === false)) {
+      return addNotification("Playlist Error", d.message, 7000, "error");
+    }
+    notification.description = d.message;
+  });
 }
 const keyUpSearch = async (i) => {
   if (i.value == "") reset(i);
@@ -84,6 +105,8 @@ const keyUpSearch = async (i) => {
     const li = document.createElement("li");
     li.innerText = suggestion;
     li.setAttribute("suggestion", suggestion);
+    li.classList.add("suggestion-li");
+    li.onclick = () => { queueSearch(suggestion); reset(i) }
     suggestions.appendChild(li)
   });
   runningRequest = false;

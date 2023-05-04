@@ -150,13 +150,41 @@ class Dashboard {
     });
     secured.get("/api/server/:s/voice", async (req, res) => {
       const server = req.params.s;
+      if (!this.remix.client.servers.has(server)) return res.status(404).send({ message: "Unknown server", success: false })
       const data = await this.remix.getVoiceData(server);
       res.status(200).send(data);
+    });
+    secured.get("/api/server/:s/channels", async (req, res) => {
+      const s = req.params.s;
+      if (!s) return res.status(500).send({ message: "Unkown server error. ID SASC-PVERIFY", success: false });
+      const server = this.remix.client.servers.get(s) || await this.remix.client.servers.fetch(s);
+      if (!server) return res.status(404).send({ message: "Unknown server", success: false });
+      const channels = server.channels.map(c => {
+        return {
+          name: c.name,
+          description: c.description,
+          id: c.id,
+          icon: c.iconURL,
+          type: c.type
+        }
+      });
+      res.status(200).send({ data: channels, success: true });
+    });
+    secured.post("/api/voice/:channel/join", async (req, res) => {
+      const channel = this.remix.client.channels.get(req.params.channel);
+      if (!channel) return res.status(422).send({ message: "Invalid voice channel", success: false });
+      if (this.remix.playerMap.has(channel.id)) return res.status(200).send({ message: "Already joined.", success: false });
+      const textC = this.remix.client.channels.get(req.body.text);
+      if (!textC) return res.status(422).send({ message: "Invalid text channel", success: false });
+      res.status(200).send({ message: "Joining", success: true });
+      this.sendMessage(textC, req, "[Web] Joining <#" + channel.id + ">").then(msg => {
+        this.remix.joinChannel.call(this.remix, msg, channel.id);
+      });
     });
     secured.post("/api/dashboard/control", (req, res) => {
       const d = this.getUserData(req.data.user.id);
       if (!d.voice) return res.status(422).send({ message: "Not in a voice channel." });
-      if (!["pause", "skip", "resume"].includes(req.body.action)) return res.status(403).send({ message: "Invalid action.", success: false });
+      if (!["pause", "skip", "resume"].includes(req.body.action)) return res.status(400).send({ message: "Invalid action.", success: false });
       var message;
       switch (req.body.action) {
         case "pause":

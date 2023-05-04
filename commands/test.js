@@ -6,15 +6,8 @@ module.exports = {
     .setDescription("A test command used for various purposes.")
     .addRequirement(r =>
       r.setOwnerOnly(true)
-    ).addStringOption(o =>
-      o.setName("string")
-        .setRequired(true)
-    ).addNumberOption(o =>
-      o.setName("number")
-        .setRequired(true)),
+    ),
   run: async function(msg, data) {
-    msg.reply(this.em(data.get("string").value, msg), false);
-    let e = { embeds: [{ media: await this.uploader.uploadFile("./storage/test.jpg"), ...this.em(data.get("number").value, msg).embeds[0] }] };
-    msg.reply(e, false);
+    console.log(typeof msg, msg instanceof require("revolt.js").Message, require("revolt.js").Message);
   }
 }

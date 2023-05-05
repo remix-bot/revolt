@@ -274,7 +274,7 @@ class Remix {
           id: c.id,
           users: (con || { users: [] }).users
         }
-        data.users = data.users.map(u => ({ name: u.username, id: u.id, avatar: u.avatarURL }))
+        data.users = data.users.map(u => this.client.users.get(u.id) || u).map(u => ({ name: u.username, id: u.id, avatar: u.avatarURL }))
         return data;
       }));
     });

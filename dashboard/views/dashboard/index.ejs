@@ -109,6 +109,9 @@
     <h1 style="font-size: 200%" class="self-center text-2xl font-semibold whitespace-nowrap dark:text-pink-600">Remix Dashboard</h2>
     <br />
     <div class="main-container">
+      <!--<div class="channel">
+
+      </div>-->
       <div class="sidebar">
         <h1>Your Servers</h1>
         <br />
@@ -169,7 +172,7 @@
   });
 
   const serverList = document.getElementById("server-list")
-  const createListItem = (i, c=true, oc) => {
+  const createListItem = (i, c=true, oc, bs="") => {
     const li = document.createElement("li");
     if (c) {
       const caret = document.createElement("span");
@@ -178,7 +181,7 @@
     }
     if (i.icon) {
       li.style.listStyle = "none";
-      css.sheet.insertRule("li[itemid='" + i.id + "']::before {content:''; display: inline-block; background-image:url(" + i.icon + "); background-size: cover; aspect-ratio: 1/1; height: 1.5rem; margin-right: 0.2rem; margin-left: 0.2rem; padding: 0;}");
+      css.sheet.insertRule("li[itemid='" + i.id + "']::before {content:''; display: inline-block; position: relative; top: 0.4rem; background-image:url(" + i.icon + "); background-size: cover; aspect-ratio: 1/1; height: 1.5rem; margin-right: 0.2rem; margin-left: 0.2rem; padding: 0; " + bs + "}");
     }
     li.appendChild(document.createTextNode(i.name));
     li.onclick = oc;
@@ -225,7 +228,7 @@
         if (c.users.length == 0) return;
         const l = document.createElement("ul");
         l.style.listStyle = "inside";
-        l.append(...c.users.map(u => createListItem(u, false)));
+        l.append(...c.users.map(u => Object.assign({icon: u.avatar}, u)).map(u => createListItem(u, false, null, "border-radius: 50%;")));
         const cList = list.querySelector("li[itemid='" + c.id + "']");
         if (cList.children.length > 0) cList.children[0].remove();
         cList.appendChild(l);

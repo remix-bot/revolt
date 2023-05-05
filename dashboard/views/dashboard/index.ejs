@@ -9,7 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script>
   <link rel="stylesheet" href="/dashboard/style.css" />
   <link rel="icon" href="../assets/icon.png" />
-  <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css" rel="stylesheet" type='text/css'>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css" rel="stylesheet" type='text/css'>
   <style id="styleContainer">
   .main-container {
     display: flex;
@@ -76,9 +76,11 @@
     padding-left: 0.35rem;
     cursor: pointer;
   }
-  #channels {
+  #channels { /* TODO: Redesign scrollbar */
     list-style-type: disc;
     margin-left: 1.3rem;
+    max-height: 60vh;
+    overflow: auto;
   }
   .button {
     border-radius: 5px;
@@ -91,6 +93,12 @@
   }
   ul.nested > li {
     cursor: pointer;
+  }
+  @media (max-width: 770px) {
+    .main-container {
+      flex-direction: column;
+      align-items: center;
+    }
   }
   </style>
 </head>

@@ -159,7 +159,9 @@ class Dashboard {
       if (!s) return res.status(500).send({ message: "Unkown server error. ID SASC-PVERIFY", success: false });
       const server = this.remix.client.servers.get(s) || await this.remix.client.servers.fetch(s);
       if (!server) return res.status(404).send({ message: "Unknown server", success: false });
-      const channels = server.channels.map(c => {
+      const member = await server.fetchMember(req.data.user.id);
+      // TODO: solve caching problem
+      const channels = server.channels.filter(c => member.hasPermission(c, "ViewChannel") && member.hasPermission(c, "SendMessage") && c.havePermission("SendMessage") && c.havePermission("ViewChannel")).map(c => {
         return {
           name: c.name,
           description: c.description,

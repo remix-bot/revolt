@@ -67,3 +67,5 @@ If you're self-hosting Remix, please make it clear that it is **not the main ins
 ## Contact
 
 If you have any questions or would like to talk with other Remix users you can join our Revolt server <a href="https://app.revolt.chat/invite/Remix">here</a>.
+
+&copy; [**Remix**](https://remix.fairuse.org) | 2023

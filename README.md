@@ -70,4 +70,4 @@ If you have any questions or would like to talk with other Remix users you can j
 
 ---
 
-&copy; 2023 [**Remix**](https://remix.fairuse.org). All Rights Reserved.
+&copy; 2023 Remix. All Rights Reserved.

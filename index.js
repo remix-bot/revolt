@@ -285,7 +285,7 @@ class Remix {
         return this.settingsMgr.getServer(d.data.channel.serverId).get("prefix");
     }
   }
-  getPlayer(message, promptJoin=true) {
+  getPlayer(message, promptJoin=true, verifyUser=true) {
     var askVC = (msg) => {
       return new Promise(res => {
         const channels = [];
@@ -358,7 +358,9 @@ class Remix {
     return new Promise(async res => {
       const user = this.revoice.getUser(message.authorId).user;
       var cid = (user) ? user.connectedTo : null;
-      if (!user || !cid) {
+      if (message.channel.type === "Group") cid = message.channel.id;
+      var player = this.playerMap.get(cid);
+      if (!((verifyUser) ? user : true) || !cid || !player) {
         if (!promptJoin) {
           message.reply(this.em("It doesn't look like we're in the same voice channel.", message), false);
           return res(false);
@@ -367,7 +369,8 @@ class Remix {
         if (!success) return res(null);
         cid = success;
       }
-      return res(this.playerMap.get(cid));
+      player = this.playerMap.get(cid);
+      return res(player);
     });
   }
   observeUserVoice(user, cb) {

@@ -202,11 +202,12 @@ class Option {
       case "channel":
         return this.channelRegex.test(i) || this.idRegex.test(i) || client.channels.some(c => c.name == i);
       case "voiceChannel":
+        if (msg.channel.type === "Group") return true;
+
         const results = this.channelRegex.exec(i) ?? this.idRegex.exec(i);
 
         const channel = client.channels.find(c => c.name == i && (msg.channel) ? c.serverId == msg.channel.serverId : false);
         const cObj = (results) ? client.channels.get(results.groups["id"]) : (channel) ? channel : null;
-        console.log(cObj, cObj.type);
         return (cObj) ? cObj.type === "VoiceChannel" || cObj.type === "Group" : null;
       // TODO: Add roles
     }
@@ -231,6 +232,8 @@ class Option {
         const channel = client.channels.find(c => c.name == i);
         return (results) ? results.groups["id"] : (channel) ? channel.id : null;
       case "voiceChannel":
+        if (msg.channel.type === "Group") return msg.channel.id;
+
         const r = this.channelRegex.exec(i) ?? this.idRegex.exec(i);
 
         const c = client.channels.find(c => c.name == i && c.type == "VoiceChannel" && c.server.id == msg.channel.server.id);

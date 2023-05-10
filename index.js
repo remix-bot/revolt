@@ -289,6 +289,15 @@ class Remix {
     var askVC = (msg) => {
       return new Promise(res => {
         const channels = [];
+        if (msg.channel.type === "Group") {
+          return this.joinChannel(msg, msg.channel.id, (p) => {
+            p.once("roomfetched", () => { // TODO: implement this in %join
+              if (p.connection.users.find(u => u.id == msg.authorId)) return;
+              msg.reply(this.em("You don't seem to be connected to <#" + msg.channel.id + ">. Did you forget to join?", msg), true);
+            });
+            res(msg.channel.id);
+          }, () => { m.edit(this.em("Something went wrong. Unable to join <#" + msg.channel.id + ">. Do I have the needed permission?", m)); return res(false); });
+        }
         var iterator = msg.channel.server.channels.entries();
         for (let v = iterator.next(); !v.done; v = iterator.next()) {
           if (v.value[1].type != "VoiceChannel") continue;

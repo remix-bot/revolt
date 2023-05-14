@@ -105,7 +105,7 @@ class Remix {
       const idx = data.findIndex(e => e == member.id.user);
       if (idx == -1) return;
       data.splice(idx, 1);
-      this.memberMap.set(member.server.id, data);
+      this.memberMap.set(member.id.server, data);
     });
 
     console.log("Loading command files...");

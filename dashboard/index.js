@@ -78,7 +78,20 @@ class Dashboard {
       res.render("login/index.ejs", opts);
     });
 
-    app.get("/commands", (req, res) => res.render("commands/index.ejs", req.data))
+    this.commands = null;
+    app.get("/commands", (req, res) => {
+      if (!this.commands) {
+         this.commands = this.remix.handler.commands.map(c => {
+          return {
+            name: c.name,
+            description: c.description,
+            usage: this.remix.handler.genCmdUsage(c),
+            aliases: c.aliases
+          }
+        });
+      }
+      res.render("commands/index.ejs", { ...req.data, commands: this.commands })
+    });
 
     app.post("/api/login", async (req, res) => {
       const user = req.body.userId;

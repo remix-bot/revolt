@@ -28,6 +28,9 @@
       <button class="btn btn-skip" onclick="pushAction(this)" action="skip">
         <i class="fa-solid fa-forward" style="color: #e9196c"></i>
       </button>
+      <div class="slidecontainer" style="margin-left: 0.2rem;">
+        <input type="range" style="accent-color: #e9196c; background: #e9196c" class="slider" value="100" min="0" max="100" onmouseup="changeVolume(this.value)" oninput="updateSlider(this)" id="volumeSlider" />
+      </div>
     </div>
     <div style="position: relative; display: flex; flex-direction: column" class="search-container">
       <input type="text" name="search" placeholder="Search or paste a link" onkeyup="keyUpSearch(this)" autocomplete="off" id="search"
@@ -68,9 +71,52 @@
 .suggestion-li {
   cursor: pointer;
 }
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 0.8em;
+  outline: none;
+  background: rgb(19, 25, 39);
+  border-radius: 7px;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 0.9rem;
+  width: 0.9rem;
+  background: #e9196c;
+  border-radius: 100%;
+  cursor: pointer;
+  border: 0.5px solid rgb(19, 25, 39);
+}
+.slider::-moz-range-thumb {
+  height: 0.9rem;
+  width: 0.9rem;
+  background: #e9196c;
+  border-radius: 100%;
+  cursor: pointer;
+  border: 0.5px solid rgb(19, 25, 39);
+}
 </style>
 
 <script>
+const updateSlider = (e) => {
+  e.style.background = `linear-gradient(to right, #e9196c ${e.value}%, rgb(19, 25, 39) ${e.value}%)`;
+  const value = Math.round(e.value);
+}
+
+const volumeSlider = document.getElementById("volumeSlider");
+const setVolume = (val) => {
+  volumeSlider.style.background = `linear-gradient(to right, #e9196c ${val}%, rgb(19, 25, 39) ${val}%)`;
+  volumeSlider.value = val;
+}
+const changeVolume = (vol) => {
+  post("/api/dashboard/control", { action: "volume", data: Math.round(vol) }).then(r => r.json()).then(data => {
+    
+  });
+}
+
 var runningRequest = false;
 const suggestions = document.getElementById("completions");
 const reset = (i) => {
@@ -471,8 +517,8 @@ const quantization = (rgbValues, depth) => {
   ];
 };
 
-function update(vid, proxy=true) {
-  bgrdImg.src = (proxy) ? "/api/imageProxy?url=" + encodeURIComponent(vid.thumbnail) : vid.thumbnail;
+function update(vid) {
+  bgrdImg.src = "/api/imageProxy?url=" + encodeURIComponent(vid.thumbnail);
   artist.innerText = vid.author.name;
   song.innerText = vid.title;
 }

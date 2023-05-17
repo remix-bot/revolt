@@ -254,10 +254,9 @@ class RevoltPlayer extends EventEmitter {
 
     const connection = this.voice.getVoiceConnection(this.connection.channelId);
     if (!connection) return "Not connected!";
-    if (!connection.media) return "There's nothing playing at the moment...";
 
     this.connection.preferredVolume = v;
-    connection.media.setVolume(v);
+    if (connection.media) connection.media.setVolume(v);
 
     return "Volume changed to `" + (v * 100) + "%`.";
   }

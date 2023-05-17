@@ -211,7 +211,7 @@ class Dashboard {
     secured.post("/api/dashboard/control", (req, res) => {
       const d = this.getUserData(req.data.user.id);
       if (!d.voice) return res.status(422).send({ message: "Not in a voice channel." });
-      if (!["pause", "skip", "resume"].includes(req.body.action)) return res.status(400).send({ message: "Invalid action.", success: false });
+      if (!["pause", "skip", "resume", "volume"].includes(req.body.action)) return res.status(400).send({ message: "Invalid action.", success: false });
       var message;
       switch (req.body.action) {
         case "pause":
@@ -228,6 +228,11 @@ class Dashboard {
           message = d.player.skip();
           res.status(200).send({ message: message || ":white_check_mark: Successfully skipped", success: !message });
           if (!message) this.sendMessage(d.player.messageChannel, req, "[Web] " + (message || "Skipped Successfully"));
+          break;
+        case "volume":
+          message = d.player.setVolume(req.body.data / 100);
+          res.status(200).send({ message: message, success: true });
+          this.sendMessage(d.player.messageChannel, req, "[Web] " + message);
           break;
         default:
           res.status(400).send({ message: "Invalid aciton", success: false });

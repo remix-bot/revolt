@@ -196,6 +196,18 @@ class Dashboard {
         this.remix.joinChannel.call(this.remix, msg, channel.id);
       });
     });
+    secured.post("/api/voice/:channel/leave", async (req, res) => {
+      const channel = this.remix.client.channels.get(req.params.channel);
+      if (!channel) return res.status(422).send({ message: "Invalid channel", success: false });
+      const d = (this.remix.revoice.getUser(req.data.user.id)) || {};
+      if (!d.connection.channelId) return res.status(403).send({ message: "Unauthorized", success: false });
+      res.status(200).send({ message: "Leaving", success: true });
+      const player = this.remix.playerMap.get(d.connection.channelId);
+      const textC = player.messageChannel;
+      this.sendMessage(textC, req, "[Web] Leaving <#" + channel.id + ">").then(msg => {
+        this.remix.leaveChannel.call(this.remix, msg, channel.id, player);
+      });
+    });
     secured.post("/api/dashboard/control", (req, res) => {
       const d = this.getUserData(req.data.user.id);
       if (!d.voice) return res.status(422).send({ message: "Not in a voice channel." });
@@ -269,11 +281,13 @@ class Dashboard {
       return {
         channel: {
           name: channel.name,
-          icon: channel.iconURL,
+          id: channel.id,
+          icon: channel.iconURL || null,
         },
         server: {
           name: channel.server.name,
-          icon: channel.server.iconURL,
+          id: channel.server.id,
+          icon: channel.server.iconURL || null,
         }
       }
     }
@@ -295,12 +309,17 @@ class Dashboard {
       }
     }
     const subscribePlayer = (player, socket) => {
-      let startPlayHandler = song => {
+      const startPlayHandler = song => {
         socket.emit("startplay", getSongData(song, player));
       }
+      const stopPlayHandler = () => {
+        socket.emit("stopplay");
+      }
       player.on("startplay", startPlayHandler);
+      player.on("stopplay", stopPlayHandler);
       socket.on("disconnect", () => {
         player.removeListener("startplay", startPlayHandler);
+        player.removeListener("stopplay", stopPlayHandler);
       });
     }
     socket.on("info", (uid) => {

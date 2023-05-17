@@ -27,6 +27,15 @@
   .remix-player {
     flex-grow: 3;
   }
+  .channel {
+    flex-grow: 2;
+    background-color: rgb(31, 41, 55);
+    border-radius: 5px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+    padding: 1rem;
+    max-height: 80vh;
+    overflow: auto;
+  }
   .sidebar {
     flex-grow: 2;
     background-color: rgb(31, 41, 55);
@@ -111,15 +120,21 @@
     <h1 style="font-size: 200%" class="self-center text-2xl font-semibold whitespace-nowrap dark:text-pink-600">Remix Dashboard</h2>
     <br />
     <div class="main-container">
-      <!--<div class="channel">
-
-      </div>-->
-      <div class="sidebar">
-        <h1>Your Servers</h1>
-        <br />
-        <ul id="server-list">
-          Loading...
-        </ul>
+      <div style="flex-grow: 2; display: flex; flex-direction: column; gap: 1.5rem; justify-content: center">
+        <div class="channel">
+          <a style="cursor: initial; opacity: 0.5; text-decoration: none; color: white; float: right;" id="closecall" onclick="leaveChannel()" href="javascript:void(0);"><i class="fa-solid fa-phone-slash"></i></a>
+          <p style="font-size: 120%">
+            Connected to: <span id="currc" style="font-weight: bold;">-</span>
+          </p>
+          <p>In Server <span id="currs" style="font-weight: bold;">-</span></p>
+        </div>
+        <div class="sidebar">
+          <h1>Your Servers</h1>
+          <br />
+          <ul id="server-list">
+            Loading...
+          </ul>
+        </div>
       </div>
       <%- include("components/player"); %>
     </div>
@@ -154,13 +169,43 @@
   const socket = io();
   socket.on("info", (info) => {
     console.log(info);
+    if (info.channel) updateCDisplay(info);
     if (info.currSong) update(info.currSong);
   });
-  socket.on("joined", console.log);
-  socket.on("left", console.log);
+  socket.on("joined", (data) => {
+    console.log(data);
+    updateCDisplay(data);
+  });
+  socket.on("left", () => { resetPlayer(); updateCDisplay({ channel: { name: "-" }, server: { name: "-" } }) });
   socket.on("startplay", (vid) => {
     update(vid);
   });
+  socket.on("stopplay", () => resetPlayer());
+
+  var currChannel = null;
+  const vChannel = document.getElementById("currc");
+  const vServer = document.getElementById("currs");
+  const closeCall = document.getElementById("closecall");
+  const updateCDisplay = (data) => {
+    currChannel = data.channel.id;
+    if (currChannel) {
+      closeCall.style.opacity = 1;
+      closeCall.style.cursor = "pointer";
+    } else {
+      closeCall.style.opacity = 0.5;
+      closeCall.style.cursor = "initial";
+    }
+    vChannel.innerText = data.channel.name;
+    vServer.innerText = data.server.name;
+  }
+
+  const leaveChannel = () => {
+    const notif = addNotification("Leaving", "Attempting to leave; View progress in the selected text channel", 5000);
+    post("/api/voice/" + currChannel + "/leave").then(r => r.json()).then(d => {
+      if (!d.success) return addNotification("Leaving Failed", "Reason: " + d.message, 7000, "error");
+      notif.description = "Success; [Message]: " + d.message;
+    });
+  }
 
   const tChannels = document.getElementById("channels");
   const tSelect = document.getElementById("cSelect");

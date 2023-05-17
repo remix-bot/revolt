@@ -32,6 +32,13 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
     p.destroy();
     this.freed.push(port);
   });
+  p.on("leave", () => {
+    p.connection.users.forEach(user => {
+      if (!this.observedVoiceUsers.has(user.id)) return;
+      const cbs = this.observedVoiceUsers.get(user.id);
+      cbs.forEach(c => c.cb.call(this, "left", p));
+    });
+  })
   p.on("message", (m) => {
     if ((this.settingsMgr.getServer(message.channel.serverId).get("songAnnouncements")) == "false") return;
     message.channel.sendMessage(this.em(m, message))

@@ -268,7 +268,7 @@ class RevoltPlayer extends EventEmitter {
 
   // functional core
   async playNext() {
-    if (this.data.queue.length === 0 && !this.data.loopSong) { this.data.current = null; return false; }
+    if (this.data.queue.length === 0 && !this.data.loopSong) { this.data.current = null; this.emit("stopplay"); return false; }
     const current = this.data.current;
     const songData = (this.data.loopSong && current) ? current : this.data.queue.shift();
     if (current && this.data.loop && !this.data.loopSong) this.data.queue.push(current);
@@ -314,6 +314,7 @@ class RevoltPlayer extends EventEmitter {
       return false;
     }
 
+    this.emit("leave");
     return true;
   }
   destroy() {

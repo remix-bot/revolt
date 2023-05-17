@@ -12,12 +12,12 @@
   font-size: 1rem;" class="remix-player">
 
   <div style="width: 12rem; height: 12rem; margin-right: 2rem;">
-    <img id="thumbnail" style="border-radius: 5px; object-fit: cover; height: 100%; width: 100%;" src="/api/imageProxy?url=https%3A%2F%2Fi.ytimg.com%2Fvi%2FhJqYc62NCKo%2Fhq720.jpg" />
+    <img id="thumbnail" cbgrdc="nochange" style="border-radius: 5px; object-fit: cover; height: 100%; width: 100%;" src="/assets/icon.png" alt="Thumbnail of the current song." />
   </div>
 
   <div style="display: flex; flex-direction: column; justify-content: center; height: 100%; flex-grow: 2">
     <h1 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">Currently Playing</h1>
-    <p style="font-size: 1rem; margin-bottom: 1rem;"><span id="song">Song</span> - <span id="artist">Artist</span></p>
+    <p style="font-size: 1rem; margin-bottom: 1rem;"><span id="song"></span> - <span id="artist"></span></p>
     <div style="display: flex; flex-direction: row; justify-content: center;">
       <button class="btn btn-play" style="margin-right: 0.5rem;" onclick="pushAction(this)" action="resume">
         <i class="fa-solid fa-play" style="color: #e9196c"></i>
@@ -148,6 +148,7 @@ const pushAction = (btn) => {
 
 bgrdImg.onload = (e) => {
   const img = e.target;
+  if (img.getAttribute("cbgrdc") == "nochange") return img.setAttribute("cbgrdc", "change"); // don't change the background color
   const canvas = document.createElement("canvas");
   canvas.width = img.width;
   canvas.height = img.height;
@@ -470,9 +471,16 @@ const quantization = (rgbValues, depth) => {
   ];
 };
 
-function update(vid) {
-  bgrdImg.src = "/api/imageProxy?url=" + encodeURIComponent(vid.thumbnail);
+function update(vid, proxy=true) {
+  bgrdImg.src = (proxy) ? "/api/imageProxy?url=" + encodeURIComponent(vid.thumbnail) : vid.thumbnail;
   artist.innerText = vid.author.name;
   song.innerText = vid.title;
+}
+function resetPlayer() {
+  bgrdImg.src = "/assets/icon.png";
+  bgrdImg.setAttribute("cbgrdc", "nochange");
+  document.body.style.backgroundColor = "rgb(19, 25, 39)";
+  artist.innerText = "";
+  song.innerText = "";
 }
 </script>

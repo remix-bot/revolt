@@ -169,15 +169,29 @@
   const socket = io();
   socket.on("info", (info) => {
     console.log(info);
-    if (info.currData) setVolume(info.currData.volume * 100);
+    if (info.currData) {
+      setVolume(info.currData.volume * 100);
+      updatePlaybackStatus(info.currData);
+    }
     if (info.channel) updateCDisplay(info);
     if (info.currSong) update(info.currSong);
+    if (info.channel) enablePlayer();
   });
   socket.on("joined", (data) => {
     console.log(data);
     setVolume(data.currData.volume * 100);
-    updateCDisplay(data);
+    updateCDisplay(data)
+    updatePlaybackStatus(data.currData);
+    enablePlayer();
   });
+  socket.on("resume", () => updatePlaybackStatus({ paused: false }));
+  socket.on("pause", () => updatePlaybackStatus({ paused: true }));
+  socket.on("userjoin", (user) => {
+    console.log("join", user);
+  })
+  socket.on("userleave", (user) => {
+    console.log("leave", user);
+  })
   socket.on("left", () => { resetPlayer(); updateCDisplay({ channel: { name: "-" }, server: { name: "-" } }) });
   socket.on("startplay", (vid) => {
     update(vid);
@@ -192,9 +206,11 @@
   const updateCDisplay = (data) => {
     currChannel = data.channel.id;
     if (currChannel) {
+      volumeSlider.disabled = false;
       closeCall.style.opacity = 1;
       closeCall.style.cursor = "pointer";
     } else {
+      volumeSlider.disabled = true;
       closeCall.style.opacity = 0.5;
       closeCall.style.cursor = "initial";
     }

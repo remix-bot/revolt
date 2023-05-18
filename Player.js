@@ -132,16 +132,22 @@ class RevoltPlayer extends EventEmitter {
     this.emit("update", "queue");
     return;
   }
+  get paused() {
+    if (!this.player) return false;
+    return this.player.playbackPaused || false;
+  }
   pause() {
     if (!this.player || !this.data.current) return `:negative_squared_cross_mark: There's nothing playing at the moment!`;
     if (this.player.playbackPaused) return ":negative_squared_cross_mark: Already paused. Use the `resume` command to continue playing!";
     this.player.pause();
+    this.emit("playback", false);
     return;
   }
   resume() {
     if (!this.player || !this.data.current) return `:negative_squared_cross_mark: There's nothing playing at the moment!`;
     if (!this.player.playbackPaused) return ":negative_squared_cross_mark: Not paused. To pause, use the `pause` command!";
     this.player.resume();
+    this.emit("playback", true);
     return;
   }
   skip() {

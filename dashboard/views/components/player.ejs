@@ -18,14 +18,14 @@
   <div style="display: flex; flex-direction: column; justify-content: center; height: 100%; flex-grow: 2">
     <h1 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">Currently Playing</h1>
     <p style="font-size: 1rem; margin-bottom: 1rem;"><span id="song"></span> - <span id="artist"></span></p>
-    <div style="display: flex; flex-direction: row; justify-content: center;">
-      <button class="btn btn-play" style="margin-right: 0.5rem;" onclick="pushAction(this)" action="resume">
+    <div style="display: flex; flex-direction: row; justify-content: center; opacity: 0.5">
+      <button class="btn btn-play btn-pbt hidden" style="margin-right: 0.5rem;" onclick="togglePlay(this)" action="resume" disabled>
         <i class="fa-solid fa-play" style="color: #e9196c"></i>
       </button>
-      <button class="btn btn-pause" onclick="pushAction(this)" action="pause">
+      <button class="btn btn-pause btn-pbt" onclick="togglePlay(this)" action="pause" disabled>
         <i class="fa-solid fa-pause" style="color: #e9196c; margin-right: 0.5rem;"></i>
       </button>
-      <button class="btn btn-skip" onclick="pushAction(this)" action="skip">
+      <button class="btn btn-skip btn-pbt" onclick="pushAction(this)" action="skip" disabled>
         <i class="fa-solid fa-forward" style="color: #e9196c"></i>
       </button>
       <div class="slidecontainer" style="margin-left: 0.5rem; display: flex; flex-direction: row; align-items: center; gap: 0.2rem" title="100%">
@@ -104,14 +104,34 @@
 </style>
 
 <script>
+const togglePlay = async (btn) => {
+  const success = await pushAction(btn);
+  if (!success) return;
+  btn.classList.add("hidden");
+  const index = (btn.parentElement.children[0] == btn) ? 1 : 0;
+  btn.parentElement.children[index].classList.remove("hidden");
+}
+const updatePlaybackStatus = (data) => {
+  const container = document.getElementsByClassName("btn-play")[0].parentElement;
+  // 0 + data.paused: converts the boolean value to an integer
+  container.children[0 + data.paused].classList.add("hidden");
+  container.children[1 - (0 + data.paused)].classList.remove("hidden");
+}
+</script>
+<script>
 const updateSlider = (e) => {
   e.style.background = `linear-gradient(to right, #e9196c ${e.value}%, rgb(19, 25, 39) ${e.value}%)`;
   const value = Math.round(e.value);
   volumeSlider.parentElement.title = value + "%";
+  updateVolIcon(value);
+}
+const updateVolIcon = (value) => {
   if (value < 50) {
+    if (volumeIcon.classList.contains("fa-volume-low")) return;
     volumeIcon.classList.remove("fa-volume-high");
     volumeIcon.classList.add("fa-volume-low");
   } else {
+    if (volumeIcon.classList.contains("fa-volume-high")) return;
     volumeIcon.classList.add("fa-volume-high");
     volumeIcon.classList.remove("fa-volume-low");
   }
@@ -122,20 +142,15 @@ const volumeIcon = document.getElementById("volumeIcon");
 const setVolume = (val) => {
   volumeSlider.style.background = `linear-gradient(to right, #e9196c ${val}%, rgb(19, 25, 39) ${val}%)`;
   volumeSlider.value = val;
-  if (val < 50) {
-    volumeIcon.classList.remove("fa-volume-high");
-    volumeIcon.classList.add("fa-volume-low");
-  } else {
-    volumeIcon.classList.add("fa-volume-high");
-    volumeIcon.classList.remove("fa-volume-low");
-  }
+  updateVolIcon(val);
 }
 const changeVolume = (vol) => {
   post("/api/dashboard/control", { action: "volume", data: Math.round(vol) }).then(r => r.json()).then(data => {
     // TODO: maybe put something in here idk
   });
 }
-
+</script>
+<script>
 var runningRequest = false;
 const suggestions = document.getElementById("completions");
 const reset = (i) => {
@@ -208,7 +223,9 @@ window.post = (url, payload) => {
   });
 }
 const pushAction = (btn) => {
-  return post('/api/dashboard/control', { action: btn.getAttribute("action") });
+  return new Promise(res => {
+    return post('/api/dashboard/control', { action: btn.getAttribute("action") }).then(r => r.json()).then(d => res(d.success));
+  })
 }
 
 bgrdImg.onload = (e) => {
@@ -547,5 +564,18 @@ function resetPlayer() {
   document.body.style.backgroundColor = "rgb(19, 25, 39)";
   artist.innerText = "";
   song.innerText = "";
+
+  const btns = document.getElementsByClassName("btn-pbt");
+  btns[0].parentElement.style.opacity = 0.5;
+  for (let i = 0; i < btns.length; i++) {
+    btns[i].disabled = true;
+  }
+}
+function enablePlayer() {
+  const btns = document.getElementsByClassName("btn-pbt");
+  btns[0].parentElement.style.opacity = 1;
+  for (let i = 0; i < btns.length; i++) {
+    btns[i].disabled = false;
+  }
 }
 </script>

@@ -36,6 +36,7 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
     p.connection.users.forEach(user => {
       if (!this.observedVoiceUsers.has(user.id)) return;
       const cbs = this.observedVoiceUsers.get(user.id);
+      p.emit("userupdate", user, "leave");
       cbs.forEach(c => c.cb.call(this, "left", p));
     });
   })
@@ -47,6 +48,7 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
     p.connection.users.forEach(user => {
       if (!this.observedVoiceUsers.has(user.id)) return;
       const cbs = this.observedVoiceUsers.get(user.id); // .id because this is a revoice user object
+      p.emit("userupdate", user, "join");
       cbs.forEach(c => c.cb.call(this, "joined", p));
     });
   });
@@ -59,11 +61,13 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
       p.connection.on("userjoin", (user) => {
         if (!this.observedVoiceUsers.has(user.id)) return;
         const cbs = this.observedVoiceUsers.get(user.id); // .id because this is a revoice user object
+        p.emit("userupdate", user, "join");
         cbs.forEach(c => c.cb.call(this, "joined", p));
       });
       p.connection.on("userleave", (user) => {
         if (!this.observedVoiceUsers.has(user.id)) return;
         const cbs = this.observedVoiceUsers.get(user.id);
+        p.emit("userupdate", user, "leave");
         cbs.forEach(c => c.cb.call(this, "left"));
       });
     });

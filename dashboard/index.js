@@ -280,6 +280,14 @@ class Dashboard {
       player: (connection) ? this.remix.playerMap.get(connection.channelId) : null
     }
   }
+  except(obj, key) {
+    const newObj = {};
+    for (let k in obj) {
+      if (k == key) continue;
+      newObj[k] = obj[k];
+    }
+    return newObj;
+  }
   socketHandler(socket) {
     const currInfo = (channel) => {
       if (!channel) return { channel: undefined };
@@ -311,7 +319,8 @@ class Dashboard {
     const getPlayerData = (player) => {
       return {
         queue: player.getQueue(),
-        volume: player.connection.preferredVolume || 1
+        volume: player.connection.preferredVolume || 1,
+        paused: player.paused
       }
     }
     const subscribePlayer = (player, socket) => {
@@ -324,13 +333,23 @@ class Dashboard {
       const volumeHandler = (v) => {
         socket.emit("volume", v);
       }
+      const userHandler = (u, type) => {
+        socket.emit("user" + type, this.except(u, "api"));
+      }
+      const playbackHandler = (playing) => {
+        socket.emit((playing) ? "resume" : "pause");
+      }
       player.on("startplay", startPlayHandler);
       player.on("stopplay", stopPlayHandler);
       player.on("volume", volumeHandler);
+      player.on("userupdate", userHandler);
+      player.on("playback", playbackHandler);
       socket.on("disconnect", () => {
         player.removeListener("startplay", startPlayHandler);
         player.removeListener("stopplay", stopPlayHandler);
         player.removeListener("volume", volumeHandler);
+        player.removeListener("userupdate", userHandler);
+        player.removeListener("playback", playbackHandler);
       });
     }
     socket.on("info", (uid) => {

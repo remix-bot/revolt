@@ -310,7 +310,8 @@ class Dashboard {
     };
     const getPlayerData = (player) => {
       return {
-        queue: player.getQueue()
+        queue: player.getQueue(),
+        volume: player.connection.preferredVolume || 1
       }
     }
     const subscribePlayer = (player, socket) => {
@@ -320,11 +321,16 @@ class Dashboard {
       const stopPlayHandler = () => {
         socket.emit("stopplay");
       }
+      const volumeHandler = (v) => {
+        socket.emit("volume", v);
+      }
       player.on("startplay", startPlayHandler);
       player.on("stopplay", stopPlayHandler);
+      player.on("volume", volumeHandler);
       socket.on("disconnect", () => {
         player.removeListener("startplay", startPlayHandler);
         player.removeListener("stopplay", stopPlayHandler);
+        player.removeListener("volume", volumeHandler);
       });
     }
     socket.on("info", (uid) => {
@@ -342,7 +348,7 @@ class Dashboard {
           case "joined":
             let player = data[0];
             let channel = this.remix.client.channels.get(data[0].connection.channelId);
-            socket.emit("joined", currInfo(channel));
+            socket.emit("joined", { ...currInfo(channel), currData: getPlayerData(player) });
 
             subscribePlayer(player, socket);
             break;

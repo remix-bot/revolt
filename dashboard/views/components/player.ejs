@@ -28,8 +28,9 @@
       <button class="btn btn-skip" onclick="pushAction(this)" action="skip">
         <i class="fa-solid fa-forward" style="color: #e9196c"></i>
       </button>
-      <div class="slidecontainer" style="margin-left: 0.2rem;">
+      <div class="slidecontainer" style="margin-left: 0.5rem; display: flex; flex-direction: row; align-items: center; gap: 0.2rem" title="100%">
         <input type="range" style="accent-color: #e9196c; background: #e9196c" class="slider" value="100" min="0" max="100" onmouseup="changeVolume(this.value)" oninput="updateSlider(this)" id="volumeSlider" />
+        <i class="fa-solid fa-volume-high" style="float:left;color: #e9196c" id="volumeIcon"></i>
       </div>
     </div>
     <div style="position: relative; display: flex; flex-direction: column" class="search-container">
@@ -74,8 +75,8 @@
 .slider {
   -webkit-appearance: none;
   appearance: none;
-  width: 100%;
-  height: 0.8em;
+  width: 4.5rem;
+  height: 0.7em;
   outline: none;
   background: rgb(19, 25, 39);
   border-radius: 7px;
@@ -88,6 +89,7 @@
   background: #e9196c;
   border-radius: 100%;
   cursor: pointer;
+  position: relative;
   border: 0.5px solid rgb(19, 25, 39);
 }
 .slider::-moz-range-thumb {
@@ -96,6 +98,7 @@
   background: #e9196c;
   border-radius: 100%;
   cursor: pointer;
+  position: relative;
   border: 0.5px solid rgb(19, 25, 39);
 }
 </style>
@@ -104,16 +107,32 @@
 const updateSlider = (e) => {
   e.style.background = `linear-gradient(to right, #e9196c ${e.value}%, rgb(19, 25, 39) ${e.value}%)`;
   const value = Math.round(e.value);
+  volumeSlider.parentElement.title = value + "%";
+  if (value < 50) {
+    volumeIcon.classList.remove("fa-volume-high");
+    volumeIcon.classList.add("fa-volume-low");
+  } else {
+    volumeIcon.classList.add("fa-volume-high");
+    volumeIcon.classList.remove("fa-volume-low");
+  }
 }
 
 const volumeSlider = document.getElementById("volumeSlider");
+const volumeIcon = document.getElementById("volumeIcon");
 const setVolume = (val) => {
   volumeSlider.style.background = `linear-gradient(to right, #e9196c ${val}%, rgb(19, 25, 39) ${val}%)`;
   volumeSlider.value = val;
+  if (val < 50) {
+    volumeIcon.classList.remove("fa-volume-high");
+    volumeIcon.classList.add("fa-volume-low");
+  } else {
+    volumeIcon.classList.add("fa-volume-high");
+    volumeIcon.classList.remove("fa-volume-low");
+  }
 }
 const changeVolume = (vol) => {
   post("/api/dashboard/control", { action: "volume", data: Math.round(vol) }).then(r => r.json()).then(data => {
-    
+    // TODO: maybe put something in here idk
   });
 }
 

@@ -258,6 +258,8 @@ class RevoltPlayer extends EventEmitter {
     this.connection.preferredVolume = v;
     if (connection.media) connection.media.setVolume(v);
 
+    this.emit("volume", v);
+
     return "Volume changed to `" + (v * 100) + "%`.";
   }
   announceSong(s) {

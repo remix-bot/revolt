@@ -9,7 +9,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script>
   <link rel="stylesheet" href="/dashboard/style.css" />
   <link rel="icon" href="../assets/icon.png" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css" rel="stylesheet" type='text/css'>
   <style id="styleContainer">
   .main-container {
     display: flex;
@@ -170,11 +169,13 @@
   const socket = io();
   socket.on("info", (info) => {
     console.log(info);
+    if (info.currData) setVolume(info.currData.volume * 100);
     if (info.channel) updateCDisplay(info);
     if (info.currSong) update(info.currSong);
   });
   socket.on("joined", (data) => {
     console.log(data);
+    setVolume(data.currData.volume * 100);
     updateCDisplay(data);
   });
   socket.on("left", () => { resetPlayer(); updateCDisplay({ channel: { name: "-" }, server: { name: "-" } }) });
@@ -182,6 +183,7 @@
     update(vid);
   });
   socket.on("stopplay", () => resetPlayer());
+  socket.on("volume", (v) => setVolume(v * 100));
 
   var currChannel = null;
   const vChannel = document.getElementById("currc");

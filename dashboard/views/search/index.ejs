@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Search Results | Remix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script>
+    <link rel="icon" href="../assets/icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    .results {
+      display: block;
+    }
+    </style>
+  </head>
+  <body>
+    <%- include("components/navbar"); -%>
+
+    <div class="results">
+      <% for (let i = 0; i < 10; i++) { %>
+        <div style="width: 10rem; height: 10rem; margin: 10px; background-color: black; display: inline-block;"></div>
+      <% } %>
+    </div>
+    <%- data.map(v => v.title) %>
+
+    <%- include("components/footer"); -%>
+  </body>
+</html>

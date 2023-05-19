@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const mysql = require("mysql");
 const bcrypt = require("bcrypt");
 const { Server } = require("socket.io");
+const yts = require("yt-search");
 
 class Dashboard {
   port;
@@ -157,6 +158,11 @@ class Dashboard {
     secured.get("/dashboard", (req, res) => {
       res.render("dashboard/index.ejs", req.data);
     });
+    secured.get("/search", async (req, res) => {
+      const query = req.query.q;
+      const data = [{ title: "test", description: "description", duration: { timestamp: "1:00" } }]//await this.getSearchResults(query);
+      res.render("search/index.ejs", { ...req.data, data: data });
+    })
     secured.get("/api/servers/", (req, res) => {
       var servers = this.remix.getSharedServers(req.data.user);
       res.status(200).send(servers);
@@ -377,6 +383,12 @@ class Dashboard {
         }
       });
       socket.on("disconnect", () => {this.remix.unobserveUserVoice(oid);});
+    });
+  }
+  getSearchResults(query) {
+    return new Promise(async res => {
+      var videos = (await yts(query)).videos;
+      res(videos);
     });
   }
 

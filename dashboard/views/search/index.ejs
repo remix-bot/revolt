@@ -18,11 +18,11 @@
 
     <div class="results" style="margin-top: 1rem; padding: 1rem;">
       <% for (let i = 0; i < data.length; i++) { %>
-        <div style="aspect-ratio: 3/1; height: 10rem; margin: 0.2rem; display: inline-block; border-radius: 5px;">
+        <div style="aspect-ratio: 3/1; height: 10rem; margin: 0.2rem; display: inline-block; border-radius: 5px; overflow: hidden">
           <div style="width: 100%; height: 100%; display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; row-gap: 0.2rem; color: white">
             <img src="<%- data[i].thumbnail || '/assets/icon.png' %>" style="object-fit: cover; width: 100%; aspect-ratio: 1/1; border-radius: 5px; grid-column: 1" />
             <div style="grid-column: 2; width: 100%; max-height: 100%; display: flex; flex-direction: column; gap: 0.2rem;">
-              <h1 style="font-size: 110%"><%= data[i].title %></h1>
+              <h1 style="font-size: 110%"><a style="text-decoration: none;" href="<%- data[i].url %>" target="_blank"><%= data[i].title %></a></h1>
               <a style="text-decoration: none;" href="<%- data[i].author.url %>" target="_blank">
                 <img src="<%= data[i].author.iconUrl %>" style="display: inline; aspect-ratio: 1/1; width: 2rem; border-radius: 100%" alt="Channel Icon" />
                 <span style="font-size: 85%"><%= data[i].author.name %></span>

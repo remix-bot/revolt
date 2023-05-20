@@ -163,25 +163,18 @@ class Dashboard {
     secured.get("/search", async (req, res) => {
       const query = req.query.q;
       const yt = await this.yt;
-      const data = [{
-        type: 'video',
-        videoId: 'whFmuLRRPKU',
-        url: 'https://youtube.com/watch?v=whFmuLRRPKU',
-        title: 'TheFatRat - Hunger [Chapter Two]',
-        description: 'Vocals by Kinnie Lane "Hunger" is FREE-to-use  on YouTube, Twitch and other social media channels. HOWEVER TO ...',
-        image: 'https://i.ytimg.com/vi/whFmuLRRPKU/hq720.jpg',
-        thumbnail: 'https://i.ytimg.com/vi/whFmuLRRPKU/hq720.jpg',
-        seconds: 184,
-        timestamp: '3:04',
-        duration: { seconds: 184, timestamp: '3:04' },
-        ago: '10 days ago',
-        views: 321680,
-        author: {
-          name: 'TheFatRat',
-          url: 'https://youtube.com/channel/UCa_UMppcMsHIzb5LDx1u9zQ',
-          iconUrl: (await yt.getChannel("UCa_UMppcMsHIzb5LDx1u9zQ")).metadata.avatar[0].url
-        }
-      }];//await this.getSearchResults(query);//[{ title: "test", description: "description", duration: { timestamp: "1:00" } }]
+      var data = (await this.getSearchResults(query)); // TODO: switch to youtubei.js
+      const ids = (await Promise.allSettled(data.map(v => {
+        return yt.getBasicInfo(v.videoId);
+      }))).map(i => (i.value || { basic_info: {}}).basic_info.channel_id);
+
+      const promises = [];
+      ids.forEach((id) => {
+        promises.push(yt.getChannel(id))
+      });
+      const channels = await Promise.allSettled(promises);
+      data = data.map((v, i) => { if (channels[i].status == "rejected") return v; v.author.iconUrl = channels[i].value.metadata.avatar[0].url; return v; });
+
       res.render("search/index.ejs", { ...req.data, data: data });
     })
     secured.get("/api/servers/", (req, res) => {

@@ -17,18 +17,22 @@
     <%- include("components/navbar"); -%>
 
     <div class="results" style="margin-top: 1rem; padding: 1rem;">
-      <% for (let i = 0; i < 10; i++) { %>
-        <div style="aspect-ratio: 2.5/1; height: 10rem; margin: 0.2rem; display: inline-block; border-radius: 5px;">
-          <div style="width: 100%; height: 100%; display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; color: white">
-            <img src="/assets/icon.png" style="width: 100%; aspect-ratio: 1/1; border-radius: 5px; grid-column: 1" />
-            <div style="grid-column: 2; width: 100%; max-height: 100%;">
-              <h1 style="font-size: 110%">Song title</h1>
+      <% for (let i = 0; i < data.length; i++) { %>
+        <div style="aspect-ratio: 3/1; height: 10rem; margin: 0.2rem; display: inline-block; border-radius: 5px;">
+          <div style="width: 100%; height: 100%; display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; row-gap: 0.2rem; color: white">
+            <img src="<%- data[i].thumbnail || '/assets/icon.png' %>" style="object-fit: cover; width: 100%; aspect-ratio: 1/1; border-radius: 5px; grid-column: 1" />
+            <div style="grid-column: 2; width: 100%; max-height: 100%; display: flex; flex-direction: column; gap: 0.2rem;">
+              <h1 style="font-size: 110%"><%= data[i].title %></h1>
+              <a style="text-decoration: none;" href="<%- data[i].author.url %>" target="_blank">
+                <img src="<%= data[i].author.iconUrl %>" style="display: inline; aspect-ratio: 1/1; width: 2rem; border-radius: 100%" alt="Channel Icon" />
+                <span style="font-size: 85%"><%= data[i].author.name %></span>
+              </a>
+              <p style="font-size: 80%; opacity: 0.8; margin-top: 0.4rem;"><%= data[i].description %></p>
             </div>
           </div>
         </div>
       <% } %>
     </div>
-    <%- data.map(v => v.title) %>
 
     <%- include("components/footer"); -%>
   </body>

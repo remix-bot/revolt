@@ -7,12 +7,14 @@ const mysql = require("mysql");
 const bcrypt = require("bcrypt");
 const { Server } = require("socket.io");
 const yts = require("yt-search");
+const { Innertube } = require("youtubei.js");
 
 class Dashboard {
   port;
   remix;
   expiryTime = 1000 * 60 * 60 * 6; // 6 hours
   observedPlayers = new Map();
+  yt = Innertube.create();
   constructor(remix) {
     const http = require('http' + ((remix.config.ssl.useSSL) ? "s" : ""));
     const app = express();
@@ -160,7 +162,26 @@ class Dashboard {
     });
     secured.get("/search", async (req, res) => {
       const query = req.query.q;
-      const data = [{ title: "test", description: "description", duration: { timestamp: "1:00" } }]//await this.getSearchResults(query);
+      const yt = await this.yt;
+      const data = [{
+        type: 'video',
+        videoId: 'whFmuLRRPKU',
+        url: 'https://youtube.com/watch?v=whFmuLRRPKU',
+        title: 'TheFatRat - Hunger [Chapter Two]',
+        description: 'Vocals by Kinnie Lane "Hunger" is FREE-to-use  on YouTube, Twitch and other social media channels. HOWEVER TO ...',
+        image: 'https://i.ytimg.com/vi/whFmuLRRPKU/hq720.jpg',
+        thumbnail: 'https://i.ytimg.com/vi/whFmuLRRPKU/hq720.jpg',
+        seconds: 184,
+        timestamp: '3:04',
+        duration: { seconds: 184, timestamp: '3:04' },
+        ago: '10 days ago',
+        views: 321680,
+        author: {
+          name: 'TheFatRat',
+          url: 'https://youtube.com/channel/UCa_UMppcMsHIzb5LDx1u9zQ',
+          iconUrl: (await yt.getChannel("UCa_UMppcMsHIzb5LDx1u9zQ")).metadata.avatar[0].url
+        }
+      }];//await this.getSearchResults(query);//[{ title: "test", description: "description", duration: { timestamp: "1:00" } }]
       res.render("search/index.ejs", { ...req.data, data: data });
     })
     secured.get("/api/servers/", (req, res) => {

@@ -162,21 +162,26 @@ class Dashboard {
     });
     secured.get("/search", async (req, res) => {
       const query = req.query.q;
-      const yt = await this.yt;
       var data = (await this.getSearchResults(query)); // TODO: switch to youtubei.js
-      const ids = (await Promise.allSettled(data.map(v => {
-        return yt.getBasicInfo(v.videoId);
-      }))).map(i => (i.value || { basic_info: {}}).basic_info.channel_id);
-
-      const promises = [];
-      ids.forEach((id) => {
-        promises.push(yt.getChannel(id))
-      });
-      const channels = await Promise.allSettled(promises);
-      data = data.map((v, i) => { if (channels[i].status == "rejected") return v; v.author.iconUrl = channels[i].value.metadata.avatar[0].url; return v; });
+      data = data.map((v) => { v.author.iconUrl = "/api/channel/icon?v=" + v.videoId; return v; });
 
       res.render("search/index.ejs", { ...req.data, data: data });
-    })
+    });
+    secured.get("/api/channel/icon", async (req, res) => {
+      const videoId = req.query.v;
+      const yt = await this.yt;
+      const channelId = (await yt.getBasicInfo(videoId)).basic_info.channel_id;
+      const icon = (await yt.getChannel(channelId)).metadata.avatar[0].url;
+      const { URL } = require("url");
+      var url = new URL(icon);
+      var externalReq = require("https").request({
+        hostname: url.hostname,
+        path: url.pathname + url.search,
+      }, function(externalRes) {
+        externalRes.pipe(res);
+      });
+      externalReq.end();
+    });
     secured.get("/api/servers/", (req, res) => {
       var servers = this.remix.getSharedServers(req.data.user);
       res.status(200).send(servers);

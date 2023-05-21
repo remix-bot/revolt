@@ -116,7 +116,7 @@
 <body class="bg-gray-900">
   <%- include("components/navbar"); -%>
   <section id="external">
-    
+
   </section>
   <section class="main">
     <h1 style="font-size: 200%" class="self-center text-2xl font-semibold whitespace-nowrap dark:text-pink-600">Remix Dashboard</h2>
@@ -163,7 +163,23 @@
     </div>
   </div>
 
+  <div id="external">
+
+  </div>
+
   <%- include("components/notifications"); %>
+
+  <script>
+  async function test() {
+    minimisePlayer();
+    const player = document.getElementsByClassName("remix-player")[0];
+    const text = await fetch("/search-content?q=thefatrat%20hunger").then(r => r.text())
+    document.getElementById("external").innerHTML = text;
+    document.querySelector("section[class='main']").style.display = "none";
+    document.body.appendChild(player);
+    window.history.pushState(text, "Search | Remix", "/search?q=thefatrat%20hunger")
+  }
+  </script>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>

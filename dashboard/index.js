@@ -167,6 +167,13 @@ class Dashboard {
 
       res.render("search/index.ejs", { ...req.data, data: data });
     });
+    secured.get("/search-content", async (req, res) => {
+      const query = req.query.q;
+      var data = (await this.getSearchResults(query)); // TODO: switch to youtubei.js
+      data = data.map((v) => { v.author.iconUrl = "/api/channel/icon?v=" + v.videoId; return v; });
+
+      res.render("search/content.ejs", { ...req.data, data: data });
+    });
     secured.get("/api/channel/icon", async (req, res) => {
       const videoId = req.query.v;
       const yt = await this.yt;

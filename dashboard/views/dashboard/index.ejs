@@ -169,18 +169,6 @@
 
   <%- include("components/notifications"); %>
 
-  <script>
-  async function test() {
-    minimisePlayer();
-    const player = document.getElementsByClassName("remix-player")[0];
-    const text = await fetch("/search-content?q=thefatrat%20hunger").then(r => r.text())
-    document.getElementById("external").innerHTML = text;
-    document.querySelector("section[class='main']").style.display = "none";
-    document.body.appendChild(player);
-    window.history.pushState(text, "Search | Remix", "/search?q=thefatrat%20hunger")
-  }
-  </script>
-
   <script src="/socket.io/socket.io.js"></script>
   <script>
   const USERID = "<%= user.id %>"; // provided by back-end

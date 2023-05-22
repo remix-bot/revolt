@@ -138,7 +138,7 @@ class Dashboard {
     app.get("/api/imageProxy", (req, res) => {
       const { URL } = require("url");
       var url = new URL(req.query.url);
-      var externalReq = http.request({
+      var externalReq = require("https").request({
         hostname: url.hostname,
         path: url.pathname + url.search,
       }, function(externalRes) {
@@ -161,17 +161,14 @@ class Dashboard {
       res.render("dashboard/index.ejs", req.data);
     });
     secured.get("/search", async (req, res) => {
-      const query = req.query.q;
-      var data = (await this.getSearchResults(query)); // TODO: switch to youtubei.js
-      data = data.map((v) => { v.author.iconUrl = "/api/channel/icon?v=" + v.videoId; return v; });
+      const query = (Object.keys(req.query).length == 0) ? null : req.query.q;
+      var data = (await this.getSearchResults(query));
 
       res.render("search/index.ejs", { ...req.data, data: data });
     });
     secured.get("/search-content", async (req, res) => {
-      const query = req.query.q;
-      var data = (await this.getSearchResults(query)); // TODO: switch to youtubei.js
-
-      data = data.map((v) => { v.author.iconUrl = "/api/channel/icon?v=" + v.videoId; return v; });
+      const query = (Object.keys(req.query).length == 0) ? null : req.query.q;
+      var data = (await this.getSearchResults(query));
 
       res.render("search/content.ejs", { ...req.data, data: data });
     });
@@ -414,6 +411,7 @@ class Dashboard {
   }
   getSearchResults(query) { // TODO: implement text runs
     return new Promise(async res => {
+      if (!query) return res([]);
       const yt = await this.yt;
       const results = (await yt.search(query)).results;
       /*const video = results.find(r => r.type=="Video");
@@ -429,7 +427,7 @@ class Dashboard {
           author: {
             name: v.author.name,
             id: v.author.id,
-            iconURL: v.author.thumbnails[0].url,
+            iconUrl: v.author.thumbnails[0].url,
             url: v.author.url
           },
           duration: {

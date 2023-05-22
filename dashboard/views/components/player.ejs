@@ -65,6 +65,7 @@
         </ul>
       </div>
     </div>
+    <a style="position: absolute; top:1rem; right: 1rem; text-decoration: none;" class="player-maximise" href="javascript:void(0);" onclick="maximisePlayer()"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></a>
   </div>
   <style>
   .suggestion-li {
@@ -100,6 +101,12 @@
     border: 0.5px solid rgb(19, 25, 39);
   }
 
+  .player-maximise {
+    display: none;
+  }
+  .minimised.player-maximise {
+    display: block;
+  }
   .minimised.remix-player {
     position: fixed;
     bottom: 0;
@@ -184,6 +191,8 @@
   const suggestions = document.getElementById("completions");
   const reset = (i) => {
     suggestions.style.display = "none";
+    i.value = "";
+    i.blur();
   }
   document.getElementById("search").addEventListener("keyup", (event) => {
     if (event.code == "Enter") {event.preventDefault(); queueSearch(event.target.value); reset(event.target)}
@@ -191,9 +200,22 @@
   window.addEventListener("click", (event) => {
     if (!event.target.matches(".search-container > *")) return reset(event.target);
   });
-  const queueSearch = (query) => {
+
+  const queueSearch = async (query) => {
+    if (!minimised) minimisePlayer();
+    const player = document.getElementsByClassName("remix-player")[0];
+    const text = await fetch("/search-content?q=" + encodeURIComponent(query)).then(r => r.text())
+    window.history.pushState(document.documentElement.innerHTML, "Search | Remix", "/search?q=" + encodeURIComponent(query))
+    document.getElementById("external").innerHTML = text;
+    document.getElementById("external").style.display = "block";
+    document.querySelector("section[class='main']").style.display = "none";
+    document.body.appendChild(player);
+  }
+  const play = (link) => {
+    if (minimised) maximisePlayer();
+    const video = link.parentElement.parentElement.parentElement.getAttribute("video");
     const notification = addNotification("Playlist", "Adding to playlist. Watch the current progress in the revolt channel (WIP)", 5000);
-    post("/api/dashboard/queue", { action: "add", query: query }).then(async r => {
+    post("/api/dashboard/queue", { action: "add", query: video }).then(async r => {
       const d = await r.json()
       if (r.status !== 200 || (d.success === false)) {
         return addNotification("Playlist Error", d.message, 7000, "error");
@@ -201,6 +223,7 @@
       notification.description = d.message;
     });
   }
+
   const keyUpSearch = async (i) => {
     if (i.value == "") reset(i);
     if (runningRequest) return;
@@ -208,7 +231,7 @@
     const data = await getSuggestions(i.value);
     suggestions.innerHTML = "";
     suggestions.style.display = "block";
-    if (data.length == 0) reset(i);
+    //if (data.length == 0) reset(i);
     data.forEach(suggestion => {
       const li = document.createElement("li");
       li.innerText = suggestion;
@@ -235,6 +258,7 @@
   }
   </script>
   <script>
+  var minimised = false;
   const minimisePlayer = () => {
     const addToClass = (c) => {
       const elems = document.getElementsByClassName(c);
@@ -245,6 +269,8 @@
     addToClass("remix-player");
     addToClass("thumbnail");
     addToClass("player-info");
+    addToClass("player-maximise");
+    minimised = true;
   }
   maximisePlayer = () => {
     const removeFromClass = (c) => {
@@ -256,6 +282,14 @@
     removeFromClass("remix-player");
     removeFromClass("thumbnail");
     removeFromClass("player-info");
+    removeFromClass("player-maximise");
+
+    document.getElementById("external").style.display = "none";
+    document.querySelector("section[class='main']").style.display = "block";
+    const player = document.getElementsByClassName("remix-player")[0];
+    document.querySelector("div[class='main-container']").appendChild(player);
+
+    minimised = false;
   }
 
   const bgrdImg = document.getElementById("thumbnail");

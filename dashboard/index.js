@@ -416,17 +416,21 @@ class Dashboard {
     return new Promise(async res => {
       const yt = await this.yt;
       const results = (await yt.search(query)).results;
+      /*const video = results.find(r => r.type=="Video");
+      console.log(video);*/
       var videos = results.filter(r => r.type=="Video");
       videos = videos.map(v => {
         return {
           title: v.title.text,
-          description: v.snippets[0].text.text,
+          description: (v.snippets) ? v.snippets[0].text.text : "",
           videoId: v.id,
+          url: "https://youtube.com/watch?v=" + v.id,
           thumbnail: v.thumbnails[0].url,
           author: {
             name: v.author.name,
             id: v.author.id,
-            iconURL: v.author.thumbnails[0].url
+            iconURL: v.author.thumbnails[0].url,
+            url: v.author.url
           },
           duration: {
             timestamp: v.duration.text,
@@ -434,9 +438,6 @@ class Dashboard {
           }
         }
       })
-      /*console.log(results);
-      const video = results.find(r => r.type=="Video");
-      console.log(video, video.snippets[0].text.text);*/
 
       res(videos);
     });

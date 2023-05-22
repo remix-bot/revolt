@@ -170,6 +170,7 @@ class Dashboard {
     secured.get("/search-content", async (req, res) => {
       const query = req.query.q;
       var data = (await this.getSearchResults(query)); // TODO: switch to youtubei.js
+
       data = data.map((v) => { v.author.iconUrl = "/api/channel/icon?v=" + v.videoId; return v; });
 
       res.render("search/content.ejs", { ...req.data, data: data });
@@ -411,9 +412,32 @@ class Dashboard {
       socket.on("disconnect", () => {this.remix.unobserveUserVoice(oid);});
     });
   }
-  getSearchResults(query) {
+  getSearchResults(query) { // TODO: implement text runs
     return new Promise(async res => {
-      var videos = (await yts(query)).videos;
+      const yt = await this.yt;
+      const results = (await yt.search(query)).results;
+      var videos = results.filter(r => r.type=="Video");
+      videos = videos.map(v => {
+        return {
+          title: v.title.text,
+          description: v.snippets[0].text.text,
+          videoId: v.id,
+          thumbnail: v.thumbnails[0].url,
+          author: {
+            name: v.author.name,
+            id: v.author.id,
+            iconURL: v.author.thumbnails[0].url
+          },
+          duration: {
+            timestamp: v.duration.text,
+            seconds: v.duration.seconds
+          }
+        }
+      })
+      /*console.log(results);
+      const video = results.find(r => r.type=="Video");
+      console.log(video, video.snippets[0].text.text);*/
+
       res(videos);
     });
   }

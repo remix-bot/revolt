@@ -392,7 +392,7 @@ class Remix {
     this.observedVoiceUsers.set(user, a);
   }
   getSettings(message) {
-    const serverId = message.channel.server_id;
+    const serverId = message.channel.serverId;
     return this.settingsMgr.getServer(serverId);
   }
   observeUser(id, channel, cb) {

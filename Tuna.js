@@ -73,10 +73,10 @@ class Tuna {
   }
 }
 
-const tuna = new Tuna({ key: "9e829c481e4862c1ded976f002504f8d" });
+/*const tuna = new Tuna({ key: "apikey" });
 (async () => {
   const results = await tuna.search("goofy ahh laugh");
   console.log(results.items[0].download());
-})();
+})();*/
 
 module.exports = Tuna;

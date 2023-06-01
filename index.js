@@ -74,6 +74,7 @@ class Remix {
         }, this.presenceInterval);
       });
 
+      this.sendRblStats();
       if (!this.config.fetchUsers) return;
       this.fetchUsers();
       setInterval(() => this.fetchUsers, 60 * 1000 * 30);
@@ -106,6 +107,9 @@ class Remix {
       if (idx == -1) return;
       data.splice(idx, 1);
       this.memberMap.set(member.id.server, data);
+    });
+    this.client.on("ServerserverCreate", () => {
+      if (this.config.rbl) this.sendRblStats();
     });
 
     console.log("Loading command files...");
@@ -201,6 +205,24 @@ class Remix {
   }
   static sleep(ms) {
     return new Promise(res => setTimeout(res, ms));
+  }
+  sendRblStats() {
+    console.log("request");
+    require("https").request({
+      host: "revoltbots.org",
+      path: "/api/v1/bots/stats",
+      method: "POST",
+      headers: {
+        "server_count": this.client.servers.size(),
+        "Authorization": this.config.rbl
+      }
+    }, function(res) {
+      res.on("data", (d) => {
+        console.log(Buffer.from(d).toString());
+      });
+    }, function(err) {
+      console.log(err);
+    });
   }
   async fetchUsers() {
     const promises = [];

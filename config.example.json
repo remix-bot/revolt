@@ -19,6 +19,7 @@
     "password": "password of your user",
     "database": "name of the target database"
   },
+  "rbl": "Your token for revoltbots.org; optional",
   "webPort": 80,
   "ssl": {
     "private": "path-to-private-key.pem",

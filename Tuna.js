@@ -1,139 +1,82 @@
-const puppeteer = require("puppeteer");
-const https = require("https");
-const EventEmitter = require("events");
+const https = require("follow-redirects").https;
 
-class Tuna extends EventEmitter {
-  ready = false
-
-  constructor() {
-    super();
+class Tuna {
+  apiKey = null;
+  constructor(auth) {
+    this.apiKey = auth.key;
   }
-  launch() {
-    return new Promise(async (r) => {
-      this.browser = await puppeteer.launch({ headless: true });
-      this.ready = true;
-      this.emit("ready");
-      r();
-    });
-  }
-  close() {
-    return new Promise(async r => {
-      // TODO: close all pages;
-      await this.browser.close();
-      this.ready = false;
-      this.emit("end");
-      r();
-    })
-  }
-  search(query, resPos=0) {
-    return new Promise(async res => {
-      if (!this.ready) {
-        console.warn("Unable to fetch data before ready!");
-        return res(null);
+  get(path, params={}) {
+    return new Promise((resolve, rej) => {
+      var query = "";
+      for (let key in params) {
+        if (query.length == 0) query = "?";
+        query += ((query.length == 0) ? "?" : "&") + key + "=" + encodeURIComponent(params[key]);
       }
-      resPos++;
-      const url = "https://tuna.voicemod.net/search/sounds" + ((query) ? "?search=" + encodeURIComponent(query) : "");
-      const page = await this.browser.newPage();
-      await page.goto(url);
-      await page.waitForSelector(".cookie-consent");
-      await page.$eval(".cookie-consent", e => e.remove());
+      var options = {
+        'method': 'GET',
+        'hostname': 'tuna-api.voicemod.net',
+        'path': path + query,
+        'headers': {
+          'x-api-key': this.apiKey
+        },
+        'maxRedirects': 20
+      };
+      var req = https.request(options, function (res) {
+        var chunks = [];
 
-      await page.waitForSelector(".search-results");
+        res.on("data", function (chunk) {
+          chunks.push(chunk);
+        });
 
-      const selector = ".search-results > div:nth-child(" + resPos + ")";
-      await Promise.all([ page.waitForNetworkIdle(), page.hover(selector)]);
+        res.on("end", function (_chunk) {
+          var body = Buffer.concat(chunks);
+          resolve(JSON.parse(body.toString()));
+        });
 
-      const data = await page.$eval(selector, (e) => {
-        let audio = e.querySelector("audio");
-        return {
-          audio: audio.src,
-          thumbnail: e.querySelector("img").src,
-          author: e.querySelector("div[class*='username']").children[1].textContent.trim(),
-          title: e.querySelector("div[class*='title']").children[0].textContent.trim(),
-          url: "https://tuna.voicemod.net/sound/" + audio.id,
-          id: audio.id
-        }
-      });
-      await page.close();
-      res(data);
-    });
-  }
-  listSearch(query) {
-    return new Promise(async res => {
-      if (!this.ready) {
-        console.warn("Unable to fetch data before ready!");
-        return res(null);
-      }
-      const url = "https://tuna.voicemod.net/search/sounds" + ((query) ? "?search=" + encodeURIComponent(query) : "");
-      const page = await this.browser.newPage();
-      await page.goto(url);
-      await page.waitForSelector(".cookie-consent");
-      await page.$eval(".cookie-consent", e => e.remove());
-
-      await page.waitForSelector(".search-results");
-
-      const selector = ".search-results > div";
-
-      const data = await page.$$eval(selector, (els) => {
-        return els.map(e => {
-          let audio = e.querySelector("audio");
-          return {
-            thumbnail: e.querySelector("img").src,
-            author: e.querySelector("div[class*='username']").children[1].textContent.trim(),
-            title: e.querySelector("div[class*='title']").children[0].textContent.trim(),
-            url: "https://tuna.voicemod.net/sound/" + audio.id,
-            id: audio.id
-          }
+        res.on("error", function (error) {
+          rej(error);
         });
       });
-      await page.close();
-      res(data);
+
+      req.end();
     });
   }
-  loadSound(id) {
+
+  search(query, page=1, size=10) {
     return new Promise(async res => {
-      if (!this.ready) {
-        console.warn("Unable to fetch data before ready!");
-        return res(null);
-      }
-      const url = "https://tuna.voicemod.net/sound/" + id;
-      const page = await this.browser.newPage();
-      await page.goto(url);
-      await page.waitForSelector(".cookie-consent");
-      await page.$eval(".cookie-consent", e => e.remove());
-
-      const selector = "div.sound__grid";
-      await page.waitForSelector(selector);
-
-      await Promise.all([ page.waitForNetworkIdle(), page.hover("div[class*='audio']")]);
-
-      const data = await page.$eval(selector, (e) => {
-        let audio = e.querySelector("audio");
-        let a = e.querySelector("div[class*='user-name-link']>a");
-        return {
-          audio: audio.src,
-          thumbnail: e.querySelector("img").src,
-          author: {
-            url: a.href,
-            name: a.textContent.trim()
-          },
-          title: e.querySelector("h1[class*='title']").textContent.trim().replace("- Meme Sound Effect Button for Soundboard", "").trim(),
-          url: "https://tuna.voicemod.net/sound/" + audio.id,
-          id: audio.id
+      const results = await this.get("/v1/sounds/search", {size, page, search: query});
+      results.items = results.items.map(s => {
+        s.download = function() {
+          return new Promise(resolve => {
+            https.get(this.oggPath, (r) => {
+              resolve(r);
+            });
+          });
         }
-      });
-      await page.close();
-      res(data);
+        return s;
+      })
+      res(results);
     });
   }
-
-  downloadSound(url) {
-    return new Promise(res => {
-      https.get(url, (result) => {
-        res(result);
-      });
+  getSound(id) {
+    return new Promise(async res => {
+      const sound = await this.get("/v1/sounds/" + id);
+      sound.download = function() {
+        return new Promise(res => {
+          https.get(this.oggPath, (result) => {
+            res(result);
+          });
+        });
+      }
+      res(sound);
     });
   }
 }
+
+/*const tuna = new Tuna({ key: "apikey" });
+(async () => {
+  const results = await tuna.search("goofy ahh laugh");
+  console.log(results.items[0].download());
+})();*/
 
 module.exports = Tuna;

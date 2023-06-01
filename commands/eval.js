@@ -45,7 +45,6 @@ function e(expression) {
 
     try {
       const evalued = eval(expression);
-      console.log(evalued == (typeof evalued == "object") ? { ...evalued } : evalued);
 
       const cleaned = await clean(evalued);
       res(("Expression returned: \n```js\n" + cleaned).slice(0, 1900) + "\n```");
@@ -68,6 +67,5 @@ module.exports = {
   run: async function(msg, data) {
     const expression = data.get("expression").value;
     msg.reply(await e.call(Object.assign({}, this), expression));
-    console.log(this);
   }
 }

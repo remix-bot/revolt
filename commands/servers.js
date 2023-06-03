@@ -8,6 +8,6 @@ module.exports = {
       r.setOwnerOnly(true)),
   run: function(msg) {
     let m = this.client.allServers.map(e => "\"" + e.name).join("\"\n");
-    this.pagination("```js\n$content\"\n```\n\nPage $currPage/$maxPage", m, msg, 10);
+    this.pagination("```js\n$content\n```\n\nPage $currPage/$maxPage", m, msg, 10);
   }
 }

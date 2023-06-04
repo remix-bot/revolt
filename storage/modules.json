@@ -3,5 +3,10 @@
     "name": "wb-dashboard",
     "index": "./dashboard/index.js",
     "enabled": true
+  },
+  {
+    "name": "rbl-stats",
+    "index": "./rbl.js",
+    "enabled": true
   }
 ]

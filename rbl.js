@@ -4,6 +4,10 @@ class RBL {
   remix;
   api;
   constructor(remix) {
+    if (!remix.config.rbl.token) {
+      console.log("No rbl config found. Disabling stats updates.");
+      return this;
+    }
     this.api = new RevoltBots.Client(remix.config.rbl.token);
     this.remix = remix;
 

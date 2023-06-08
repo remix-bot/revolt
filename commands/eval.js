@@ -14,6 +14,7 @@ function e(expression) {
           switch (key) {
             case "revolt":
             case "vapid":
+            case "token":
             case "config":
             case "key":
             case "clientSecret":

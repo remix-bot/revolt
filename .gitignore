@@ -3,3 +3,4 @@ storage/data
 config.json
 settings.json
 cmdUsage.md
+bot.js

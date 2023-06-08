@@ -72,7 +72,7 @@ class Dashboard {
     app.set("views", [path.join(__dirname, "views")]);
     app.get("/", (req, res) => {
       // TODO: implement ejs system (maybe)
-      res.render("index.ejs", req.data);
+      res.render("index.ejs", { ...req.data, serverCount: this.remix.client.servers.size() });
     });
     app.get("/login", async (req, res) => {
       if (await this.verifySession(req.session, req.cookies)) return res.redirect("/dashboard");

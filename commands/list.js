@@ -4,7 +4,7 @@ module.exports = {
   command: new CommandBuilder()
     .setName("list")
     .setDescription("List the queue in your current voice channel.")
-    .addAliases("queue"),
+    .addAliases("queue", "q"),
   run: async function(message) {
     const p = await this.getPlayer(message);
     if (!p) return;

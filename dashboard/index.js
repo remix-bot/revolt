@@ -495,6 +495,7 @@ class Dashboard {
   createLogin(id, req, verified=false) {
     return new Promise(async (res) => {
       if (req.session.token && req.session.user == id) return res({ id: req.session.tId, token: req.session.token, kId: req.cookies.ksi, kToken: req.cookies.ksiToken });
+      this.db.query(`DELETE FROM ksiTokens WHERE DATE_ADD(createdAt, INTERVAL 63 DAY) < NOW()`);
       const uid = this.guid();
       const token = await this.randToken();
       this.db.query(`INSERT INTO logins (user, id, token, verified, createdAt) VALUES (${this.db.escape(id)}, ${this.db.escape(uid)}, ${this.db.escape(await this.hash(token))}, ${verified}, NOW())`, (error) => {

@@ -553,6 +553,10 @@ class Remix {
 
 new Remix();
 
+/*const { ShardingManager } = require("revolt.js"); // reshard.js :eyes:
+const mgr = new ShardingManager({ scriptPath: "./bot.js", shardServerCount: 3 });
+mgr.loginBot(config.token);*/
+
 // God, please forgive us, this is just to keep the bot online at all cost
 process.on("unhandledRejection", (reason, p) => {
   console.log(" [Error_Handling] :: Unhandled Rejection/Catch");

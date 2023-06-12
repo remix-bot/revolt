@@ -17,6 +17,7 @@ function e(expression) {
             case "token":
             case "config":
             case "key":
+            case "YT_API_KEY":
             case "clientSecret":
             case "clientId":
               obj[key] = null;

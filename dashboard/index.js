@@ -369,17 +369,22 @@ class Dashboard {
       const playbackHandler = (playing) => {
         socket.emit((playing) ? "resume" : "pause");
       }
+      const queueHandler = (event) => {
+        socket.emit("queue", event);
+      }
       player.on("startplay", startPlayHandler);
       player.on("stopplay", stopPlayHandler);
       player.on("volume", volumeHandler);
       player.on("userupdate", userHandler);
       player.on("playback", playbackHandler);
+      player.on("queue", queueHandler);
       socket.on("disconnect", () => {
         player.removeListener("startplay", startPlayHandler);
         player.removeListener("stopplay", stopPlayHandler);
         player.removeListener("volume", volumeHandler);
         player.removeListener("userupdate", userHandler);
         player.removeListener("playback", playbackHandler);
+        player.removeListener("queue", queueHandler);
       });
     }
     socket.on("info", (uid) => {

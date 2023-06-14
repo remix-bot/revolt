@@ -140,6 +140,19 @@
   </style>
 
   <script>
+  const updateQueue = (data) => {
+    switch (data.type) {
+      case "add": // something is added to the queue
+        break;
+      case "remove": // something is removed from the queue
+        break;
+      case "update": // queue has changed due to a new song playing
+        break;
+    }
+  }
+  </script>
+
+  <script>
   const togglePlay = async (btn) => {
     const success = await pushAction(btn);
     if (!success) return;

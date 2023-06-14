@@ -88,12 +88,26 @@ class RevoltPlayer extends EventEmitter {
   addIdToQueue(id) {
     return new Promise((res, _rej) => {
       this.workerJob("search", id).then((data) => {
+        this.emit("queue", {
+          type: "add",
+          data: {
+            append: true,
+            data
+          }
+        });
         this.data.queue.push(data);
         res(true);
       }).catch(res(false));
     });
   }
   addToQueue(data, top=false) {
+    this.emit("queue", {
+      type: "add",
+      data: {
+        append: !top,
+        data
+      }
+    });
     if (!top) return this.data.queue.push(data);
     return this.data.queue.unshift(data);
   }
@@ -221,7 +235,15 @@ class RevoltPlayer extends EventEmitter {
     if (!index && index != 0) throw "Index can't be empty";
     if (!this.data.queue[index]) return "Index out of bounds";
     let title = this.data.queue[index].title;
-    this.data.queue.splice(index, 1);
+    this.emit("queue", {
+      type: "remove",
+      data: {
+        index: index,
+        old: this.data.queue.slice(),
+        removed: this.data.queue.splice(index, 1),
+        new: this.data.queue
+      }
+    });
     this.emit("update", "queue");
     return "Successfully removed **" + title + "** from the queue.";
   }
@@ -279,6 +301,15 @@ class RevoltPlayer extends EventEmitter {
     const current = this.data.current;
     const songData = (this.data.loopSong && current) ? current : this.data.queue.shift();
     if (current && this.data.loop && !this.data.loopSong) this.data.queue.push(current);
+    if (!this.data.loopSong) {
+      this.emit("queue", {
+        type: "update",
+        data: {
+          current: songData,
+          loop: this.data.loop
+        }
+      });
+    }
 
     this.data.current = songData;
     const connection = this.voice.getVoiceConnection(this.connection.channelId);

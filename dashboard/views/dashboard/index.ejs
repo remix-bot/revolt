@@ -205,6 +205,7 @@
   });
   socket.on("stopplay", () => resetPlayer());
   socket.on("volume", (v) => setVolume(v * 100));
+  socket.on("queue", (d) => updateQueue(d));
 
   var currChannel = null;
   const vChannel = document.getElementById("currc");

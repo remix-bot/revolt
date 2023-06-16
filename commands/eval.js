@@ -2,33 +2,37 @@ const { CommandBuilder } = require("../Commands.js");
 
 function e(expression) {
   return new Promise(async res => {
+
     const clean = async (text) => {
       // If our input is a promise, await it before continuing
       if (text && text.constructor.name == "Promise") text = await text;
 
       const removeSensitive = (obj, level=0) => {
         if (level == 2) return obj;
-        obj = { ...obj };
+        if (typeof obj !== "object") return obj;
+        const restricted = ["revolt", "vapid", "token", "config", "key", "YT_API_KEY", "clientSecret", "clientId"];
+        var copied = false;
         level++;
-        for (key in obj) {
-          switch (key) {
-            case "revolt":
-            case "vapid":
-            case "token":
-            case "config":
-            case "key":
-            case "YT_API_KEY":
-            case "clientSecret":
-            case "clientId":
-              obj[key] = null;
-            default:
-              break;
+        for (let key in obj) {
+          if (restricted.includes(key)) {
+            if (!copied) obj = { ...obj };
+            obj[key] = null;
           }
           if (typeof obj[key] === "object") obj[key] = removeSensitive(obj[key], level);
         }
         return obj;
       }
-      if (typeof text == "object") text = removeSensitive({ ...text });
+      const containsSensitive = (obj, level=0) => {
+        if (level == 2) return false;
+        const restricted = ["revolt", "vapid", "token", "config", "key", "YT_API_KEY", "clientSecret", "clientId"];
+        level++;
+        for (let key in obj) {
+          if (restricted.includes(key)) return true;
+          if (typeof obj[key] === "object") if (containsSensitive(obj[key], level)) return true;
+        }
+        return false;
+      }
+      if (typeof text == "object") text = removeSensitive((containsSensitive(text)) ? { ...text } : text);
 
       // If the response isn't a string, `util.inspect()`
       // is used to 'stringify' the code in a safe way that
@@ -46,7 +50,7 @@ function e(expression) {
     }
 
     try {
-      const evalued = eval(expression);
+      const evalued = eval("'use strict';" + expression);
 
       const cleaned = await clean(evalued);
       res(("Expression returned: \n```js\n" + cleaned).slice(0, 1900) + "\n```");
@@ -68,6 +72,6 @@ module.exports = {
     ),
   run: async function(msg, data) {
     const expression = data.get("expression").value;
-    msg.reply(await e.call(Object.assign({}, this), expression));
+    msg.reply(await e.call(Object.assign({ message: msg }, this), expression));
   }
 }

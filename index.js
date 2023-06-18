@@ -42,6 +42,22 @@ class Remix {
     this.geniusClient = new Genius.Client(this.config.geniusToken);
     this.spotify = new Spotify(this.spotifyConfig)
 
+    this.i18n = require("i18next");
+    this.i18n.use(require("i18next-fs-backend")).init({
+      fallbackLng: "en",
+      initImmediate: false,
+      backend: {
+        loadPath: path.join(__dirname, "/storage/locales/{{ns}}/{{lng}}.json"),
+        addPath: '/locales/{{ns}}/{{lng}}.missing.json'
+      },
+      nonExplicitSupportedLngs: true,
+      supportedLngs: ["en", "de", "de-DE", "sk-SK"],
+      preload: ["en", "de-DE"],
+      ns: "bot",
+    }).then(() => {
+      console.log("localisation loaded");
+    });
+
     console.log("Starting");
     console.log("Loading optional modules...");
     this.loadedModules = new Map();
@@ -390,6 +406,9 @@ class Remix {
     a.splice(idx, 1);
     if (a.length == 0) return this.observedVoiceUsers.delete(user);
     this.observedVoiceUsers.set(user, a);
+  }
+  t(key, language, options) {
+    return this.i18n.t(key, { ...options, lng: language });
   }
   getSettings(message) {
     const serverId = message.channel.serverId;

@@ -1,3 +1,30 @@
 {
-  "test" : "Das ist ein Test"
+  "commands" : {
+    "ping" : "Mein Präfix in diesem Server ist: {{prefix}}"
+  },
+  "pagination" : {
+    "embed" : {
+      "sclosedContent" : "{{content}}\\nSitzung geschlossen - Das Umblättern funktioniert ab jetzt **nicht mehr**.",
+      "sclosedTitle" : "Sitzung geschlossen"
+    },
+    "error" : {
+      "perms" : {
+        "messages" : "Ich kann keine Nachrichten in {{channel}} senden. Bitte wende dich an einen Serveradministrator und erteile mir die Berechtigung \"SendMessage\"",
+        "reactions" : "Ich brauche die Berechtigung, auf Nachrichten zu reagieren. Bitte wende dich an einen Serveradministrator, um dies zu klären."
+      }
+    }
+  },
+  "voice" : {
+    "join" : {
+      "cancelled" : "Abgebrochen!",
+      "error" : {
+        "dc" : "Es scheint, als wären wir nicht im selben Sprachkanal.",
+        "invalid" : "Ungültiger Sprachkanal. Bitte versuche es erneut und überprüfe deine Eingabe auf Groß- und Kleinschreibung! (`x` zum Abbrechen)",
+        "perms" : "Etwas ist schiefgelaufen. Ich kann {{channel}} nicht beitreten. Habe ich die nötigen Berechtigungen?"
+      },
+      "warning" : {
+        "nc" : "Es scheint nicht, als wärst du nicht mit {{channel}} verbunden. Hast du vergessen beizutreten?"
+      }
+    }
+  }
 }

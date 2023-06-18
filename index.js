@@ -51,8 +51,8 @@ class Remix {
         addPath: '/locales/{{ns}}/{{lng}}.missing.json'
       },
       nonExplicitSupportedLngs: true,
-      supportedLngs: ["en", "de", "de-DE", "sk-SK"],
-      preload: ["en", "de-DE"],
+      supportedLngs: ["en", "de", "de-DE", "sk-SK", "ar", "ar-SA"],
+      preload: ["en", "de-DE", "ar-SA"],
       ns: "bot",
     }).then(() => {
       console.log("localisation loaded");
@@ -133,7 +133,7 @@ class Remix {
     this.handler.setRequestCallback((...data) => this.request(...data));
     this.handler.setOnPing(msg => {
       let pref = this.handler.getPrefix(msg.channel.server_id);
-      let m = this.iconem(msg.channel.server.name, "My prefix in this server is: `" + pref + "`", (msg.channel.server.icon) ? "https://autumn.revolt.chat/icons/" + msg.channel.server.icon._id : null, msg);
+      let m = this.iconem(msg.channel.server.name, this.t("commands.ping", msg, {prefix: "`" + pref + "`"}), (msg.channel.server.icon) ? "https://autumn.revolt.chat/icons/" + msg.channel.server.icon._id : null, msg);
       msg.reply(m, false)
     });
     this.handler.setPaginationHandler((message, form, contents) => {
@@ -319,7 +319,7 @@ class Remix {
           if (v.value[1].type != "VoiceChannel") continue;
           channels.push(v.value[1]);
         }
-        if (channels.length != 0) {
+        if (channels.length != 0) { // TODO: translate
           var channelSelection = "Please select one of the following channels by clicking on the reactions below\n\n";
           var reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];//[":one:",":two:",":three:",":four:",":five:",":six:",":seven:",":eight:",":nine:"];
           channels.slice(0, 9).forEach((c, i) => {
@@ -342,7 +342,7 @@ class Remix {
             this.joinChannel(msg, c.id, (p) => {
               p.once("roomfetched", () => { // TODO: implement this in %join
                 if (p.connection.users.find(u => u.id == msg.authorId)) return;
-                msg.reply(this.em("You don't seem to be connected to <#" + c.id + ">. Did you forget to join?", msg), true);
+                msg.reply(this.em(this.t("voice.join.warning.nc", m, {channel: "<#" + c.id + ">"}), msg), true);
               });
               res(c.id);
             }, () => { m.edit(this.em("Something went wrong. Unable to join <#" + c.id + ">. Do I have the needed permission?", m)); return res(false); });
@@ -356,10 +356,10 @@ class Remix {
             if (m.content.toLowerCase() == "x") {
               this.unobserveUser(observer);
               this.unobserveReactions(roid);
-              m.reply(this.em("Cancelled!", m), false);
+              m.reply(this.em(this.t("voice.join.cancelled", m), m), false);
               return res(false);
             }
-            if (!this.handler.validateString(m.content, m, "voiceChannel")) return m.reply(this.em("Invalid voice channel. Please try again and check capitalisation! (`x` to cancel)", m), false); // TODO: more specific error messages
+            if (!this.handler.validateString(m.content, m, "voiceChannel")) return m.reply(this.em(this.t("voice.join.error.invalid", m), m), false); // TODO: more specific error messages
             const channel = this.handler.formatString(m.content, m, "voiceChannel");
             this.unobserveUser(observer);
             this.unobserveReactions(roid);
@@ -408,6 +408,10 @@ class Remix {
     this.observedVoiceUsers.set(user, a);
   }
   t(key, language, options) {
+    if (typeof language === "object") {
+      const settings = this.getSettings(language);
+      language = settings.get("locale");
+    }
     return this.i18n.t(key, { ...options, lng: language });
   }
   getSettings(message) {

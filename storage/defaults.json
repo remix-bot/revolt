@@ -2,11 +2,13 @@
   "values": {
     "songAnnouncements": false,
     "prefix": "%",
-    "pfp": "default"
+    "pfp": "default",
+    "locale": "en"
   },
   "descriptions": {
     "songAnnouncements": "Wether the bot should announce every song when it starts playing it.",
     "prefix": "The prefix that is used to trigger commands. Alternatively, you can use a ping with a space after it.",
-    "pfp": "What profile picture the bot should use. `default | dark | light | mono | <custom url>`"
+    "pfp": "What profile picture the bot should use. `default | dark | light | mono | <custom url>`",
+    "locale": "The preferred language of your server. For valid language codes please see the github repository."
   }
 }

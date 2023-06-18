@@ -1,3 +1,30 @@
 {
-  "test" : "This is a test key"
+  "commands" : {
+    "ping" : "My prefix in this server is: {{prefix}}"
+  },
+  "pagination" : {
+    "embed" : {
+      "sclosedContent" : "{{content}}\\nSession closed - Changing pages **won't work** from here.",
+      "sclosedTitle" : "Session Closed"
+    },
+    "error" : {
+      "perms" : {
+        "messages" : "I am unable to send messages in {{channel}}. Please contact a server administrator and grant me the \"SendMessage\" permission.",
+        "reactions" : "I need reaction permissions to work. Please contact a server administrator to address this."
+      }
+    }
+  },
+  "voice" : {
+    "join" : {
+      "cancelled" : "Cancelled!",
+      "error" : {
+        "dc" : "It doesn't look like we're in the same voice channel.",
+        "invalid" : "Invalid voice channel. Please try again and check capitalization! (`x` to cancel)",
+        "perms" : "Something went wrong. Unable to join {{channel}}. Do I have the needed permission?"
+      },
+      "warning" : {
+        "nc" : "You don't seem to be connected to {{channel}}. Did you forget to join?"
+      }
+    }
+  }
 }

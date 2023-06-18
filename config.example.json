@@ -27,6 +27,12 @@
     "useSSL": false,
     "httpPort": 80
   },
+  "revolt.js": {
+    "Comment": "Configuration data for revolt.js clients; See possible options here: https://revolt.js.org/classes/Client.html#constructor"
+  },
+  "revolt-api": {
+    "Comment": "Configuration options for a revolt-api client; See the last example here: https://github.com/insertish/oapi#example"
+  },
   "sessionSecret": "secret for the expressjs session middleware; https://www.npmjs.com/package/express-session#user-content-secret",
   "geniusToken": "Genius access token (Used for lyrics); optional",
   "owners": ["not necessary unless you want to use testing commands", "another user id"],

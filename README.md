@@ -64,6 +64,12 @@ If you're self-hosting Remix, please make it clear that it is **not the main ins
     - Rename the `config.example.json` file and fill out the missing values. You can generate spotify credentials [here](https://developer.spotify.com/)
 -   Run the bot (`node index.js`)
 
+# Connecting to a self-hosted instance
+
+If you don't want to connect to the official Revolt instance, you need to fill out the `revolt.js` and `revolt-api` configuration values in your config file.
+
+Please refer to the [revolt.js docs](https://revolt.js.org/classes/Client.html#constructor) for `revolt.js` and to [oapi's docs](https://github.com/insertish/oapi#example) for `revolt-api`.
+
 ## Contact
 
 If you have any questions or would like to talk with other Remix users you can join our Revolt server <a href="https://app.revolt.chat/invite/Remix">here</a>.

@@ -21,7 +21,7 @@ if (fs.existsSync("./config.json")) {
 
 class Remix {
   constructor() {
-    this.client = new Client();
+    this.client = new Client(config["revolt.js"]);
     this.client.config = config;
     this.config = config;
     this.modules = require("./storage/modules.json");
@@ -158,7 +158,7 @@ class Remix {
       this.settingsMgr.save();
     }
 
-    this.revoice = new Revoice(config.token || config.login);
+    this.revoice = new Revoice(config.token || config.login, config["revolt-api"]);
     this.observedVoiceUsers = new Map();
 
     try {

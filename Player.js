@@ -143,7 +143,10 @@ class RevoltPlayer extends EventEmitter {
   shuffle() {
     if (this.data.queue.length == 0) return "There is nothing to shuffle in the queue.";
     this.data.queue = this.shuffleArr(this.data.queue);
-    this.emit("update", "queue");
+    this.emit("queue", {
+      type: "shuffle",
+      data: this.data.queue
+    });
     return;
   }
   get paused() {

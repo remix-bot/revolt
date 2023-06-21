@@ -163,11 +163,15 @@
     /*color: rgb(19, 25, 39);*/
     font-size: 70%;
   }
+  /*.queue > * {
+    transition: 1s all;
+  }*/
   </style>
 
   <script> // TODO: implement queue actions
   const mt = document.getElementById("originItem");
   const queue = document.getElementsByClassName("queue")[0];
+  var queueData = [];
   const createSongItem = (video) => {
     const n = mt.cloneNode(true);
     n.id = "song#" + video.videoId;
@@ -184,29 +188,52 @@
       case "add": // something is added to the queue
         const video = data.data.data;
         const n = createSongItem(video);
+        video.element = n;
         if (data.data.append) {
+          queueData.push(video);
           queue.appendChild(n);
         } else {
+          queueData.unshift(video);
           queue.prepend(n);
         }
       break;
       case "remove": // something is removed from the queue
         const index = data.data.index;
         queue.children[index].remove();
+        queueData.splice(index, 1);
       break;
       case "update": // queue has changed due to a new song playing
         const next = queue.children[0];
         next.remove();
+        queueData.splice(0, 1);
         if (data.data.loop) {
-          queue.appendChild(createSongItem(data.data.old));
+          const item = createSongItem(data.data.old);
+          queue.appendChild(item);
+          data.data.old.element = item;
+          queueData.push(data.data.old);
         }
+      break;
+      case "shuffle":
+        const newArr = data.data;
+        queueData.forEach((item) => {
+          const idx = newArr.findIndex(e => e.videoId === item.videoId && !e.consumed);
+          item.queueIndex = idx;
+          newArr[idx].consumed = true;
+        });
+        queueData = queueData.sort((a, b) => b.queueIndex - a.queueIndex);
+        queueData.forEach(v => {
+          queue.prepend(v.element);
+        });
       break;
     }
   }
   const renderQueue = (q) => {
     queue.innerHTML = "";
     q.forEach((item) => {
-      queue.appendChild(createSongItem(item));
+      const i = createSongItem(item);
+      queue.appendChild(i);
+      item.element = i;
+      queueData.push(item);
     });
   }
   </script>

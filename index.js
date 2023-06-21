@@ -92,7 +92,7 @@ class Remix {
           } else {
             this.client.login(config.login);
           }
-        }, 1000);
+        }, 5000);
       }
       console.log("Logged in as " + this.client.user.username);
     });

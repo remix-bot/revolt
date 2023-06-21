@@ -64,7 +64,7 @@ If you're self-hosting Remix, please make it clear that it is **not the main ins
     - Rename the `config.example.json` file and fill out the missing values. You can generate spotify credentials [here](https://developer.spotify.com/)
 -   Run the bot (`node index.js`)
 
-## Connecting to a self-hosted instance
+## Connecting To A Self-Hosted Instance
 
 If you don't want to connect to the official Revolt instance, you need to fill out the `revolt.js` and `revolt-api` configuration values in your config file.
 

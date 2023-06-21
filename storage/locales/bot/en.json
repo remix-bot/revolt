@@ -1,10 +1,34 @@
 {
+  "cmdBuilder" : {
+    "requirement" : {
+      "permission" : "You don't have the needed permissions to run this command!"
+    },
+    "subcommand" : {
+      "invalid" : "Invalid subcommand. Try one of the following options: `$previousCmd <$cmdlist>"
+    }
+  },
+  "cmdHandler" : {
+    "command" : {
+      "invalid" : "Unknown command {{command}}!",
+      "suggestion" : "Did you mean {{command}}? (Type {{acceptCommand}} to run this)"
+    },
+    "help" : {
+      "pageStructure" : "Available Commands (page $currPage/$maxPage): \n\n$content\n\nRun `$prefix$helpCmd <command>` to learn more about it. You can also include subcommands.\nFor example: `$prefix$helpCmd command subcommandName`\n\nTip: Use the arrows beneath this message to turn pages, or specify the required page by using `$prefixhelp <page number>`"
+    },
+    "invalidFlag" : "Invalid flag `$invalidFlag`. It doesn't match any options on this command.\n`$previousCmd $invalidFlag`",
+    "page" : {
+      "invalid" : "{{number}} is not a valid page number!"
+    },
+    "permissions" : {
+      "message" : "Please grant me the {{permission}} permission in {{channel}} or contact a server administrator. I am unable to operate without this."
+    }
+  },
   "commands" : {
     "ping" : "My prefix in this server is: {{prefix}}"
   },
   "pagination" : {
     "embed" : {
-      "sclosedContent" : "{{content}}\\nSession closed - Changing pages **won't work** from here.",
+      "sclosedContent" : "{{content}}\nSession closed - Changing pages **won't work** from here.",
       "sclosedTitle" : "Session Closed"
     },
     "error" : {

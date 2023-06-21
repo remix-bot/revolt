@@ -43,6 +43,11 @@ class Remix {
     this.spotify = new Spotify(this.spotifyConfig)
 
     this.i18n = require("i18next");
+    var languages = fs.readdirSync(path.join(__dirname, "./storage/locales/bot")).map(f => f.replace(".json", ""));
+    languages = languages.map(l => {
+      const base = l.substring(0, l.indexOf("-"));
+      return (languages.includes(base)) ? [l] : [base, l];
+    }).flat(1).filter(l => l.length > 0);
     this.i18n.use(require("i18next-fs-backend")).init({
       fallbackLng: "en",
       initImmediate: false,
@@ -51,8 +56,8 @@ class Remix {
         addPath: '/locales/{{ns}}/{{lng}}.missing.json'
       },
       nonExplicitSupportedLngs: true,
-      supportedLngs: ["en", "de", "de-DE", "sk-SK", "ar", "ar-SA"],
-      preload: ["en", "de-DE", "ar-SA"],
+      supportedLngs: languages,
+      preload: languages,
       ns: "bot",
     }).then(() => {
       console.log("localisation loaded");
@@ -385,7 +390,7 @@ class Remix {
       var player = this.playerMap.get(cid);
       if (!((verifyUser) ? user : true) || !cid || !player) {
         if (!promptJoin) {
-          message.reply(this.em("It doesn't look like we're in the same voice channel.", message), false);
+          message.reply(this.em(this.t("voice.join.error.dc", message), message), false);
           return res(false);
         }
         var success = await askVC(message);
@@ -498,14 +503,14 @@ class Remix {
       const finish = () => {
         this.unobserveReactions(oid);
         m.edit({
-          content: "Session Closed",
+          content: this.t("pagination.embed.sclosedTitle", m),
           embeds: [
-            this.embedify(lastEmbed.description + "\nSession closed - Changing pages **won't work** from here.", "red")
+            this.embedify(this.t("pagination.embed.sclosedContent", m, { content: lastEmbed.description, interpolation: { escapeValue: false }}), "red")
           ]
         });
       }
       var currTime = setTimeout(() => { finish() }, 60*1000);
-    })
+    });
   }
 
   embedify(text = "", color = "#e9196c") {

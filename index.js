@@ -269,10 +269,17 @@ class Remix {
   getSharedServers(user) {
     var servers = this.mutualServers(user.id).map(s => this.client.servers.get(s));
     servers = servers.map((server) => {
+      const icon = () => {
+        try {
+          return server.animatedIconURL || server.iconURL || null
+        } catch(e) {
+          return null;
+        }
+      }
       return {
         name: server.name,
         id: server.id,
-        icon: server.animatedIconURL || server.iconURL || null,
+        icon: icon(),
         voiceChannels: server.channels.filter(c => c.type == "VoiceChannel").map(c => ({ name: c.name, id: c.id, icon: c.animatedIconURL || c.iconURL || null })) // TODO: fetch users as well
       }
     });

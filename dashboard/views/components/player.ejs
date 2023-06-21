@@ -72,19 +72,18 @@
   </div>
 
   <!-- queue -->
-  <div style="grid-row: 2; grid-column-start: 1; grid-column-end: 4">
+  <div style="grid-row: 2; grid-column-start: 1; grid-column-end: 4" class="queue-container">
     <h1 style="font-size: 1.5rem">Queue</h1>
     <br />
-    <div class="queue" style="width: 100%; display: flex; flex-direction: column;"> <!-- inspired by yt music -->
-      <div style="width: 100%; height: 4rem; padding: 0.3rem; display: flex; flex-direction: row; gap: 0.5rem; align-items: center; border-bottom: 1px solid rgb(19, 25, 39)">
-        <img alt="song name" src="/assets/icon.png" style="aspect-ratio: 1 / 1; height: 100%; border-radius: 5px; object-fit: cover" />
-        <div style="flex-grow: 3; display: flex; flex-direction: column; align-items: flex-start; gap: 0.1rem">
-          <span style="font-size: 1.1rem">Song name</span>
-          <span style="font-size: 0.8rem">Artist name</span>
-        </div>
-        <p style="align-self: center">3:08</p>
+    <div style="width: 100%; height: 4rem; padding: 0.3rem; display: flex; display: none; flex-direction: row; gap: 0.5rem; align-items: center; border-bottom: 1px solid rgb(19, 25, 39)" id="originItem"> <!-- for the simplicity of the script, this has been moved out of .queue -->
+      <img alt="song cover" src="/assets/icon.png" style="aspect-ratio: 1 / 1; height: 100%; border-radius: 5px; object-fit: cover" cover />
+      <div style="flex-grow: 3; display: flex; flex-direction: column; align-items: flex-start; gap: 0.1rem">
+        <span style="font-size: 1.1rem" title>Song name</span>
+        <span style="font-size: 0.8rem" artist>Artist name</span>
       </div>
+      <p style="align-self: center" duration>3:08</p>
     </div>
+    <div class="queue" style="width: 100%; display: flex; flex-direction: column;"></div> <!-- inspired by yt music -->
   </div>
   <style>
   .suggestion-li {
@@ -156,18 +155,59 @@
     flex-grow: 2;
     text-align: left;
   }
+  .queue-container.minimised {
+    display: none;
+  }
+  .queue:empty:after {
+    content: "Empty";
+    /*color: rgb(19, 25, 39);*/
+    font-size: 70%;
+  }
   </style>
 
-  <script>
+  <script> // TODO: implement queue actions
+  const mt = document.getElementById("originItem");
+  const queue = document.getElementsByClassName("queue")[0];
+  const createSongItem = (video) => {
+    const n = mt.cloneNode(true);
+    n.id = "song#" + video.videoId;
+    n.querySelector("span[title]").innerText = video.title;
+    n.querySelector("span[artist]").innerText = video.author.name;
+    n.querySelector("p[duration]").innerText = video.duration.timestamp;
+    n.querySelector("img[cover]").src = video.thumbnail;
+    n.style.display = "flex";
+    return n;
+  }
   const updateQueue = (data) => {
+    console.log(data);
     switch (data.type) {
       case "add": // something is added to the queue
-        break;
+        const video = data.data.data;
+        const n = createSongItem(video);
+        if (data.data.append) {
+          queue.appendChild(n);
+        } else {
+          queue.prepend(n);
+        }
+      break;
       case "remove": // something is removed from the queue
-        break;
+        const index = data.data.index;
+        queue.children[index].remove();
+      break;
       case "update": // queue has changed due to a new song playing
-        break;
+        const next = queue.children[0];
+        next.remove();
+        if (data.data.loop) {
+          queue.appendChild(createSongItem(data.data.old));
+        }
+      break;
     }
+  }
+  const renderQueue = (q) => {
+    queue.innerHTML = "";
+    q.forEach((item) => {
+      queue.appendChild(createSongItem(item));
+    });
   }
   </script>
 
@@ -237,14 +277,14 @@
     if (!minimised) minimisePlayer();
     const player = document.getElementsByClassName("remix-player")[0];
     const text = await fetch("/search-content?q=" + encodeURIComponent(query)).then(r => r.text())
-    window.history.pushState(document.documentElement.innerHTML, "Search | Remix", "/search?q=" + encodeURIComponent(query))
+    //window.history.pushState(document.documentElement.innerHTML, "Search | Remix", "/search?q=" + encodeURIComponent(query))
     document.getElementById("external").innerHTML = text;
     document.getElementById("external").style.display = "block";
     document.querySelector("section[class='main']").style.display = "none";
     document.body.appendChild(player);
   }
   const play = (link) => {
-    if (minimised) maximisePlayer();
+    //if (minimised) maximisePlayer();
     const video = link.parentElement.parentElement.parentElement.getAttribute("video");
     const notification = addNotification("Playlist", "Adding to playlist. Watch the current progress in the revolt channel (WIP)", 5000);
     post("/api/dashboard/queue", { action: "add", query: video }).then(async r => {
@@ -302,6 +342,7 @@
     addToClass("thumbnail");
     addToClass("player-info");
     addToClass("player-maximise");
+    addToClass("queue-container");
     minimised = true;
   }
   maximisePlayer = () => {
@@ -315,6 +356,7 @@
     removeFromClass("thumbnail");
     removeFromClass("player-info");
     removeFromClass("player-maximise");
+    removeFromClass("queue-container");
 
     document.getElementById("external").style.display = "none";
     document.querySelector("section[class='main']").style.display = "block";
@@ -682,6 +724,7 @@
     document.body.style.backgroundColor = "rgb(19, 25, 39)";
     artist.innerText = "";
     song.innerText = "";
+    queue.innerHTML = "";
 
     const btns = document.getElementsByClassName("btn-pbt");
     btns[0].parentElement.style.opacity = 0.5;

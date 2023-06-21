@@ -402,7 +402,7 @@ class Dashboard {
           case "joined":
             let player = data[0];
             let channel = this.remix.client.channels.get(data[0].connection.channelId);
-            socket.emit("joined", { ...currInfo(channel), currData: getPlayerData(player) });
+            socket.emit("joined", { ...currInfo(channel), currData: getPlayerData(player), currSong: getSongData(player.data.current, player) });
 
             subscribePlayer(player, socket);
             break;

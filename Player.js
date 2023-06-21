@@ -306,6 +306,7 @@ class RevoltPlayer extends EventEmitter {
         type: "update",
         data: {
           current: songData,
+          old: current,
           loop: this.data.loop
         }
       });

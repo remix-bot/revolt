@@ -179,6 +179,7 @@
     if (info.currData) {
       setVolume(info.currData.volume * 100);
       updatePlaybackStatus(info.currData);
+      renderQueue(info.currData.queue);
     }
     if (info.channel) updateCDisplay(info);
     if (info.currSong) update(info.currSong);
@@ -186,8 +187,10 @@
   });
   socket.on("joined", (data) => {
     console.log(data);
+    renderQueue(data.currData.queue);
     setVolume(data.currData.volume * 100);
     updateCDisplay(data)
+    update(data.currSong);
     updatePlaybackStatus(data.currData);
     enablePlayer();
   });

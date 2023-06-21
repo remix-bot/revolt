@@ -300,7 +300,17 @@
     if (!event.target.matches(".search-container > *")) return reset(event.target);
   });
 
+  const validURL = (str) => {
+    var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+      '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    return !!pattern.test(str);
+  }
   const queueSearch = async (query) => {
+    if (validURL(query)) return play(query);
     if (!minimised) minimisePlayer();
     const player = document.getElementsByClassName("remix-player")[0];
     const text = await fetch("/search-content?q=" + encodeURIComponent(query)).then(r => r.text())
@@ -312,9 +322,10 @@
   }
   const play = (link) => {
     if (minimised) maximisePlayer();
-    const video = link.parentElement.parentElement.parentElement.getAttribute("video");
+    var video;
+    if (link.parentElement) video = link.parentElement.parentElement.parentElement.getAttribute("video");
     const notification = addNotification("Playlist", "Adding to playlist. Watch the current progress in the revolt channel (WIP)", 5000);
-    post("/api/dashboard/queue", { action: "add", query: video }).then(async r => {
+    post("/api/dashboard/queue", { action: "add", query: video || link }).then(async r => {
       const d = await r.json()
       if (r.status !== 200 || (d.success === false)) {
         return addNotification("Playlist Error", d.message, 7000, "error");

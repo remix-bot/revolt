@@ -81,8 +81,8 @@ class Remix {
       reconnects.push({ time: t, timeout: setTimeout(() => {
         const idx = reconnects.find(e => e.time == t);
         reconnects.splice(idx, 1);
-      }, 6000)})
-      if (reconnects.length > 4) {
+      }, 20000)})
+      if (reconnects.length > 3) {
         console.log("Too many reconnects. Restarting.");
         this.client.events.disconnect();
         return setTimeout(() => {

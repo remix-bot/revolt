@@ -284,7 +284,7 @@
     document.body.appendChild(player);
   }
   const play = (link) => {
-    //if (minimised) maximisePlayer();
+    if (minimised) maximisePlayer();
     const video = link.parentElement.parentElement.parentElement.getAttribute("video");
     const notification = addNotification("Playlist", "Adding to playlist. Watch the current progress in the revolt channel (WIP)", 5000);
     post("/api/dashboard/queue", { action: "add", query: video }).then(async r => {

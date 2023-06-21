@@ -272,7 +272,7 @@ class Remix {
           evaluate(await Promise.allSettled(promises));
           console.log("Mapped " + Math.round((i / servers.length * 100)) + "%")
           promises.length = 0;
-          await Remix.sleep(1000);
+          await Remix.sleep(1200);
         }
         promises.push(servers[i].fetchMembers());
       }

@@ -75,7 +75,25 @@ class Remix {
 
     this.stats = require("./storage/stats.json");
 
+    var reconnects = [];
     this.client.on("ready", () => {
+      const t = Date.now();
+      reconnects.push({ time: t, timeout: setTimeout(() => {
+        const idx = reconnects.find(e => e.time == t);
+        reconnects.splice(idx, 1);
+      }, 6000)})
+      if (reconnects.length > 4) {
+        console.log("Too many reconnects. Restarting.");
+        this.client.events.disconnect();
+        return setTimeout(() => {
+          console.log("Reconnecting.");
+          if (config.token) {
+            this.client.loginBot(config.token);
+          } else {
+            this.client.login(config.login);
+          }
+        }, 1000);
+      }
       console.log("Logged in as " + this.client.user.username);
     });
     this.client.once("ready", () => {

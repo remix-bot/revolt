@@ -20,12 +20,6 @@ Remix is a free and open source music bot for Revolt built on [revoice.js](https
 
 [![Wakatime stats](https://wakatime.com/badge/user/810f765c-4ad8-49cc-8be6-0f07dff3733f/project/e79f62e3-4d15-41fc-b239-53d5a30302c7.svg?style=flat)](https://wakatime.com/badge/user/810f765c-4ad8-49cc-8be6-0f07dff3733f/project/e79f62e3-4d15-41fc-b239-53d5a30302c7)
 
-## Getting Started
-
-Firstly, you have to [invite Remix](https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW). Then use the `%help` command to get a list of commands that you can use through the bot.
-
-<!-- TODO: more extensive tutorial -->
-
 ## Commands  
 
 Below is a table of all of Remix's commands.
@@ -52,6 +46,12 @@ Below is a table of all of Remix's commands.
 |test|A test command used for various purposes.|%test 'number: number'|test|
 |thumbnail|Request the thumbnail of the currently playing song.|%thumbnail|thumbnail, thumb|
 |volume|Change the current volume.|%volume 'volume: number'|volume, v|
+
+## Getting Started
+
+Firstly, you have to [invite Remix](https://app.revolt.chat/bot/01FVB28WQ9JHMWK8K7RD0F0VCW). Then use the `%help` command to get a list of commands that you can use through the bot.
+
+<!-- TODO: more extensive tutorial -->
 
 ## Hosting The Bot
 

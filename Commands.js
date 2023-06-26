@@ -70,6 +70,10 @@ class CommandBuilder extends EventEmitter {
     this.options.push(config(new Option("channel")));
     return this;
   }
+  addUserOption(config) {
+    this.options.push(config(new Option("user")));
+    return this;
+  }
   addTextOption(config) {
     if (this.options.findIndex(e=>e.type=="text") !== -1) throw "There can only be 1 text option.";
     this.options.push(config(new Option("text")));
@@ -117,8 +121,9 @@ class CommandRequirement {
   }
 }
 class Option {
-  channelRegex = /^<#(?<id>[A-Z0-9]+)>$/;
-  idRegex = /^(?<id>[A-Z0-9]+)$/;
+  channelRegex = /^(<|<\\)#(?<id>[A-Z0-9]+)>/;
+  userRegex = /^(<|<\\)@(?<id>[A-Z0-9]+)>/;
+  idRegex = /^(?<id>[A-Z0-9]+)/;
 
   constructor(type="string") {
     this.name = null;
@@ -196,9 +201,8 @@ class Option {
         );
       case "choice":
         return this.choices.includes(i);
-      case "user": // TODO: Add user validation
-        // check if string is empty
-        return !!i;
+      case "user":
+        return this.userRegex.test(i) || this.idRegex.test(i);
       case "channel":
         return this.channelRegex.test(i) || this.idRegex.test(i) || client.channels.some(c => c.name == i);
       case "voiceChannel":
@@ -222,12 +226,13 @@ class Option {
       case "boolean":
         return i.toLowerCase() === "true" || i == "1"; // NOTE: this should cover the allowed values from .validateInput()
       case "choice":
+        return i; // TODO: implement choice type
       case "user":
-        return i; // TODO: implement choice types
+        var rs = this.userRegex.exec(i) ?? this.idRegex.exec(i);
+        rs &&= rs.groups["id"];
+        return rs;
       case "channel":
-        const channelRegex = /^<#(?<id>[A-Z0-9]+)>$/;
-        const idRegex = /^(?<id>[A-Z0-9]+)$/;
-        const results = channelRegex.exec(i) ?? idRegex.exec(i);
+        const results = this.channelRegex.exec(i) ?? this.idRegex.exec(i);
 
         const channel = client.channels.find(c => c.name == i);
         return (results) ? results.groups["id"] : (channel) ? channel.id : null;
@@ -242,7 +247,7 @@ class Option {
   }
   get typeError() {
     if (this.tError) return this.tError;
-    switch(this.type) {
+    switch(this.type) { // TODO: translate
       case "choice":
         let e = "Invalid value '$currValue'. The option `$optionName` has to be one of the following options: \n";
         e += "- " + this.choices.join("\n- ");
@@ -655,7 +660,7 @@ class CommandHandler extends EventEmitter {
       return;
     }
 
-    let p = (page) ? ` (page ${page.curr}/${page.max})` : "";
+    let p = (page) ? ` (page ${page.curr}/${page.max})` : ""; // TODO: translate
     const indexOffset = (page) ? page.offset : 0;
 
     let content = "Available Commands" + p + ": \n\n";

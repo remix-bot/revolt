@@ -3,7 +3,7 @@ const { CommandBuilder } = require("../Commands.js");
 module.exports = {
   command: new CommandBuilder()
     .setName("thumbnail")
-    .setDescription("Request the thumbnail of the currently playing song.")
+    .setDescription("Request the thumbnail of the currently playing song.", "commands.thumbnail")
     .addAliases("thumb"),
   run: async function(msg) {
     const p = await this.getPlayer(msg);

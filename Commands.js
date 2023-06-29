@@ -11,6 +11,7 @@ class CommandBuilder extends EventEmitter {
     this.subcommands = [];
     this.options = [];
     this.requirements = [];
+    this.translations = {};
     this.uid = this.guid();
 
     this.subcommandError = "Invalid subcommand. Try one of the following options: `$previousCmd <$cmdlist>`";
@@ -35,8 +36,9 @@ class CommandBuilder extends EventEmitter {
     this.aliases.push(n.toLowerCase());
     return this;
   }
-  setDescription(d) {
+  setDescription(d, t) {
     this.description = d;
+    if (t) this.setTranslation(t, "description");
     return this;
   }
   setId(id) {
@@ -91,6 +93,13 @@ class CommandBuilder extends EventEmitter {
   addAliases(...aliases) {
     aliases.forEach((a) => this.addAlias(a));
     return this;
+  }
+  translation(property) {
+    return this.translations[property];
+  }
+  setTranslation(key, property) {
+    if (typeof key === "string") return this.translations[property] = { key: key };
+    this.translations[property] = key;
   }
 }
 class CommandRequirement {
@@ -298,6 +307,7 @@ class CommandHandler extends EventEmitter {
     this.replyHandler = (t, msg) => {
       msg.reply(t);
     }
+    this.translationHandler = null;
 
     this.client.on("messageCreate", (msg)=>this.messageHandler(msg))
 
@@ -352,7 +362,7 @@ class CommandHandler extends EventEmitter {
       this.fixMap.delete(msg.authorId);
       return this.processCommand(cmd.cmd, cmd.args, msg);
     } else if (args[0] === this.helpCommand) {
-      if (!args[1]) return (this.paginateHelp) ? this.genHelp(null, msg) : this.replyHandler(this.f(this.getHelpPage(this.commandLimit, 0, ...this.commands), msg.channel.serverId), msg);
+      if (!args[1]) return (this.paginateHelp) ? this.genHelp(null, msg) : this.replyHandler(this.f(this.getHelpPage(this.commandLimit, 0, msg, ...this.commands), msg.channel.serverId), msg);
 
       if (args.length > 1) {
         // check if a new page is requested
@@ -360,7 +370,7 @@ class CommandHandler extends EventEmitter {
         if (newPage) {
           newPage = parseInt(args[1]);
           if (newPage < 1 || newPage > this.getHelpPages()) return this.replyHandler("`" + newPage + "` is not a valid page number!", msg);
-          return this.replyHandler(this.f(this.getHelpPage(this.commandLimit, newPage - 1, ...this.commands), msg.channel.serverId), msg);
+          return this.replyHandler(this.f(this.getHelpPage(this.commandLimit, newPage - 1, msg, ...this.commands), msg.channel.serverId), msg);
         }
       }
 
@@ -375,11 +385,11 @@ class CommandHandler extends EventEmitter {
           currCmd = curr[idx];
           prefix += a + " ";
         }
-        return this.replyHandler(this.genCommandHelp(currCmd), msg);
+        return this.replyHandler(this.genCommandHelp(currCmd, msg), msg);
       } else {
         let idx = this.commands.findIndex(e => e.name.toLowerCase() == args[1].toLowerCase());
         if (idx === -1) return this.replyHandler(this.f("Unknown command `$prefix" + args[1] + "`!", msg.channel.serverId), msg);
-        return this.replyHandler(this.genCommandHelp(this.commands[idx]), msg);
+        return this.replyHandler(this.genCommandHelp(this.commands[idx], msg), msg);
       }
     }
     if (!this.commandNames.includes(args[0].toLowerCase())) {
@@ -432,6 +442,9 @@ class CommandHandler extends EventEmitter {
   }
   setPaginationHandler(handler) {
     this.paginationHandler = handler;
+  }
+  setTranslationHandler(handler) {
+    this.translationHandler = handler;
   }
   enableHelpPagination(bool) {
     this.paginateHelp = bool;
@@ -627,33 +640,39 @@ class CommandHandler extends EventEmitter {
     if (idx == -1) return;
     this.commands.splice(idx, 1);
   }
+  getDescription(obj, message) {
+    const config = obj.translation("description");
+    if (!config || !this.translationHandler) return obj.description;
+    const translated = this.translationHandler(config.key, message, config.options);
+    return (translated == config.key) ? obj.description : translated;
+  }
   getHelpPages(cmdLimit=5) {
     return Math.ceil(this.commands.length / cmdLimit);
   }
-  getHelpPage(cmdLimit=5, currPage=0, ...cmds) {
+  getHelpPage(cmdLimit=5, currPage=0, msg, ...cmds) {
     const split = (cmdLimit < cmds.length);
-    if (!split) return this.genHelp(null, null, ...cmds); // no need to chunk it into pages
+    if (!split) return this.genHelp(null, msg, false, ...cmds); // no need to chunk it into pages
 
     let s = (cmdLimit) * currPage;
     const commands = cmds.slice(s, s + cmdLimit);
     let max = Math.ceil(cmds.length / cmdLimit);
     let offset = cmdLimit * currPage;
 
-    return this.genHelp({ curr: currPage + 1, max, offset }, null, ...commands);
+    return this.genHelp({ curr: currPage + 1, max, offset }, msg, false, ...commands);
   }
-  genHelp(page=null, message, ...cmds) {
+  genHelp(page=null, message, paginate=false, ...cmds) {
     // TODO: make help more customizable
     if (cmds.length == 0) cmds.push(...this.userCommands(this.commands));
     cmds = this.userCommands(cmds);
 
-    if (this.paginateHelp && message) {
+    if (this.paginateHelp && message && paginate) {
       var form = "Available Commands (page $currPage/$maxPage): \n\n$content";
       form += "\n\nRun `$prefix$helpCmd <command>` to learn more about it. You can also include subcommands.\n";
       form += "For example: `$prefix$helpCmd command subcommandName`\n\n";
       form += "Tip: Use the arrows beneath this message to turn pages, or specify the required page by using `$prefixhelp <page number>`";
 
       const contents = cmds.map((cmd, i) => {
-        return (i + 1) + ". **" + cmd.name + "**: " + cmd.description;
+        return (i + 1) + ". **" + cmd.name + "**: " + this.getDescription(cmd, message);
       });
 
       this.paginationHandler(message, this.f(form), contents);
@@ -667,7 +686,7 @@ class CommandHandler extends EventEmitter {
     if (page && page.curr != 1) content += (indexOffset) + ". [...]\n";
 
     cmds.forEach((cmd, i) => {
-      content += (i + 1 + indexOffset) + ". **" + cmd.name + "**: " + cmd.description + "\n";
+      content += (i + 1 + indexOffset) + ". **" + cmd.name + "**: " + this.getDescription(cmd, message) + "\n";
     });
     if (page && page.curr != page.max) content += (cmds.length + indexOffset) + ". [...]\n";
 
@@ -677,10 +696,10 @@ class CommandHandler extends EventEmitter {
 
     return content;
   }
-  genCommandHelp(cmd) { // TODO: add better indicator for optional parameters/subcommands/options
+  genCommandHelp(cmd, msg) { // TODO: add better indicator for optional parameters/subcommands/options
     // TODO: make options work;
     let content = "# " + this.capitalize(cmd.name) + "\n";
-    content += cmd.description + "\n\n";
+    content += this.getDescription(cmd, msg) + "\n\n";
     if (cmd.aliases.length > 1) {
       content += "**Aliases:** \n";
       cmd.aliases.forEach(alias => {

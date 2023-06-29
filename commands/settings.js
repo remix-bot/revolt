@@ -5,7 +5,7 @@ module.exports = {
   command: function() {
     return new CommandBuilder()
       .setName("settings")
-      .setDescription("Change/Get settings in the current server.")
+      .setDescription("Change/Get settings in the current server.", "commands.settings")
       .addAliases("s")
       .addRequirement(e => e.addPermission("ManageServer"))
       .addSubcommand(cmd =>

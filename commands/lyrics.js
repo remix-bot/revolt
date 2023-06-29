@@ -4,7 +4,7 @@ const { CommandBuilder } = require("../Commands.js");
 module.exports = {
   command: new CommandBuilder()
     .setName("lyrics")
-    .setDescription("Fetch the lyrics of the current song. Please note that the lyrics might differ from the actual ones, as Genius doesn't always find the right song.")
+    .setDescription("Fetch the lyrics of the current song. Please note that the lyrics might differ from the actual ones, as Genius doesn't always find the right song.", "commands.lyrics")
     .addAliases("lyric"),
   run: async function(message) {
     const p = await this.getPlayer(message);

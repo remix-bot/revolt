@@ -77,7 +77,7 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
 module.exports = {
   command: new CommandBuilder()
     .setName("join")
-    .setDescription("Make the bot join a specific voice channel.")
+    .setDescription("Make the bot join a specific voice channel.", "commands.join")
     .setId("join")
     .addChannelOption((option) =>
       option.setName("Channel ID")

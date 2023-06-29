@@ -1,6 +1,28 @@
 {
   "commands" : {
-    "ping" : "Mein Präfix in diesem Server ist: {{prefix}}"
+    "clear" : "Entferne alle Songs aus der Warteschlange.",
+    "join" : "Lasse den Bot einem bestimmten Sprachkanal beitreten",
+    "leave" : "Lasse den Bot deinen aktuellen Sprachkanal verlassen",
+    "list" : "Listet die Songs in der Warteschlange deines Kanals auf.",
+    "login" : "Bestätige die Anmeldung deines Kontos auf der Webseite",
+    "loop" : "Aktiviere/Deaktiviere die Schleife des aktuellen Songs oder der Warteschlange.",
+    "lyrics" : "Rufe den Songtext des aktuellen Liedes auf. Bitte beachte, dass dieser vom tatsächlichen Text abweichen kann, da Genius nicht immer den richtigen Song findet.",
+    "np" : "Rufe den Namen und die URL des Songs ab, der gerade abgespielt wird.",
+    "pause" : "Pausiere die Wiedergabe in deinem Sprachkanal",
+    "ping" : "Mein Präfix in diesem Server ist: {{prefix}}",
+    "play" : "Spiele ein YouTube-Video mithilfe einer URL/einem Suchbegriff, oder eine Playlist von einer URL. Einige andere Dienste sind auch unterstützt.",
+    "player" : "Erstellen eine Emoji-Steuerung für deinen Sprachkanal",
+    "playnext" : "Siehe %play. Die gefundenen Songs werden am Anfang der Warteschlange eingefügt.",
+    "remove" : "Entferne einen bestimmten Song von der Warteschlange.",
+    "resume" : "Setze die Wiedergabe in deinem Sprachkanal fort",
+    "search" : "Listet die Suchergebnisse für eine bestimmte Suchanfrage auf",
+    "settings" : "Rufe die Einstellungen eines Servers ab, oder ändere diese.",
+    "shuffle" : "Ordnet die Warteschlange zufällig an.",
+    "skip" : "Überspringe den aktuellen Song.",
+    "stats" : "Rufe Statistiken über den Bot ab.",
+    "support" : "Der Support-Server für Remix. Zögere nicht, um Hilfe zu bitten, Bugs zu melden oder einfach zu chatten :)",
+    "thumbnail" : "Rufe das Thumbnail des aktuellen Songs ab.",
+    "volume" : "Ändere die aktuelle Lautstärke."
   },
   "pagination" : {
     "embed" : {

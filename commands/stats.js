@@ -3,7 +3,7 @@ const { CommandBuilder } = require("../Commands.js");
 module.exports = {
   command: new CommandBuilder()
     .setName("stats")
-    .setDescription("Display stats about the bot like the uptime.")
+    .setDescription("Display stats about the bot like the uptime.", "commands.stats")
     .addAliases("info"),
   run: function(message) {
     const reason = (this.config.restart) ? ":screwdriver: Cause for last restart: `" + this.config.restart + "`\n": "";

@@ -3,7 +3,7 @@ const { CommandBuilder } = require("../Commands.js");
 module.exports = {
   command: new CommandBuilder()
     .setName("skip")
-    .setDescription("Skip the current playing song."),
+    .setDescription("Skip the current playing song.", "commands.skip"),
   run: async function(message) {
     const p = await this.getPlayer(message);
     if (!p) return;

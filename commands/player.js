@@ -3,7 +3,7 @@ const { CommandBuilder } = require("../Commands.js");
 module.exports = {
   command: new CommandBuilder()
     .setName("player")
-    .setDescription("Create an emoji player control for your voice channel"),
+    .setDescription("Create an emoji player control for your voice channel", "commands.player"),
   run: async function(msg) {
     const p = await this.getPlayer(msg);
     if (!p) return;

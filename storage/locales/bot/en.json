@@ -24,7 +24,29 @@
     }
   },
   "commands" : {
-    "ping" : "My prefix in this server is: {{prefix}}"
+    "clear" : "Remove all songs from the queue.",
+    "join" : "Make the bot join a specific voice channel.",
+    "leave" : "Make the bot leave your current voice channel",
+    "list" : "List the songs in the queue of your current voice channel.",
+    "login" : "Confirm the login of your account on the website",
+    "loop" : "Toggle the looping of your queue/song.",
+    "lyrics" : "Fetch the lyrics of the current song. Please note that the lyrics might differ from the actual ones, as Genius doesn't always find the right song.",
+    "np" : "Request the name and url of the currently playing song.",
+    "pause" : "Pause the playback in your voice channel",
+    "ping" : "My prefix in this server is: {{prefix}}",
+    "play" : "Play a youtube video from url/query or a playlist by url. Other services are supported as well.",
+    "player" : "Create an emoji player control for your voice channel",
+    "playnext" : "Same as %play. The result will be added to the top of the queue.",
+    "remove" : "Remove a specific song from the queue.",
+    "resume" : "Resume the playback in your voice channel",
+    "search" : "Display the search results for a given query",
+    "settings" : "Change/Get settings in the current server.",
+    "shuffle" : "Re-orders the queue randomly.",
+    "skip" : "Skip the current playing song.",
+    "stats" : "Display stats about the bot like the uptime.",
+    "support" : "The support server for Remix. Feel free to ask help, report bugs or just chat :)",
+    "thumbnail" : "Request the thumbnail of the currently playing song.",
+    "volume" : "Change the current volume."
   },
   "pagination" : {
     "embed" : {

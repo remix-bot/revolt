@@ -3,7 +3,7 @@ const { CommandBuilder } = require("../Commands.js");
 module.exports = {
   command: new CommandBuilder()
     .setName("loop")
-    .setDescription("Toggle the looping of your queue/song.")
+    .setDescription("Toggle the looping of your queue/song.", "commands.loop")
     .addChoiceOption(opt =>
       opt.setName("type")
         .addChoices("queue", "song")

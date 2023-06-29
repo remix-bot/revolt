@@ -3,7 +3,7 @@ module.exports = {
   command: new CommandBuilder()
     .setName("playnext")
     .setId("playnext")
-    .setDescription("Play a youtube video from url/query or a playlist by url. The result will be added to the top of the queue.")
+    .setDescription("Same as %play. The result will be added to the top of the queue.", "commands.playnext")
     .addTextOption((option) =>
       option.setName("query")
         .setDescription("A youtube query/url or youtube playlist url")

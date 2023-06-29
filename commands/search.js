@@ -18,7 +18,7 @@ function awaitMessage(msg, count, player) {
 module.exports = {
   command: new CommandBuilder()
     .setName("search")
-    .setDescription("Display the search results for a given query")
+    .setDescription("Display the search results for a given query", "commands.search")
     .addChoiceOption(o =>
       o.setName("provider")
         .setDescription("The search result provider. (Youtube or Youtube Music)")

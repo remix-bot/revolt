@@ -162,6 +162,9 @@ class Remix {
     this.handler.setPaginationHandler((message, form, contents) => {
       this.pagination(form, contents, message, 8);
     });
+    this.handler.setTranslationHandler((key, message, options) => {
+      return this.t(key, message, options);
+    });
     this.handler.enableHelpPagination(true);
     const dir = path.join(__dirname, "commands");
     const files = fs.readdirSync(dir).filter(f => f.endsWith(".js"));
@@ -438,7 +441,7 @@ class Remix {
     this.observedVoiceUsers.set(user, a);
   }
   t(key, language, options) {
-    if (typeof language === "object") {
+    if (typeof language === "object" && language !== null) {
       const settings = this.getSettings(language);
       language = settings.get("locale");
     }

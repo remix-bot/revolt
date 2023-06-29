@@ -3,7 +3,7 @@ module.exports = {
   command: new CommandBuilder()
     .setName("play")
     .setId("play")
-    .setDescription("Play a youtube video from url/query or a playlist by url.")
+    .setDescription("Play a youtube video from url/query or a playlist by url. Other services are supported as well.", "commands.play")
     .addTextOption((option) =>
       option.setName("query")
         .setDescription("A youtube query/url or youtube playlist url")

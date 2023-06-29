@@ -3,7 +3,7 @@ const { CommandBuilder } = require("../Commands.js");
 module.exports = {
   command: new CommandBuilder()
     .setName("clear")
-    .setDescription("Remove all songs from the queue.")
+    .setDescription("Remove all songs from the queue.", "commands.clear")
     .addAliases("c"),
   run: async function(msg) {
     const p = await this.getPlayer(msg);

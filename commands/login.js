@@ -3,7 +3,7 @@ const { CommandBuilder } = require("../Commands.js");
 module.exports = {
   command: new CommandBuilder()
     .setName("login")
-    .setDescription("Generate a code to connect your remix account with your revolt account.")
+    .setDescription("Confirm a login of your account on the website", "commands.login")
     .addStringOption(o =>
       o.setName("id")
         .setDescription("The id you got from logging in at the dashboard.")

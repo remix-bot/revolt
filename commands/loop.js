@@ -7,7 +7,7 @@ module.exports = {
     .addChoiceOption(opt =>
       opt.setName("type")
         .addChoices("queue", "song")
-        .setDescription("Specifies what loop should be toggled. (`song` | `queue`)")
+        .setDescription("Specifies what loop should be toggled.", "options.loop.type")
         .setRequired(true)),
   run: async function(message, data) {
     const p = await this.getPlayer(message, data);

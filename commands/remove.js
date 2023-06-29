@@ -6,7 +6,7 @@ module.exports = {
     .setDescription("Remove a specific song from the queue.", "commands.remove")
     .addNumberOption(opt =>
       opt.setName("index")
-        .setDescription("The position of the song in the queue. You can view the indeces with the 'list' command")
+        .setDescription("The position of the song in the queue. You can view the indices with the 'list' command", "options.remove.index")
         .setRequired(true)
     ),
   run: async function(message, data) {

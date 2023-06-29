@@ -11,24 +11,24 @@ module.exports = {
       .addSubcommand(cmd =>
         cmd.setName("set")
           .setId("setSettings")
-          .setDescription("Set the value of a specific setting.")
+          .setDescription("Set the value of a specific setting.", "subcommands.settings.set")
           .addChoiceOption(c =>
             c.addChoices(...Object.keys(this.settingsMgr.defaults))
               .setName("setting")
-              .setDescription("The name of the setting you want to set.")
+              .setDescription("The name of the setting you want to set.", "options.settings.set.setting")
               .setRequired(true)
           ).addTextOption(c =>
             c.setName("value")
-              .setDescription("The new value.")
+              .setDescription("The new value.", "options.settings.set.value")
               .setRequired(true))
       ).addSubcommand(cmd =>
         cmd.setName("get")
-          .setDescription("Get the value of a specific setting or the settings of the server.")
+          .setDescription("Get the value of a specific setting or the settings of the server.", "subcommands.settings.get")
           .setId("getSettings")
           .addChoiceOption(c =>
             c.addChoices(...Object.keys(this.settingsMgr.defaults))
               .setName("setting")
-              .setDescription("Get the current value of a setting.")
+              .setDescription("Get the current value of a setting.", "options.settings.get.setting")
               .setRequired(false)
             )
       )

@@ -145,6 +145,7 @@ class Option {
     this.tError = null;
     this.aliases = [null];
     this.choices = []; // only for choice options
+    this.translations = {};
 
     return this;
   }
@@ -159,8 +160,9 @@ class Option {
     this.aliases[0] = n;
     return this;
   }
-  setDescription(d) {
+  setDescription(d, t) {
     this.description = d;
+    if (t) this.setTranslation(t, "description");
     return this;
   }
   setRequired(r) {
@@ -270,6 +272,13 @@ class Option {
   }
   set typeError(e) {
     this.tError = e;
+  }
+  translation(property) {
+    return this.translations[property];
+  }
+  setTranslation(key, property) {
+    if (typeof key === "string") return this.translations[property] = { key: key };
+    this.translations[property] = key;
   }
 }
 
@@ -710,16 +719,16 @@ class CommandHandler extends EventEmitter {
     if (cmd.subcommands.length > 0) {
       content += "**Subcommands:** \n";
       cmd.subcommands.forEach(s => {
-        content += "- " + s.name + ": " + s.description + "\n";
+        content += "- " + s.name + ": " + this.getDescription(s, msg) + "\n";
       });
       content += "\n";
     } else if (cmd.options.length > 0) {
       content += "**Options:** \n";
       cmd.options.forEach(o => {
         if (o.type == "choice") {
-          content += "- " + o.name + ": " + o.description + "; Allowed values: `" + o.choices.join("`, `") + "`\n";
+          content += "- " + o.name + ": " + this.getDescription(o, msg) + "; Allowed values: `" + o.choices.join("`, `") + "`\n";
         } else {
-          content += "- " + o.name + ": " + o.description + "\n";
+          content += "- " + o.name + ": " + this.getDescription(o, msg) + "\n";
         }
       });
       content += "\n";

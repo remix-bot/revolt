@@ -6,7 +6,7 @@ module.exports = {
     .setDescription("Same as %play. The result will be added to the top of the queue.", "commands.playnext")
     .addTextOption((option) =>
       option.setName("query")
-        .setDescription("A youtube query/url or youtube playlist url")
+        .setDescription("A YouTube query/url, playlist url, or a link to a Spotify, SoundCloud, or YouTube Music song.", "options.playnext.query")
         .setRequired(true)
     ).addAlias("pn"),
   run: async function(message, data) {

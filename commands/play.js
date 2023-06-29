@@ -6,7 +6,7 @@ module.exports = {
     .setDescription("Play a youtube video from url/query or a playlist by url. Other services are supported as well.", "commands.play")
     .addTextOption((option) =>
       option.setName("query")
-        .setDescription("A youtube query/url or youtube playlist url")
+        .setDescription("A YouTube query/url, playlist url, or a link to a Spotify, SoundCloud, or YouTube Music song.", "options.play.query")
         .setRequired(true)
     ).addAlias("p"),
   run: async function(message, data) {

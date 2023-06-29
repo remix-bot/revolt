@@ -6,7 +6,7 @@ module.exports = {
     .setDescription("Confirm a login of your account on the website", "commands.login")
     .addStringOption(o =>
       o.setName("id")
-        .setDescription("The id you got from logging in at the dashboard.")
+        .setDescription("The id you got from logging in at the dashboard.", "options.login.id")
         .setRequired(true)),
   run: async function(msg, data) { // TODO: temporary login (without creating account)
     const log = data.get("id").value;

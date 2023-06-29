@@ -24,6 +24,42 @@
     "thumbnail" : "Rufe das Thumbnail des aktuellen Songs ab.",
     "volume" : "Ändere die aktuelle Lautstärke."
   },
+  "options" : {
+    "join" : {
+      "channel" : "Gebe den Kanal an, dem der Bot beitreten soll. Dies ist aufgrund Revolt-Einschränkungen notwendig."
+    },
+    "login" : {
+      "id" : "Die ID, die du beim Einloggen auf dem Dashboard erhalten hast."
+    },
+    "loop" : {
+      "type" : "Gibt an, welche Schleife geändert werden soll."
+    },
+    "play" : {
+      "query" : "Eine YouTube-Suchanfrage/URL, Playlist-URL oder ein Link zu einem Song auf Spotify, SoundCloud oder YouTube Music."
+    },
+    "playnext" : {
+      "query" : "Eine YouTube-Suchanfrage/URL, Playlist-URL oder ein Link zu einem Song auf Spotify, SoundCloud oder YouTube Music."
+    },
+    "remove" : {
+      "index" : "Die Position des Liedes in der Warteschlange. Die Indexe (Positionen) der Lieder können mit dem `list` Befehl aufgerufen werden."
+    },
+    "search" : {
+      "provider" : "Der Anbieter der Suchergebnisse. (YouTube oder YouTube Music)",
+      "query" : "Die Suchanfrage, nach der gesucht werden soll."
+    },
+    "settings" : {
+      "get" : {
+        "setting" : "Rufe den Wert einer bestimmten Einstellung ab."
+      },
+      "set" : {
+        "setting" : "Der Name der Einstellung, die bearbeitet werden soll.",
+        "value" : "Der neue Wert der Einstellung."
+      }
+    },
+    "volume" : {
+      "volume" : "Die neue Lautstärke in Prozent (z.B.: `30` oder `100`). Werte über 100 % können Qualitätsverluste verursachen."
+    }
+  },
   "pagination" : {
     "embed" : {
       "sclosedContent" : "{{content}}\nSitzung geschlossen - Das Umblättern funktioniert ab jetzt **nicht mehr**.",
@@ -34,6 +70,12 @@
         "messages" : "Ich kann keine Nachrichten in {{channel}} senden. Bitte wende dich an einen Serveradministrator und erteile mir die Berechtigung \"SendMessage\"",
         "reactions" : "Ich brauche die Berechtigung, auf Nachrichten zu reagieren. Bitte wende dich an einen Serveradministrator, um dies zu klären."
       }
+    }
+  },
+  "subcommands" : {
+    "settings" : {
+      "get" : "Rufe den Wert einer bestimmten Einstellung ab, oder Liste die Einstellungen des gesamten Servers auf.",
+      "set" : "Lege den Wert einer bestimmten Einstellung fest."
     }
   },
   "voice" : {

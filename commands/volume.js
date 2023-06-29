@@ -6,7 +6,7 @@ module.exports = {
     .setDescription("Change the current volume.", "commands.volume")
     .addNumberOption(o =>
       o.setName("volume")
-        .setDescription("The new volume in perentages. If you go above 100% there might be quality loss. (e.g. `30` or `100`)")
+        .setDescription("The new volume in percentages (e.g. `30` or `100`). If you go above 100% there might be quality loss.", "options.volume.volume")
         .setRequired(true)
     )
     .addAliases("v", "vol"),

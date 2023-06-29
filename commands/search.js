@@ -21,13 +21,13 @@ module.exports = {
     .setDescription("Display the search results for a given query", "commands.search")
     .addChoiceOption(o =>
       o.setName("provider")
-        .setDescription("The search result provider. (Youtube or Youtube Music)")
+        .setDescription("The search result provider. (YouTube or YouTube Music)", "options.search.provider")
         .addChoices("yt", "ytm")
         .setRequired(true)
         .addFlagAliases("p", "u", "s"))
     .addTextOption(o =>
       o.setName("query")
-        .setDescription("The query to search for.")
+        .setDescription("The query to search for.", "options.search.query")
         .setRequired(true)
     ),
   run: async function(msg, data) {

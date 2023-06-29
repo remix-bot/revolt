@@ -48,6 +48,42 @@
     "thumbnail" : "Request the thumbnail of the currently playing song.",
     "volume" : "Change the current volume."
   },
+  "options" : {
+    "join" : {
+      "channel" : "Specify the channel, the bot should join. This is necessary due to (current) Revolt limitations."
+    },
+    "login" : {
+      "id" : "The id you got from logging in at the dashboard."
+    },
+    "loop" : {
+      "type" : "Specifies what loop should be toggled."
+    },
+    "play" : {
+      "query" : "A YouTube query/url, playlist url, or a link to a Spotify, SoundCloud, or YouTube Music song."
+    },
+    "playnext" : {
+      "query" : "A YouTube query/url, playlist url, or a link to a Spotify, SoundCloud, or YouTube Music song."
+    },
+    "remove" : {
+      "index" : "The position of the song in the queue. You can view the indices with the 'list' command"
+    },
+    "search" : {
+      "provider" : "The search result provider. (YouTube or YouTube Music)",
+      "query" : "The query to search for."
+    },
+    "settings" : {
+      "get" : {
+        "setting" : "Get the current value of a setting."
+      },
+      "set" : {
+        "setting" : "The name of the setting you want to set.",
+        "value" : "The new value."
+      }
+    },
+    "volume" : {
+      "volume" : "The new volume in percentages (e.g. `30` or `100`). If you go above 100% there might be quality loss."
+    }
+  },
   "pagination" : {
     "embed" : {
       "sclosedContent" : "{{content}}\nSession closed - Changing pages **won't work** from here.",
@@ -58,6 +94,12 @@
         "messages" : "I am unable to send messages in {{channel}}. Please contact a server administrator and grant me the \"SendMessage\" permission.",
         "reactions" : "I need reaction permissions to work. Please contact a server administrator to address this."
       }
+    }
+  },
+  "subcommands" : {
+    "settings" : {
+      "get" : "Get the value of a specific setting or the settings of the server.",
+      "set" : "Set the value of a specific setting."
     }
   },
   "voice" : {

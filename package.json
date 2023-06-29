@@ -18,7 +18,7 @@
     "revolt-uploader": "^1.1.0",
     "revolt.js": "^7.0.0-beta.7",
     "revoltbots.js": "^1.0.5",
-    "socket.io": "^4.6.1",
+    "socket.io": "^4.7.1",
     "soundcloud-downloader": "^1.0.0",
     "spotifydl-core": "^0.2.0",
     "util": "^0.12.5",

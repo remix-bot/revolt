@@ -42,6 +42,8 @@ class Remix {
     this.geniusClient = new Genius.Client(this.config.geniusToken);
     this.spotify = new Spotify(this.spotifyConfig)
 
+    this.presence = "Online";
+
     this.i18n = require("i18next");
     var languages = fs.readdirSync(path.join(__dirname, "./storage/locales/bot")).map(f => f.replace(".json", ""));
     languages = languages.map(l => {
@@ -106,7 +108,7 @@ class Remix {
           this.client.user.edit({
             status: {
               text: texts[state].replace(/\$serverCount/g, this.client.servers.size()),
-              presence: "Online"
+              presence: this.presence
             },
           });
           if (state == texts.length - 1) {state = 0} else {state++}
@@ -155,7 +157,7 @@ class Remix {
     this.handler.addOwners(...(this.config.owners || ["01G9MCW5KZFKT2CRAD3G3B9JN5"]));
     this.handler.setRequestCallback((...data) => this.request(...data));
     this.handler.setOnPing(msg => {
-      let pref = this.handler.getPrefix(msg.channel.server_id);
+      let pref = this.handler.getPrefix(msg.channel.serverId);
       let m = this.iconem(msg.channel.server.name, this.t("commands.ping", msg, {prefix: "`" + pref + "`"}), (msg.channel.server.icon) ? "https://autumn.revolt.chat/icons/" + msg.channel.server.icon._id : null, msg);
       msg.reply(m, false)
     });

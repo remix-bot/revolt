@@ -371,7 +371,7 @@ class CommandHandler extends EventEmitter {
       this.fixMap.delete(msg.authorId);
       return this.processCommand(cmd.cmd, cmd.args, msg);
     } else if (args[0] === this.helpCommand) {
-      if (!args[1]) return (this.paginateHelp) ? this.genHelp(null, msg) : this.replyHandler(this.f(this.getHelpPage(this.commandLimit, 0, msg, ...this.commands), msg.channel.serverId), msg);
+      if (!args[1]) return (this.paginateHelp) ? this.genHelp(null, msg, true) : this.replyHandler(this.f(this.getHelpPage(this.commandLimit, 0, msg, ...this.commands), msg.channel.serverId), msg);
 
       if (args.length > 1) {
         // check if a new page is requested
@@ -719,7 +719,7 @@ class CommandHandler extends EventEmitter {
     if (cmd.subcommands.length > 0) {
       content += "**Subcommands:** \n";
       cmd.subcommands.forEach(s => {
-        content += "- " + s.name + ": " + this.getDescription(s, msg) + "\n";
+        content += "- " + s.name + ": " + this.getDescription(s, msg) + ((s.options.length > 0) ? "; (`" + s.options.length + " option(s)`)" : "") + "\n";
       });
       content += "\n";
     } else if (cmd.options.length > 0) {

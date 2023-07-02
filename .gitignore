@@ -2,5 +2,6 @@ node_modules/
 storage/data
 config.json
 settings.json
+remix-settings.json
 cmdUsage.md
 bot.js

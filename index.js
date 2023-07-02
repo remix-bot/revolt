@@ -514,6 +514,7 @@ class Remix {
       }
     }, false).then(m => {
       const oid = this.observeReactions(m, arrows, (e, ms) => {
+        if (paginated.length == 1) return;
         let change = (e.emoji_id == arrows[0]) ? -1 : 1;
         if (page + change < 0) page = paginated.length - 1, change = 0;
         if (!paginated[page + change]) page = 0, change = 0;
@@ -534,6 +535,74 @@ class Remix {
       }
       var currTime = setTimeout(() => { finish() }, 60*1000);
     });
+  }
+  reactionCollector(msg, reactions, onReaction=()=>{}, time=60*1000, finishCb=()=>{}) {
+    var timer = setTimeout(() => finish(), time);
+    const oid = this.observeReactions(msg, reactions, (e, msg) => {
+      onReaction(e, msg);
+      clearTimeout(timer);
+      timer = setTimeout(() => finish(), time);
+    });
+    const finish = () => {
+      this.unobserveReactions(oid);
+      finishCb();
+    }
+  }
+  catalog(msg, categories, defaultPage=0, maxLinesPerPage) {
+    const reactions = categories.map(c => c.reaction);
+    const pages = categories.map(c => this.pages(c.content, maxLinesPerPage));
+    const forms = categories.map(c => c.form);
+    const titles = categories.map(c => c.title);
+
+    const arrows = ["⬅️", "➡️"];
+    const rs = [...reactions, ...arrows];
+    var currPage = 0;
+    var currCat = defaultPage;
+    var lastEmbed;
+
+    const messageFormatter = (t) => {
+      lastEmbed = this.embedify(forms[currCat].replace(/\$currPage/gi, currPage + 1).replace(/\$maxPage/gi, pages[currCat].length).replace(/\$content/gi, t));
+      lastEmbed.title = titles[currCat];
+      return {
+        embeds: [
+          lastEmbed
+        ]
+      }
+    }
+
+    msg.reply({
+      content: " ",
+      ...messageFormatter(pages[defaultPage][0].join("\n")),
+      interactions: {
+        restrict_reactions: true,
+        reactions: rs
+      }
+    }).then(m => {
+      this.reactionCollector(m, rs, (e) => {
+        if (arrows.includes(e.emoji_id)) {
+          // turn page inside category
+          if (pages[currCat].length == 1) return;
+          let change = (e.emoji_id == arrows[0]) ? -1 : 1;
+          if (currPage + change < 0) currPage = pages[currCat].length - 1, change = 0;
+          if (!pages[currCat][currPage + change]) currPage = 0, change = 0;
+          currPage += change;
+          const c = pages[currCat][currPage].join("\n");
+          m.edit(messageFormatter(c));
+          return;
+        }
+        const i = reactions.indexOf(e.emoji_id);
+        currCat = i;
+        currPage = 0;
+        m.edit(messageFormatter(pages[i][0].join("\n")));
+      }, 60*1000, () => {
+        m.edit({
+          content: this.t("pagination.embed.sclosedTitle", m),
+          embeds: [
+            this.embedify(this.t("pagination.embed.sclosedContent", m, { content: lastEmbed.description, interpolation: { escapeValue: false }}), "red")
+          ]
+        });
+      });
+    })
   }
 
   embedify(text = "", color = "#e9196c") {

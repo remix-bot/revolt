@@ -164,10 +164,14 @@ class Remix {
     this.handler.setPaginationHandler((message, form, contents) => {
       this.pagination(form, contents, message, 8);
     });
+    this.handler.setHelpHandler((commandData, msg) => {
+      this.handleHelp(commandData, msg);
+    });
     this.handler.setTranslationHandler((key, message, options) => {
       return this.t(key, message, options);
     });
-    this.handler.enableHelpPagination(true);
+    this.handler.enableHelpPagination(this.config.helpPagination);
+    this.handler.enableCustomHelpHandling(this.config.helpCatalog);
     const dir = path.join(__dirname, "commands");
     const files = fs.readdirSync(dir).filter(f => f.endsWith(".js"));
     this.runnables = new Map();
@@ -603,6 +607,52 @@ class Remix {
         });
       });
     })
+  }
+
+  handleHelp(data, msg) {
+    const commands = data.reduce((prev, curr, i) => {
+      if (!prev[curr.command.category]) return prev[curr.command.category] = [curr], prev;
+      prev[curr.command.category].push(curr);
+      return prev;
+    }, {});
+
+    for (let c in commands) {
+      commands[c] = commands[c].map((c, i) => `${i + 1}. ${c.description}`);
+    }
+
+    const pref = this.handler.getPrefix(msg.channel.serverId);
+    const categories = [{ // TODO: improve this text
+      reaction: "🏠",
+      content: [`# Home\n\n \
+      Welcome to Remix' help.
+      Remix is Revolt's first open-source music bot. It supports a variety of streaming services and has many features, \
+      with one of the newest being the [Web Dashboard](https://remix.fairuse.org/).\n\n \
+      We hope you enjoy using Remix!\n\n \
+      To get started, just click on the reactions below to find more about the commands.
+      In the case that reactions don't work for you, there's also the possiblity to look through them by using \`${pref}help <page number>\` :)`],
+      form: "$content\n\n###### Page $currPage/$maxPage",
+      title: "Home Page"
+    }, {
+      reaction: "🎵",
+      content: commands.default,
+      form: `# Music\n\n$content\n\nTo learn more about a command, run \`${pref}help <command name>\`!\n\n###### Page $currPage/$maxPage`,
+      title: "Music Commands"
+    }, { // TODO: add more info here
+      reaction: "ℹ️",
+      content: commands.util,
+      form: `# Utilities\n\n$content\n\nTo learn more about a command, run \`${pref}help <command name>\`!\n\n###### Page $currPage/$maxPage`,
+      title: "Utility Commands"
+    }, {
+      reaction: "💻",
+      content: [`If you need help with anything or encounter any issues, hop over to our support server [Remix HQ](/invite/Remix)!\n
+      Alternatively, you can write a dm to any of the following people:
+      - <@01FZ5P08W36B05M18FP3HF4PT1> (Community Manager & Developer)
+      - <@01FVB1ZGCPS8TJ4PD4P7NAFDZA> (Revolt & Discord Bot Developer)
+      - <@01G9MCW5KZFKT2CRAD3G3B9JN5> (Lead Developer)`],
+      form: "# Support\n\n$content\n\n###### Page $currPage/$maxPage",
+      title: "Support Info"
+    }]; // TODO: add status, or news page
+    this.catalog(msg, categories, 0, 8)
   }
 
   embedify(text = "", color = "#e9196c") {

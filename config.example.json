@@ -11,6 +11,8 @@
     "clientId": "your spotify client id",
     "clientSecret": "your spotify client secret"
   },
+  "helpCatalog": true,
+  "helpPagination": true,
   "mapMembers": true,
   "mysql": {
     "host": "https:your-mysql-host.com",

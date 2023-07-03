@@ -4,7 +4,8 @@ module.exports = {
   command: new CommandBuilder()
     .setName("stats")
     .setDescription("Display stats about the bot like the uptime.", "commands.stats")
-    .addAliases("info"),
+    .addAliases("info")
+    .setCategory("util"),
   run: function(message) {
     const reason = (this.config.restart) ? ":screwdriver: Cause for last restart: `" + this.config.restart + "`\n": "";
     const version = ":building_construction: Build: [`" + this.comHash + "` :link:](" + this.comLink + ")";

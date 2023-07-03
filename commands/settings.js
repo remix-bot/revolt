@@ -7,6 +7,7 @@ module.exports = {
       .setName("settings")
       .setDescription("Change/Get settings in the current server.", "commands.settings")
       .addAliases("s")
+      .setCategory("util")
       .addRequirement(e => e.addPermission("ManageServer"))
       .addSubcommand(cmd =>
         cmd.setName("set")

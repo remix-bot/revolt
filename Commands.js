@@ -11,6 +11,8 @@ class CommandBuilder extends EventEmitter {
     this.subcommands = [];
     this.options = [];
     this.requirements = [];
+    this.category = "default";
+
     this.translations = {};
     this.uid = this.guid();
 
@@ -94,6 +96,11 @@ class CommandBuilder extends EventEmitter {
     aliases.forEach((a) => this.addAlias(a));
     return this;
   }
+  setCategory(cat) {
+    this.category = cat;
+    return this;
+  }
+
   translation(property) {
     return this.translations[property];
   }
@@ -123,7 +130,7 @@ class CommandRequirement {
     return this;
   }
   getPermissions() {
-    return this.permissions;
+    return (this.ownerOnly) ? [...this.permissions, "Owner-only command"] : this.permissions;
   }
   setPermissionError(e) {
     this.permissionError = e;
@@ -292,6 +299,8 @@ class CommandHandler extends EventEmitter {
 
   paginateHelp = false;
   paginationHandler = null;
+  customHelp = false;
+  helpHandler = null;
 
   requiredPermissions = ["SendMessage"];
 
@@ -371,6 +380,7 @@ class CommandHandler extends EventEmitter {
       this.fixMap.delete(msg.authorId);
       return this.processCommand(cmd.cmd, cmd.args, msg);
     } else if (args[0] === this.helpCommand) {
+      if (!args[1] && this.customHelp) return this.dispatchCustomHelp(msg);
       if (!args[1]) return (this.paginateHelp) ? this.genHelp(null, msg, true) : this.replyHandler(this.f(this.getHelpPage(this.commandLimit, 0, msg, ...this.commands), msg.channel.serverId), msg);
 
       if (args.length > 1) {
@@ -452,11 +462,17 @@ class CommandHandler extends EventEmitter {
   setPaginationHandler(handler) {
     this.paginationHandler = handler;
   }
+  setHelpHandler(handler) {
+    this.helpHandler = handler;
+  }
   setTranslationHandler(handler) {
     this.translationHandler = handler;
   }
   enableHelpPagination(bool) {
     this.paginateHelp = bool;
+  }
+  enableCustomHelpHandling(bool) {
+    this.customHelp = bool;
   }
   setCustomPrefix(guildId, p) {
     //if (p == this.prefix) return; // comment because this prevents resetting of the prefix
@@ -758,6 +774,15 @@ class CommandHandler extends EventEmitter {
       if (o) options += " '" + o.name + ": " + o.type + "'";
       return options.trim();
     }
+  }
+  dispatchCustomHelp(msg) {
+    const commands = this.userCommands(this.commands).map((cmd) => {
+      return {
+        description: "**" + cmd.name + "**: " + this.getDescription(cmd, msg),
+        command: cmd
+      };
+    });
+    return this.helpHandler(commands, msg);
   }
   capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);

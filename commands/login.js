@@ -1,9 +1,10 @@
 const { CommandBuilder } = require("../Commands.js");
 
 module.exports = {
-  command: new CommandBuilder()
+  command: new CommandBuilder() // TODO: maybe move to own website category?
     .setName("login")
     .setDescription("Confirm a login of your account on the website", "commands.login")
+    .setCategory("util")
     .addStringOption(o =>
       o.setName("id")
         .setDescription("The id you got from logging in at the dashboard.", "options.login.id")

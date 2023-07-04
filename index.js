@@ -610,7 +610,7 @@ class Remix {
   }
 
   handleHelp(data, msg) {
-    const commands = data.reduce((prev, curr, i) => {
+    const commands = data.reduce((prev, curr) => {
       if (!prev[curr.command.category]) return prev[curr.command.category] = [curr], prev;
       prev[curr.command.category].push(curr);
       return prev;
@@ -635,12 +635,12 @@ class Remix {
     }, {
       reaction: "🎵",
       content: commands.default,
-      form: `# Music\n\n$content\n\nTo learn more about a command, run \`${pref}help <command name>\`!\n\n###### Page $currPage/$maxPage`,
+      form: `# Music\n\n$content\n\nTo learn more about a command, run \`${pref}help <command name>\`!\n\nTip: You can use the arrows beneath this message to turn pages, or use \`${pref}help <page number>\` to access a certain page.\n\n###### Page $currPage/$maxPage`,
       title: "Music Commands"
     }, { // TODO: add more info here
       reaction: "ℹ️",
       content: commands.util,
-      form: `# Utilities\n\n$content\n\nTo learn more about a command, run \`${pref}help <command name>\`!\n\n###### Page $currPage/$maxPage`,
+      form: `# Utilities\n\n$content\n\nTo learn more about a command, run \`${pref}help <command name>\`!\n\nTip: You can use the arrows beneath this message to turn pages, or use \`${pref}help <page number>\` to access a certain page.\n\n###### Page $currPage/$maxPage`,
       title: "Utility Commands"
     }, {
       reaction: "💻",

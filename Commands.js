@@ -407,7 +407,7 @@ class CommandHandler extends EventEmitter {
         return this.replyHandler(this.genCommandHelp(currCmd, msg), msg);
       } else {
         let idx = this.commands.findIndex(e => e.name.toLowerCase() == args[1].toLowerCase());
-        if (idx === -1) return this.replyHandler(this.f("Unknown command `$prefix" + args[1] + "`!", msg.channel.serverId), msg);
+        if (idx === -1) return this.replyHandler(this.f(this.t("Unknown command `$prefix" + args[1] + "`!", "cmdHandler.command.invalid", msg, {command: "`$prefix" + args[1] + "`"}), msg.channel.serverId), msg);
         return this.replyHandler(this.genCommandHelp(this.commands[idx], msg), msg);
       }
     }
@@ -429,7 +429,7 @@ class CommandHandler extends EventEmitter {
       this.fixMap.set(msg.authorId, { cmd: cmd, args: args });
 
       let fixed = matches[0].command + " " + args.slice(1).join(" ");
-      this.replyHandler(this.f("Did you mean `$prefix" + fixed + "`? (Type `$prefix$accept` to run this)", msg.channel.serverId), msg);
+      this.replyHandler(this.f(this.t("Did you mean `$prefix" + fixed + "`? (Type `$prefix$accept` to run this)", "cmdHandler.command.suggestion", msg, { command: "`$prefix" + fixed + "`", acceptCommand: "`$prefix$accept`"}), msg.channel.serverId), msg);
       return;
     }
     return this.processCommand(this.commands.find(e => e.aliases.includes(args[0].toLowerCase())), args, msg);
@@ -541,7 +541,7 @@ class CommandHandler extends EventEmitter {
       });
       if (idx === -1) {
         let list = cmd.subcommands.map(s => s.name).join(" | ");
-        let e = cmd.subcommandError.replace(/\$cmdlist/gi, list).replace(/\$previousCmd/gi, previous);
+        let e = this.t(cmd.subcommandError, "cmdHandler.subcommand.invalid", msg).replace(/\$cmdlist/gi, list).replace(/\$previousCmd/gi, previous);
         return this.replyHandler(e, msg);
       }
       return this.processCommand(cmd.subcommands[idx], args.slice(1), msg, previous + this.f(" " + cmd.subcommands[idx].name));
@@ -670,6 +670,11 @@ class CommandHandler extends EventEmitter {
     if (!config || !this.translationHandler) return obj.description;
     const translated = this.translationHandler(config.key, message, config.options);
     return (translated == config.key) ? obj.description : translated;
+  }
+  t(def, key, msg, options) {
+    if (!this.translationHandler) return def;
+    const translated = this.translationHandler(key, msg, options);
+    return (translated == key) ? def : translated;
   }
   getHelpPages(cmdLimit=5) {
     return Math.ceil(this.commands.length / cmdLimit);

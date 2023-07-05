@@ -384,7 +384,7 @@ class Remix {
                 msg.reply(this.em(this.t("voice.join.warning.nc", m, {channel: "<#" + c.id + ">"}), msg), true);
               });
               res(c.id);
-            }, () => { m.edit(this.em("Something went wrong. Unable to join <#" + c.id + ">. Do I have the needed permission?", m)); return res(false); });
+            }, () => { m.edit(this.em(this.t("voice.join.error.perms", m, {channel: "<#" + c.id + ">"}), m)); return res(false); });
 
             this.unobserveUser(observer);
             this.unobserveReactions(roid);

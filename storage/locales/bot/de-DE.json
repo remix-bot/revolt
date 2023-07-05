@@ -1,4 +1,28 @@
 {
+  "cmdBuilder" : {
+    "requirement" : {
+      "permission" : "Du hast nicht die notwendigen Berechtigungen, dieses Kommando hier auszuführen."
+    },
+    "subcommand" : {
+      "invalid" : "Ungültiger Unterbefehl. Versuche es bitte mit einer dieser Optionen `$previousCmd <$cmdlist>"
+    }
+  },
+  "cmdHandler" : {
+    "command" : {
+      "invalid" : "Unbekanntes Kommando {{command}}!",
+      "suggestion" : "Meintest du {{command}}? (Nutze {{acceptCommand}}, um dies auszuführen)"
+    },
+    "help" : {
+      "pageStructure" : "Verfügbare Kommandos (page $currPage/$maxPage): $content Nutze das Kommando `$prefix$helpCmd <command>` um mehr zu erfahren. Du kannst auch zusätzliche Unterbefehle nutzen, wie zum Beispiel: `$prefix$helpCmd command subcommandName` Noch ein Tip: Nutze die Pfeile unter dieser Nachricht, um Seiten umzublättern, oder gib eine gewünschte Seitenzahl mit `$prefixhelp <page number>` an!"
+    },
+    "invalidFlag" : "Ungültige Flag `$invalidFlag`. Sie stimmt mit keiner der Optionen im Kommando überein. `$previousCmd $invalidFlag`",
+    "page" : {
+      "invalid" : "{{number}} ist keine gültige Seiten-Nummer!"
+    },
+    "permissions" : {
+      "message" : "Bitte erteile mir die {{permission}}-Berechtigung in {{channel}} oder informiere einen Server-Admin. Ich habe in diesem Zustand keinen Zugriff, um zu arbeiten."
+    }
+  },
   "commands" : {
     "clear" : "Entferne alle Songs aus der Warteschlange.",
     "join" : "Lasse den Bot einem bestimmten Sprachkanal beitreten",
@@ -32,7 +56,7 @@
       "id" : "Die ID, die du beim Einloggen auf dem Dashboard erhalten hast."
     },
     "loop" : {
-      "type" : "Gibt an, welche Schleife geändert werden soll."
+      "type" : "Gibt an, welcher Schleifentyp gesetzt werden soll."
     },
     "play" : {
       "query" : "Eine YouTube-Suchanfrage/URL, Playlist-URL oder ein Link zu einem Song auf Spotify, SoundCloud oder YouTube Music."
@@ -41,11 +65,11 @@
       "query" : "Eine YouTube-Suchanfrage/URL, Playlist-URL oder ein Link zu einem Song auf Spotify, SoundCloud oder YouTube Music."
     },
     "remove" : {
-      "index" : "Die Position des Liedes in der Warteschlange. Die Indexe (Positionen) der Lieder können mit dem `list` Befehl aufgerufen werden."
+      "index" : "Die Position des Liedes in der Warteschlange. Die Position aller Lieder kann mit dem `list` Befehl aufgerufen werden."
     },
     "search" : {
       "provider" : "Der Anbieter der Suchergebnisse. (YouTube oder YouTube Music)",
-      "query" : "Die Suchanfrage, nach der gesucht werden soll."
+      "query" : "Der Such-Text, nach dem gesucht werden soll."
     },
     "settings" : {
       "get" : {
@@ -74,7 +98,7 @@
   },
   "subcommands" : {
     "settings" : {
-      "get" : "Rufe den Wert einer bestimmten Einstellung ab, oder Liste die Einstellungen des gesamten Servers auf.",
+      "get" : "Rufe den Wert einer bestimmten Einstellung oder eine Liste der Einstellungen des gesamten Servers auf.",
       "set" : "Lege den Wert einer bestimmten Einstellung fest."
     }
   },
@@ -84,10 +108,10 @@
       "error" : {
         "dc" : "Es scheint, als wären wir nicht im selben Sprachkanal.",
         "invalid" : "Ungültiger Sprachkanal. Bitte versuche es erneut und überprüfe deine Eingabe auf Groß- und Kleinschreibung! (`x` zum Abbrechen)",
-        "perms" : "Etwas ist schiefgelaufen. Ich kann {{channel}} nicht beitreten. Habe ich die nötigen Berechtigungen?"
+        "perms" : "Etwas ist schiefgelaufen. Ich kann {{channel}} nicht betreten. Habe ich die nötigen Berechtigungen?"
       },
       "warning" : {
-        "nc" : "Es scheint nicht, als wärst du nicht mit {{channel}} verbunden. Hast du vergessen beizutreten?"
+        "nc" : "Es scheint, als wärst du nicht mit {{channel}} verbunden. Hast du vergessen, dort beizutreten?"
       }
     }
   }

@@ -108,7 +108,7 @@
       "error" : {
         "dc" : "It doesn't look like we're in the same voice channel.",
         "invalid" : "Invalid voice channel. Please try again and check capitalization! (`x` to cancel)",
-        "perms" : "Something went wrong. Unable to join {{channel}}. Do I have the needed permission?"
+        "perms" : "Something went wrong. Unable to join {{channel}}. Do I have the needed permissions?"
       },
       "warning" : {
         "nc" : "You don't seem to be connected to {{channel}}. Did you forget to join?"

@@ -526,6 +526,7 @@ class CommandHandler extends EventEmitter {
         if (req.ownerOnly && !this.owners.includes(msg.authorId)) return;
         for (let j = 0; j < req.getPermissions().length; j++) {
           let p = req.getPermissions()[j];
+          if (p == "Owner-only command") continue;
           if (!msg.member.hasPermission(server, p) && !this.owners.includes(msg.authorId)) return this.replyHandler(req.permissionError, msg);
         }
       }

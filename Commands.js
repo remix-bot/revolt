@@ -58,24 +58,24 @@ class CommandBuilder extends EventEmitter {
     this.subcommands.push(sub);//new SubcommandBuilder()));
     return this;
   }
-  addStringOption(config) {
-    this.options.push(config(new Option("string")))
+  addStringOption(config, flag=false) {
+    this.options.push(config(Option.create("string", flag)))
     return this;
   }
-  addNumberOption(config) {
-    this.options.push(config(new Option("number")));
+  addNumberOption(config, flag=false) {
+    this.options.push(config(Option.create("number", flag)));
     return this;
   }
-  addBooleanOption(config) {
-    this.options.push(config(new Option("boolean")));
+  addBooleanOption(config, flag=false) {
+    this.options.push(config(Option.create("boolean", flag)));
     return this;
   }
-  addChannelOption(config) {
-    this.options.push(config(new Option("channel")));
+  addChannelOption(config, flag=false) {
+    this.options.push(config(Option.create("channel", flag)));
     return this;
   }
-  addUserOption(config) {
-    this.options.push(config(new Option("user")));
+  addUserOption(config, flag=false) {
+    this.options.push(config(Option.create("user", flag)));
     return this;
   }
   addTextOption(config) {
@@ -83,8 +83,8 @@ class CommandBuilder extends EventEmitter {
     this.options.push(config(new Option("text")));
     return this;
   }
-  addChoiceOption(config) {
-    this.options.push(config(new Option("choice")));
+  addChoiceOption(config, flag=false) {
+    this.options.push(config(Option.create("choice", flag)));
     return this;
   }
   addAlias(alias) {
@@ -155,6 +155,9 @@ class Option {
     this.translations = {};
 
     return this;
+  }
+  static create(type, flag=false) {
+    return (!flag) ? new Option(type) : new Flag(type);
   }
   guid() {
     var S4 = function() {
@@ -286,6 +289,12 @@ class Option {
   setTranslation(key, property) {
     if (typeof key === "string") return this.translations[property] = { key: key };
     this.translations[property] = key;
+  }
+}
+class Flag extends Option {
+  constructor(type="string") {
+    if (type == "text") throw "Flags can't be of type 'text'!";
+    super(type);
   }
 }
 
@@ -559,17 +568,16 @@ class CommandHandler extends EventEmitter {
       as.push(a);
       return collectArguments(index, a, as);
     }
-    const options = cmd.options.slice();
+    const options = cmd.options.slice(); // TODO: fix problems with flags after the last argument (!test string -u <@01G9MCW5KZFKT2CRAD3G3B9JN5>)
     var usedArgumentCount = 0;
-    for (let i = 0, argIndex = 1; i < options.length; i++) {
+    for (let i = 0, argIndex = 1; i < options.length; i++) { // argIndex starts at 1 to exclude command itself
+      if (options[i] instanceof Flag) i++; // ignore pure flag options
       const o = options[i];
-      if (o.type == "text") { texts.push(o); continue; } // text options are processed last
+      if (o?.type == "text") { texts.push(o); continue; } // text options are processed last
       if ((args[argIndex] || "").startsWith("-")) { // flags
         const flagName = args[argIndex].slice(1);
         const op = cmd.options.find(e => e.aliases.includes(flagName));
         if (!op) return this.replyHandler(this.invalidFlagError.replace(/\$previousCmd/gi, previous).replace(/\$invalidFlag/gi, "-" + flagName), msg);
-        const idx = options.findIndex(e => e.uid == op.uid);
-        if (idx !== -1) options.splice(idx, 1);
         previous += " " + args[argIndex];
         var value = args[++argIndex];
         // text quote wrapping
@@ -591,10 +599,13 @@ class CommandHandler extends EventEmitter {
         opts.push({
           value: op.formatInput(value, this.client, msg),
           name: op.name,
-          id: op.id
+          id: op.id,
+          uid: op.uid
         });
         continue;
       }
+      if (!o) continue; // continue after flag processing is done
+      if (opts.findIndex(op => op.uid == o.uid) !== -1) continue; // options has been processed already
       var value = args[argIndex];
       if ((args[argIndex] || "").startsWith('"') && (["string", "text", "channel"].includes(o.type))) {
         const data = collectArguments(argIndex, args[argIndex], [args[argIndex]]);
@@ -603,7 +614,7 @@ class CommandHandler extends EventEmitter {
         value = data.args.join(" ");
         value = value.slice(1, value.length - 1);
       }
-      let valid = o.validateInput(value, this.client, msg); // argIndex starts at 1 to exclude command itself
+      let valid = o.validateInput(value, this.client, msg);
       if (!valid && (o.required || !o.empty(value))) {
         let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, value).replace(/\$optionName/gi, o.name);
         return this.replyHandler(e, msg);
@@ -612,7 +623,8 @@ class CommandHandler extends EventEmitter {
       opts.push({
         value: o.formatInput(value, this.client, msg),
         name: o.name,
-        id: o.id
+        id: o.id,
+        uid: o.uid
       });
       previous += " " + value;
       argIndex++;
@@ -729,6 +741,7 @@ class CommandHandler extends EventEmitter {
   }
   genCommandHelp(cmd, msg) { // TODO: add better indicator for optional parameters/subcommands/options
     // TODO: make options work;
+    // TODO: add help page for options
     let content = "# " + this.capitalize(cmd.name) + "\n";
     content += this.getDescription(cmd, msg) + "\n\n";
     if (cmd.aliases.length > 1) {
@@ -747,10 +760,11 @@ class CommandHandler extends EventEmitter {
     } else if (cmd.options.length > 0) {
       content += "**Options:** \n";
       cmd.options.forEach(o => {
+        const optional = (o.required) ? "" : "; `(optional)`";
         if (o.type == "choice") {
-          content += "- " + o.name + ": " + this.getDescription(o, msg) + "; Allowed values: `" + o.choices.join("`, `") + "`\n";
+          content += "- " + o.name + ": " + this.getDescription(o, msg) + "; Allowed values: `" + o.choices.join("`, `") + "`" + optional + "\n";
         } else {
-          content += "- " + o.name + ": " + this.getDescription(o, msg) + "\n";
+          content += "- " + o.name + ": " + this.getDescription(o, msg) + optional + "\n";
         }
       });
       content += "\n";

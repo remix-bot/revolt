@@ -8,23 +8,15 @@ module.exports = {
       r.setOwnerOnly(true)
     ).addUserOption(o =>
       o.setName("user")
-        .setDescription("A user")),
-  run: async function(msg, _data) {
-    const categories = [{ // TODO: improve this text
-      reaction: "🏠",
-      content: `# Home\n
-      Welcome to Remix' help.\n
-      Remix is Revolt's first open-source music bot. It supports a variety of streaming services and has many features,
-      with one of the newest being the [Web Dashboard](https://remix.fairuse.org/).\n\n
-      We hope you enjoy using Remix!\n\n
-      To get started, just click on the reactions below to find more about the commands.`,
-      form: "$content\n\n###### Page $currPage/$maxPage",
-      title: "Home Page"
-    }, {
-      reaction: "💻",
-      content: ["c", "c2", "c3"],
-      form: "List page $currPage/$maxPage: \n\n$content"
-    }]; // TODO: add status page
-    this.catalog(msg, categories, 0, 15)
+        .setDescription("A user")
+        .addFlagAliases("u")
+        .setId("testOption")
+    , true).addStringOption(o =>
+      o.setName("string")
+        .setDescription("A cool string")
+        .setRequired(true)),
+  run: async function(msg, data) {
+    console.log(data.options);
+    msg.reply(this.em("Ref String: " + data.get("string").value + " Option received: " + data.getById("testOption")?.value, msg), false)
   }
 }

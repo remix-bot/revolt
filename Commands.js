@@ -615,7 +615,7 @@ class CommandHandler extends EventEmitter {
         value = value.slice(1, value.length - 1);
       }
       let valid = o.validateInput(value, this.client, msg);
-      if (!valid && (o.required || !o.empty(value))) {
+      if (!valid && (o.required || !o.empty(value))) { // TODO: improve checking on optional options
         let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, value).replace(/\$optionName/gi, o.name);
         return this.replyHandler(e, msg);
       }
@@ -744,50 +744,53 @@ class CommandHandler extends EventEmitter {
     // TODO: add help page for options
     let content = "# " + this.capitalize(cmd.name) + "\n";
     content += this.getDescription(cmd, msg) + "\n\n";
+    content += "#### Usage: \n`" + this.genCmdUsage(cmd, msg) + "`\n\n";
     if (cmd.aliases.length > 1) {
-      content += "**Aliases:** \n";
+      content += "#### Aliases: \n";
       cmd.aliases.forEach(alias => {
         content += "- " + alias + "\n";
       });
       content += "\n";
     }
     if (cmd.subcommands.length > 0) {
-      content += "**Subcommands:** \n";
+      content += "#### Subcommands: \n";
       cmd.subcommands.forEach(s => {
         content += "- " + s.name + ": " + this.getDescription(s, msg) + ((s.options.length > 0) ? "; (`" + s.options.length + " option(s)`)" : "") + "\n";
       });
       content += "\n";
     } else if (cmd.options.length > 0) {
-      content += "**Options:** \n";
+      content += "#### Arguments: \n"; // TODO: IMPORTANT; visualise flags differently
       cmd.options.forEach(o => {
-        const optional = (o.required) ? "" : "; `(optional)`";
+        /*const optional = ((o.required) ? "" : "; $\\color{gold}\\text{optional}$"); // TODO: create how-to-use page for help; explaining flags, optional arguments, etc
+        const flag = (o instanceof Flag) ? "$\\fbox{\\color{white}\\text{Flag:}}$ " : "";*/
+        const optional = ((o.required) ? "" : "; $\\color{gold}\\text{optional}$");
+        const flag = (o instanceof Flag) ? "$\\small\\underline{\\color{white}\\text{Flag:}}$ " : "";
         if (o.type == "choice") {
-          content += "- " + o.name + ": " + this.getDescription(o, msg) + "; Allowed values: `" + o.choices.join("`, `") + "`" + optional + "\n";
+          content += "- " + flag + "**" + o.name + "**: " + this.getDescription(o, msg) + "; Allowed values: `" + o.choices.join("`, `") + "`" + optional + "\n";
         } else {
-          content += "- " + o.name + ": " + this.getDescription(o, msg) + optional + "\n";
+          content += "- " + flag + "**" + o.name + "**: " + this.getDescription(o, msg) + optional + "\n";
         }
       });
       content += "\n";
     }
     if (cmd.requirements.length > 0) { // TODO: add requirement inheritance (displaying parent requirements on subcommand help page)
-      content += "**Requirements:** \n\n";
+      content += "#### Requirements: \n";
       content += "Permissions: \n";
       cmd.requirements.forEach(r => {
         content += "- " + r.getPermissions().map(e=>"`" + e + "`").join("\n- ")
       });
-      content += "\n\n";
     }
-    content += "Usage: `" + this.genCmdUsage(cmd) + "`";
 
     return content;
   }
-  genCmdUsage(cmd) {
+  genCmdUsage(cmd, msg) {
     if (cmd.subcommands.length > 0) {
       return cmd.command + " <" + cmd.subcommands.map(e=>e.name).join(" | ") + ">".trim();
     } else {
-      let options = this.f("$prefix" + cmd.command); // TODO: fix this
+      let options = this.f("$prefix" + cmd.command, msg?.channel?.serverId);
       cmd.options.forEach(o => {
         if (o.type == "text") return;
+        if (o instanceof Flag) return options += (o.type == "choice") ? "-" + o.aliases[0] + ((!o.required) ? "?" : "") + " <" + o.choices.join(" | ") + ">" : " -" + o.aliases[0] + ((!o.required) ? "?" : "") + " '" + o.type + "'";
         options += (o.type == "choice") ? " <" + o.choices.join(" | ") + ">" : " '" + o.name + ": " + o.type + "'";
       });
       let o = cmd.options.find(e=>e.type=="text");

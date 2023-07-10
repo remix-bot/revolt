@@ -82,18 +82,21 @@ class Dashboard {
     });
 
     this.commands = null;
+    this.commandsRaw = null;
     app.get("/commands", (req, res) => {
-      if (!this.commands) {
-         this.commands = this.remix.handler.commands.map(c => {
-          return {
-            name: c.name,
-            description: c.description,
-            usage: this.remix.handler.genCmdUsage(c),
-            aliases: c.aliases
-          }
-        });
-      }
-      res.render("commands/index.ejs", { ...req.data, commands: this.commands })
+      this.commands ||= this.remix.handler.commands.map(c => {
+        return {
+          name: c.name,
+          description: c.description,
+          usage: this.remix.handler.genCmdUsage(c),
+          aliases: c.aliases
+        }
+      });
+      res.render("commands/index.ejs", { ...req.data, commands: this.commands });
+    });
+    app.get("/commands/help", (req, res) => {
+      this.commandsRaw ||= remix.handler.commands;
+      res.render("commands/help.ejs", { ...req.data, commands: this.commandsRaw, prefix: remix.config.prefix });
     });
 
     app.post("/api/login", async (req, res) => {

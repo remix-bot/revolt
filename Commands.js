@@ -743,6 +743,7 @@ class CommandHandler extends EventEmitter {
     // TODO: make options work;
     // TODO: add help page for options
     // TODO: include references to the website
+    // TODO: add titles to embeds
     let content = "# " + this.capitalize(cmd.name) + "\n";
     content += this.getDescription(cmd, msg) + "\n\n";
     content += "#### Usage: \n🖥️ `" + this.genCmdUsage(cmd, msg) + "`\n\n";

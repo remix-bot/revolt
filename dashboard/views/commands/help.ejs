@@ -1,0 +1,49 @@
+<body style="background-color: rgb(17 24 39); color: white">
+  <style>
+  code {
+    background-color: rgb(31 41 55);
+    border-radius: 5px;
+    padding: 0.7rem;
+  }
+  </style>
+  <%
+  const colorMapping = {
+    string: "gold",
+    number: "blue",
+    boolean: "red",
+    channel: "",
+    user: "",
+    text: "inherit",
+    choice: ""
+  }
+  %>
+
+  <div>
+    <%= commands.map(c => c.name).join(" ") %>
+    <% const command = commands[17]; %>
+    <h2><%= command.name %></h2>
+    <div>
+      <code style="display: flex; flex-direction: row; gap: 0.6rem; align-items: center">
+        <%= prefix + command.name %>
+        <% command.options.forEach(option => { %>
+          <% if (option.type == "choice") { %>
+            <!--<div style="display: flex; flex-direction: column; gap: 0.2rem">
+              <div>
+                <% option.choices.forEach(c => { %>
+                  <span><%= c %></span>
+                <% }); %>
+              </div>
+              <span style="font-size: 70%"><%= option.name %></span>
+            </div>-->
+            <div style="display: block">
+              <span><%= option.choices.join("/") %></span>
+              <sup style="font-size: 60%"><%= option.name %></sup>
+            </div>
+          <% } %>
+          <span style="color: <%= colorMapping[option.type] %>"><%= option.name %></span>
+        <% }) %>
+      </code>
+    </div>
+
+  </div>
+</body>

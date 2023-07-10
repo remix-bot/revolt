@@ -742,9 +742,10 @@ class CommandHandler extends EventEmitter {
   genCommandHelp(cmd, msg) { // TODO: add better indicator for optional parameters/subcommands/options
     // TODO: make options work;
     // TODO: add help page for options
+    // TODO: include references to the website
     let content = "# " + this.capitalize(cmd.name) + "\n";
     content += this.getDescription(cmd, msg) + "\n\n";
-    content += "#### Usage: \n`" + this.genCmdUsage(cmd, msg) + "`\n\n";
+    content += "#### Usage: \n🖥️ `" + this.genCmdUsage(cmd, msg) + "`\n\n";
     if (cmd.aliases.length > 1) {
       content += "#### Aliases: \n";
       cmd.aliases.forEach(alias => {
@@ -763,38 +764,37 @@ class CommandHandler extends EventEmitter {
       cmd.options.forEach(o => {
         /*const optional = ((o.required) ? "" : "; $\\color{gold}\\text{optional}$"); // TODO: create how-to-use page for help; explaining flags, optional arguments, etc
         const flag = (o instanceof Flag) ? "$\\fbox{\\color{white}\\text{Flag:}}$ " : "";*/
-        const optional = ((o.required) ? "" : "; $\\color{gold}\\text{optional}$");
-        const flag = (o instanceof Flag) ? "$\\small\\underline{\\color{white}\\text{Flag:}}$ " : "";
+        const optional = ((o.required) ? "" : "?");
+        const flag = (o instanceof Flag) ? "-" : "";
         if (o.type == "choice") {
-          content += "- " + flag + "**" + o.name + "**: " + this.getDescription(o, msg) + "; Allowed values: `" + o.choices.join("`, `") + "`" + optional + "\n";
+          content += "- **" + flag + o.name + "**" + optional + ": " + this.getDescription(o, msg) + "; Allowed values: `" + o.choices.join("`, `") + "`" + optional + "\n";
         } else {
-          content += "- " + flag + "**" + o.name + "**: " + this.getDescription(o, msg) + optional + "\n";
+          content += "- **" + flag + o.name + "**" + optional + ": " + this.getDescription(o, msg) + "\n";
         }
       });
       content += "\n";
     }
     if (cmd.requirements.length > 0) { // TODO: add requirement inheritance (displaying parent requirements on subcommand help page)
       content += "#### Requirements: \n";
-      content += "Permissions: \n";
       cmd.requirements.forEach(r => {
-        content += "- " + r.getPermissions().map(e=>"`" + e + "`").join("\n- ")
+        content += "- " + r.getPermissions().map(e=>"Permission `" + e + "`").join("\n- ")
       });
     }
 
-    return content;
+    return content.trim();
   }
   genCmdUsage(cmd, msg) {
     if (cmd.subcommands.length > 0) {
-      return cmd.command + " <" + cmd.subcommands.map(e=>e.name).join(" | ") + ">".trim();
+      return cmd.command + " <" + cmd.subcommands.map(e=>e.name).join(" | ") + "> [...]".trim();
     } else {
       let options = this.f("$prefix" + cmd.command, msg?.channel?.serverId);
       cmd.options.forEach(o => {
         if (o.type == "text") return;
-        if (o instanceof Flag) return options += (o.type == "choice") ? "-" + o.aliases[0] + ((!o.required) ? "?" : "") + " <" + o.choices.join(" | ") + ">" : " -" + o.aliases[0] + ((!o.required) ? "?" : "") + " '" + o.type + "'";
-        options += (o.type == "choice") ? " <" + o.choices.join(" | ") + ">" : " '" + o.name + ": " + o.type + "'";
+        if (o instanceof Flag) return options += "` `" + ((o.type == "choice") ? "-" + o.aliases[0] + " <" + o.choices.join(" | ") + ">" : " -" + o.aliases[0] + " '" + o.type + "'");
+        options += "` `" + ((o.type == "choice") ? " <" + o.choices.join(" | ") + ">" : " '" + o.name + ": " + o.type + "'");
       });
       let o = cmd.options.find(e=>e.type=="text");
-      if (o) options += " '" + o.name + ": " + o.type + "'";
+      if (o) options += " ` `'" + o.name + ": " + o.type + "'";
       return options.trim();
     }
   }

@@ -411,15 +411,15 @@ class RevoltPlayer extends EventEmitter {
       this.connection.play(p);
     }
   }
-  playFirst(query) {
-    return this.play(query, true);
+  playFirst(query, provider) {
+    return this.play(query, true, provider);
   }
-  play(query, top=false) { // top: where to add the results in the queue (top/bottom)
+  play(query, top=false, provider) { // top: where to add the results in the queue (top/bottom)
     let prep = this.preparePlay();
     if (prep) return prep;
 
     const events = new EventEmitter();
-    this.workerJob("generalQuery", { query: query, spotify: this.spotifyConfig }, (msg) => {
+    this.workerJob("generalQuery", { query: query, spotify: this.spotifyConfig, provider: provider }, (msg) => {
       events.emit("message", msg);
     }).then((data) => {
       if (data.type == "list") {

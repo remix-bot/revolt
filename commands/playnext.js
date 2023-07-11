@@ -8,13 +8,19 @@ module.exports = {
       option.setName("query")
         .setDescription("A YouTube query/url, playlist url, or a link to a Spotify, SoundCloud, or YouTube Music song.", "options.playnext.query")
         .setRequired(true)
-    ).addAlias("pn"),
+    ).addChoiceOption(o =>
+      o.setName("provider")
+        .setDescription("The search result provider (YouTube or YouTube Music). Default: Youtube Music", "options.search.provider") // same as search provider flag
+        .addFlagAliases("p", "u", "use")
+        .addChoices("ytm", "yt")
+        .setDefault("ytm")
+    , true).addAlias("pn"),
   run: async function(message, data) {
     const p = await this.getPlayer(message);
     if (!p) return;
-    const query = data.options[0].value // only 1 text option registered
+    const query = data.get("query").value; // only 1 text option registered
     message.reply(this.em("Searching...", message), false).then((msg) => {
-      const messages = p.playFirst(query);
+      const messages = p.playFirst(query, data.get("provider").value);
       messages.on("message", (d) => {
         msg.edit(this.em(d, message));
       });

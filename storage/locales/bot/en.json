@@ -68,7 +68,7 @@
       "index" : "The position of the song in the queue. You can view the indices with the 'list' command"
     },
     "search" : {
-      "provider" : "The search result provider. (YouTube or YouTube Music)",
+      "provider" : "The search result provider (YouTube or YouTube Music). Default: Youtube Music",
       "query" : "The query to search for."
     },
     "settings" : {

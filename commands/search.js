@@ -21,10 +21,10 @@ module.exports = {
     .setDescription("Display the search results for a given query", "commands.search")
     .addChoiceOption(o =>
       o.setName("provider")
-        .setDescription("The search result provider. (YouTube or YouTube Music)", "options.search.provider")
+        .setDescription("The search result provider (YouTube or YouTube Music). Default: Youtube Music", "options.search.provider")
         .addChoices("yt", "ytm")
-        .setRequired(true)
-        .addFlagAliases("p", "u", "s"))
+        .setDefault("ytm")
+        .addFlagAliases("p", "u", "use"), true)
     .addTextOption(o =>
       o.setName("query")
         .setDescription("The query to search for.", "options.search.query")
@@ -34,7 +34,7 @@ module.exports = {
     const p = await this.getPlayer(msg);
     if (!p) return;
     let query = data.get("query").value;
-    let provider = data.get("provider").value;
+    let provider = data.get("provider")?.value;
     msg.reply(this.em("Loading results...", msg)).then(async m => {
       let res = await p.fetchResults(query, msg.authorId, provider);
       m.edit(this.em(res.m, msg));

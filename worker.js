@@ -14,10 +14,19 @@ class YTUtils extends EventEmitter {
   constructor(spotify) {
     super();
 
-    this.spotify = new Spotify(spotify);
-    this.api = new YoutubeMusicApi();
+    this.spotifyClient = null
+    this.spotifyConfig = spotify;
+    this.ytApi = null;
 
     return this;
+  }
+  get api() {
+    this.ytApi ||= new YoutubeMusicApi();
+    return this.ytApi
+  }
+  get spotify() {
+    this.spotifyClient ||= new Spotify(this.spotifyConfig);
+    return this.spotifyClient;
   }
   init() {
     if (Object.keys(this.api.ytcfg).length > 0) return true; // already initalized
@@ -122,8 +131,21 @@ class YTUtils extends EventEmitter {
   getSpotifyPlaylist(id) {
     return this.getSpotifyAlbum(id, "playlist")
   }
-  async getByQuery(query) {
+  async getByQuery(query, provider) { // either yt or ytm
     this.emit("message", "Searching...");
+    if (provider === "ytm") {
+      await this.init();
+      const results = (await this.api.search(query, "song")).content;
+      const song = results[0];
+      if (!song) { this.emit("message", "**There was an error loading the youtube music song using the query '" + query + "'!**"); return false;}
+      const r = {...song};
+      r.title = song.name;
+      r.url = `https://music.youtube.com/watch?v=${song.videoId}`;
+      r.thumbnail = (Array.from(song.thumbnails).sort((a, b) => b.width - a.width)[0] || {}).url;
+      r.artists = ((Array.isArray(song.artist)) ?Array.from(song.artist) : [song.artist]).map(a => (a.url = `https://music.youtube.com/channel/${a.browseId}`, a))
+      this.emit("message",  `Successfully added [${r.title}](${r.url}) to the queue.`)
+      return { type: "video", data: r };
+    }
     let video = await this.search(query);
     if (video) { this.emit("message", `Successfully added [${video.title}](${video.url}) to the queue.`); } else { this.emit("message", "**There was an error loading a youtube video using the query '" + query + "'!**") };
     if (!video) return false;
@@ -152,7 +174,7 @@ class YTUtils extends EventEmitter {
     }*/
     return await this.getByQuery(song.name + " " + song.artists[0]);
   }
-  async getVideoData(query) {
+  async getVideoData(query, provider="yt") {
     if (this.isSoundCloud(query)) return await this.getScdl(query);
     if (this.isSpotify(query)) return await this.getSpotifyData(query);
 
@@ -163,7 +185,7 @@ class YTUtils extends EventEmitter {
     let parsed = this.youtubeParser(query);
     if (!parsed) {
       const live = this.liveParser(query);
-      if (!live) return await this.getByQuery(query); // not a yt id
+      if (!live) return await this.getByQuery(query, provider); // not a yt id
       return await this.getById(live, true);
     }
     // fetch youtube video data by id
@@ -245,7 +267,7 @@ const post = (event, data) => {
       post("finished", result);
     break;
     case "generalQuery":
-      r = (await utils.getVideoData(data.query));
+      r = (await utils.getVideoData(data.query, data.provider));
       post("finished", r);
     break;
     case "searchResults":

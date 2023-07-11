@@ -153,6 +153,7 @@ class Option {
     this.aliases = [null];
     this.choices = []; // only for choice options
     this.translations = {};
+    this.defaultValue = null;
 
     return this;
   }
@@ -199,6 +200,10 @@ class Option {
   addChoices(...cs) {
     if (this.type != "choice") throw ".addChoices is only available for choice options!";
     cs.forEach(c => this.addChoice(c));
+    return this;
+  }
+  setDefault(value) {
+    this.defaultValue = value;
     return this;
   }
   empty(i) {
@@ -569,6 +574,7 @@ class CommandHandler extends EventEmitter {
       return collectArguments(index, a, as);
     }
     const options = cmd.options.slice(); // TODO: fix problems with flags after the last argument (!test string -u <@01G9MCW5KZFKT2CRAD3G3B9JN5>)
+    const usedOptions = [];
     var usedArgumentCount = 0;
     for (let i = 0, argIndex = 1; i < options.length; i++) { // argIndex starts at 1 to exclude command itself
       if (options[i] instanceof Flag) i++; // ignore pure flag options
@@ -602,6 +608,7 @@ class CommandHandler extends EventEmitter {
           id: op.id,
           uid: op.uid
         });
+        usedOptions.push(op.uid);
         continue;
       }
       if (!o) continue; // continue after flag processing is done
@@ -619,6 +626,7 @@ class CommandHandler extends EventEmitter {
         let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, value).replace(/\$optionName/gi, o.name);
         return this.replyHandler(e, msg);
       }
+      if (o.empty(value)) value = o.defaultValue;
 
       opts.push({
         value: o.formatInput(value, this.client, msg),
@@ -626,6 +634,7 @@ class CommandHandler extends EventEmitter {
         id: o.id,
         uid: o.uid
       });
+      usedOptions.push(o.uid);
       previous += " " + value;
       argIndex++;
       usedArgumentCount++;
@@ -640,9 +649,20 @@ class CommandHandler extends EventEmitter {
       opts.push({
         name: o.name,
         value: text,
-        id: o.id
+        id: o.id,
+        uid: o.uid
       });
+      usedOptions.push(o.uid);
     }
+    options.filter(o => !usedOptions.includes(o.uid)).forEach(o => {
+      if (!o.defaultValue) return;
+      opts.push({
+        name: o.name,
+        value: o.defaultValue,
+        id: o.id,
+        uid: o.uid,
+      });
+    });
     this.emit("run", {
       command: cmd,
       commandId: cmd.id,
@@ -768,7 +788,7 @@ class CommandHandler extends EventEmitter {
         const optional = ((o.required) ? "" : "?");
         const flag = (o instanceof Flag) ? "-" : "";
         if (o.type == "choice") {
-          content += "- **" + flag + o.name + "**" + optional + ": " + this.getDescription(o, msg) + "; Allowed values: `" + o.choices.join("`, `") + "`" + optional + "\n";
+          content += "- **" + flag + o.name + "**" + optional + ": " + this.getDescription(o, msg) + "; Allowed values: `" + o.choices.join("`, `") + "`\n";
         } else {
           content += "- **" + flag + o.name + "**" + optional + ": " + this.getDescription(o, msg) + "\n";
         }
@@ -795,7 +815,7 @@ class CommandHandler extends EventEmitter {
         options += "` `" + ((o.type == "choice") ? " <" + o.choices.join(" | ") + ">" : " '" + o.name + ": " + o.type + "'");
       });
       let o = cmd.options.find(e=>e.type=="text");
-      if (o) options += " ` `'" + o.name + ": " + o.type + "'";
+      if (o) options += "` `'" + o.name + ": " + o.type + "'";
       return options.trim();
     }
   }

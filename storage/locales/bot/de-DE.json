@@ -68,7 +68,7 @@
       "index" : "Die Position des Liedes in der Warteschlange. Die Position aller Lieder kann mit dem `list` Befehl aufgerufen werden."
     },
     "search" : {
-      "provider" : "Der Anbieter der Suchergebnisse. (YouTube oder YouTube Music)",
+      "provider" : "Der Anbieter der Suchergebnisse (YouTube oder YouTube Music). Standard: Youtube Music",
       "query" : "Der Such-Text, nach dem gesucht werden soll."
     },
     "settings" : {

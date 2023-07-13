@@ -190,7 +190,7 @@
     renderQueue(data.currData.queue);
     setVolume(data.currData.volume * 100);
     updateCDisplay(data)
-    update(data.currSong);
+    if (data.currSong) update(data.currSong);
     updatePlaybackStatus(data.currData);
     enablePlayer();
   });

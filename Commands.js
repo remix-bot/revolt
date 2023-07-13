@@ -12,6 +12,7 @@ class CommandBuilder extends EventEmitter {
     this.options = [];
     this.requirements = [];
     this.category = "default";
+    this.examples = [];
 
     this.translations = {};
     this.uid = this.guid();
@@ -98,6 +99,10 @@ class CommandBuilder extends EventEmitter {
   }
   setCategory(cat) {
     this.category = cat;
+    return this;
+  }
+  addExamples(...examples) {
+    this.examples.push(...examples);
     return this;
   }
 
@@ -646,6 +651,10 @@ class CommandHandler extends EventEmitter {
         let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, text).replace(/\$optionName/gi, o.name);
         return this.replyHandler(e, msg);
       }
+      const quote = (['"', "'"].includes(text.charAt(0))) ? text.charAt(0) : null;
+      if (quote && text.charAt(text.length - 1) == quote) {
+        text = text.slice(1, text.length - 1);
+      }
       opts.push({
         name: o.name,
         value: text,
@@ -767,6 +776,7 @@ class CommandHandler extends EventEmitter {
     let content = "# " + this.capitalize(cmd.name) + "\n";
     content += this.getDescription(cmd, msg) + "\n\n";
     content += "#### Usage: \n🖥️ `" + this.genCmdUsage(cmd, msg) + "`\n\n";
+    if (cmd.examples.length > 0) content += "Example(s): \n- `" + cmd.examples.map(e => this.f(e,  msg?.channel?.serverId)).join("`\n- `") + "`\n\n";
     if (cmd.aliases.length > 1) {
       content += "#### Aliases: \n";
       cmd.aliases.forEach(alias => {

@@ -10,6 +10,7 @@ module.exports = {
       o.setName("user")
         .setDescription("A user")
         .addFlagAliases("u")
+        .setDefault("01G9MCW5KZFKT2CRAD3G3B9JN5")
         .setId("testOption")
     , true).addStringOption(o =>
       o.setName("string")

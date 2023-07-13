@@ -7,6 +7,7 @@ module.exports = {
       .setName("settings")
       .setDescription("Change/Get settings in the current server.", "commands.settings")
       .addAliases("s")
+      .addExamples("$prefixsettings get", "$prefixsettings get locale", "$prefixsettings set locale de-DE")
       .setCategory("util")
       .addRequirement(e => e.addPermission("ManageServer"))
       .addSubcommand(cmd =>

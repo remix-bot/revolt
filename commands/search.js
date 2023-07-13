@@ -19,6 +19,7 @@ module.exports = {
   command: new CommandBuilder()
     .setName("search")
     .setDescription("Display the search results for a given query", "commands.search")
+    .addExamples("$prefixsearch never gonna give you up", "$prefixsearch -provider yt 'never gonna give you up'")
     .addChoiceOption(o =>
       o.setName("provider")
         .setDescription("The search result provider (YouTube or YouTube Music). Default: Youtube Music", "options.search.provider")

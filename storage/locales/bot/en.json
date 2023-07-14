@@ -4,7 +4,7 @@
       "permission" : "You don't have the needed permissions to run this command!"
     },
     "subcommand" : {
-      "invalid" : "Invalid subcommand. Try one of the following options: `$previousCmd <$cmdlist>"
+      "invalid" : "Invalid subcommand. Try one of the following options: `$previousCmd <$cmdlist>`"
     }
   },
   "cmdHandler" : {
@@ -33,7 +33,7 @@
     "lyrics" : "Fetch the lyrics of the current song. Please note that the lyrics might differ from the actual ones, as Genius doesn't always find the right song.",
     "np" : "Request the name and url of the currently playing song.",
     "pause" : "Pause the playback in your voice channel",
-    "ping" : "My prefix in this server is: {{prefix}}",
+    "ping" : "My prefix in this server is: {{prefix}}\n\nUse {{helpCmd}} to get started!",
     "play" : "Play a youtube video from url/query or a playlist by url. Other services are supported as well.",
     "player" : "Create an emoji player control for your voice channel",
     "playnext" : "Same as %play. The result will be added to the top of the queue.",

@@ -4,7 +4,7 @@
       "permission" : "Du hast nicht die notwendigen Berechtigungen, dieses Kommando hier auszuführen."
     },
     "subcommand" : {
-      "invalid" : "Ungültiger Unterbefehl. Versuche es bitte mit einer dieser Optionen `$previousCmd <$cmdlist>"
+      "invalid" : "Ungültiger Unterbefehl. Versuche es bitte mit einer dieser Optionen `$previousCmd <$cmdlist>`"
     }
   },
   "cmdHandler" : {
@@ -33,7 +33,7 @@
     "lyrics" : "Rufe den Songtext des aktuellen Liedes auf. Bitte beachte, dass dieser vom tatsächlichen Text abweichen kann, da Genius nicht immer den richtigen Song findet.",
     "np" : "Rufe den Namen und die URL des Songs ab, der gerade abgespielt wird.",
     "pause" : "Pausiere die Wiedergabe in deinem Sprachkanal",
-    "ping" : "Mein Präfix in diesem Server ist: {{prefix}}",
+    "ping" : "Mein Präfix in diesem Server ist: {{prefix}}\n\nFühre {{helpCmd}} aus, um loszulegen!",
     "play" : "Spiele ein YouTube-Video mithilfe einer URL/einem Suchbegriff, oder eine Playlist von einer URL. Einige andere Dienste sind auch unterstützt.",
     "player" : "Erstellen eine Emoji-Steuerung für deinen Sprachkanal",
     "playnext" : "Siehe %play. Die gefundenen Songs werden am Anfang der Warteschlange eingefügt.",
@@ -68,7 +68,7 @@
       "index" : "Die Position des Liedes in der Warteschlange. Die Position aller Lieder kann mit dem `list` Befehl aufgerufen werden."
     },
     "search" : {
-      "provider" : "Der Anbieter der Suchergebnisse (YouTube oder YouTube Music). Standard: Youtube Music",
+      "provider" : "Der Anbieter der Suchergebnisse (YouTube oder YouTube Music). Standard: YouTube Music",
       "query" : "Der Such-Text, nach dem gesucht werden soll."
     },
     "settings" : {

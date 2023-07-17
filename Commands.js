@@ -775,7 +775,7 @@ class CommandHandler extends EventEmitter {
     // TODO: add titles to embeds
     let content = "# " + this.capitalize(cmd.name) + "\n";
     content += this.getDescription(cmd, msg) + "\n\n";
-    content += "#### Usage: \n🖥️ `" + this.genCmdUsage(cmd, msg) + "`\n\n";
+    content += "#### Usage: \n🖥️ `" + this.genCmdUsage(cmd, msg, "` `") + "`\n\n";
     if (cmd.examples.length > 0) content += "Example(s): \n- `" + cmd.examples.map(e => this.f(e,  msg?.channel?.serverId)).join("`\n- `") + "`\n\n";
     if (cmd.aliases.length > 1) {
       content += "#### Aliases: \n";
@@ -814,18 +814,18 @@ class CommandHandler extends EventEmitter {
 
     return content.trim();
   }
-  genCmdUsage(cmd, msg) {
+  genCmdUsage(cmd, msg, pre="") {
     if (cmd.subcommands.length > 0) {
       return cmd.command + " <" + cmd.subcommands.map(e=>e.name).join(" | ") + "> [...]".trim();
     } else {
       let options = this.f("$prefix" + cmd.command, msg?.channel?.serverId);
       cmd.options.forEach(o => {
         if (o.type == "text") return;
-        if (o instanceof Flag) return options += "` `" + ((o.type == "choice") ? "-" + o.aliases[0] + " <" + o.choices.join(" | ") + ">" : " -" + o.aliases[0] + " '" + o.type + "'");
-        options += "` `" + ((o.type == "choice") ? " <" + o.choices.join(" | ") + ">" : " '" + o.name + ": " + o.type + "'");
+        if (o instanceof Flag) return options += pre + ((o.type == "choice") ? "-" + o.aliases[0] + " <" + o.choices.join(" | ") + ">" : " -" + o.aliases[0] + " '" + o.type + "'");
+        options += pre + ((o.type == "choice") ? " <" + o.choices.join(" | ") + ">" : " '" + o.name + ": " + o.type + "'");
       });
       let o = cmd.options.find(e=>e.type=="text");
-      if (o) options += "` `'" + o.name + ": " + o.type + "'";
+      if (o) options += pre + o.name + ": " + o.type + "'";
       return options.trim();
     }
   }

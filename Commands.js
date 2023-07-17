@@ -814,7 +814,7 @@ class CommandHandler extends EventEmitter {
 
     return content.trim();
   }
-  genCmdUsage(cmd, msg, pre="") {
+  genCmdUsage(cmd, msg, pre=" ") {
     if (cmd.subcommands.length > 0) {
       return cmd.command + " <" + cmd.subcommands.map(e=>e.name).join(" | ") + "> [...]".trim();
     } else {

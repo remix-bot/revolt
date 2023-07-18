@@ -20,6 +20,8 @@ class RevoltPlayer extends EventEmitter {
     this.spotify = opts.spotifyClient || new Spotify(opts.spotify);
     this.spotifyConfig = opts.spotify;
 
+    this.ytdlp = opts.ytdlp;
+
     this.gClient = opts.geniusClient || new (require("genius-lyrics")).Client();
 
     this.port = 3050 + (opts.portOffset || 0);
@@ -277,6 +279,7 @@ class RevoltPlayer extends EventEmitter {
   getThumbnail() {
     return new Promise(async (res) => {
       if (!this.data.current) return res({ msg: "There's nothing playing at the moment.", image: null });
+      if (!this.data.current.thumbnail) return res({ msg: "The current media resource doesn't have a thumbnail.", image: null });
       res({ msg: `The thumbnail of the video [${this.data.current.title}](${this.data.current.url}): `, image: await this.uploadThumbnail() });
     });
   }
@@ -319,6 +322,9 @@ class RevoltPlayer extends EventEmitter {
     const connection = this.voice.getVoiceConnection(this.connection.channelId);
     const stream = (songData.type == "soundcloud") ?
       await scdl.download(songData.url)
+      :
+      (songData.type == "external") ?
+      this.ytdlp.execStream((songData.url + " -f ba").split(" "))
       :
       ytdl("https://www.youtube.com/watch?v=" + songData.videoId, {
         filter: "audioonly",

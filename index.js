@@ -40,7 +40,7 @@ class Remix {
     this.uploader = new Uploader(this.client);
 
     this.geniusClient = new Genius.Client(this.config.geniusToken);
-    this.spotify = new Spotify(this.spotifyConfig)
+    this.spotify = new Spotify(this.spotifyConfig);
 
     this.presence = "Online";
 
@@ -208,6 +208,8 @@ class Remix {
 
     this.revoice = new Revoice(config.token || config.login, config["revolt-api"]);
     this.observedVoiceUsers = new Map();
+
+    //this.ytdlp = new YTDlpWrap("") // TODO: finish ytdlp setup
 
     try {
       this.comHash = require('child_process')

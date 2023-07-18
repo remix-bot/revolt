@@ -23,7 +23,8 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
     settings: settings,
     spotifyClient: this.spotify,
     geniusClient: this.geniusClient,
-    messageChannel: message.channel
+    messageChannel: message.channel,
+    ytdlp: this.ytdlp
   });
   p.on("autoleave", async () => {
     message.channel.sendMessage(this.em("Left channel <#" + cid + "> because of inactivity.", message));

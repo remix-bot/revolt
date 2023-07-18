@@ -4,6 +4,7 @@ const yts = require('yt-search');
 const Spotify = require("spotifydl-core").default;
 const scdl = require("soundcloud-downloader").default;
 const YoutubeMusicApi = require('youtube-music-api-fix')
+const meta = require("./src/probe.js");
 
 if (!workerData) {
   console.log("Worker data shouldn't be empty!");
@@ -174,6 +175,30 @@ class YTUtils extends EventEmitter {
     }*/
     return await this.getByQuery(song.name + " " + song.artists[0]);
   }
+  isMedia(url) {
+    return new Promise(res => {
+      require("https").get(url, function(r) {
+        res(["audio", "video"].includes(r.headers["content-type"].slice(0, r.headers["content-type"].indexOf("/"))));
+      });
+    });
+  }
+  unknownMedia(url) {
+    return new Promise(async res => {
+      const data = await meta(url);
+      data.title ||= "Unknown";
+      data.album ||= "Unknown";
+      data.artist ||= "Unknown Artist";
+
+      data.thumbnail = null;
+      data.url = url;
+      data.type = "external";
+      data.author = {
+        name: data.artist,
+        url: "#"
+      }
+      res({ type: "video", data: data });
+    });
+  }
   async getVideoData(query, provider="yt") {
     if (this.isSoundCloud(query)) return await this.getScdl(query);
     if (this.isSpotify(query)) return await this.getSpotifyData(query);
@@ -185,8 +210,15 @@ class YTUtils extends EventEmitter {
     let parsed = this.youtubeParser(query);
     if (!parsed) {
       const live = this.liveParser(query);
-      if (!live) return await this.getByQuery(query, provider); // not a yt id
-      return await this.getById(live, true);
+      if (live) await this.getById(live, true);
+
+      // not a yt id
+
+      if (query.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)) {
+        // unknown valid url; use yt-dlp to stream it
+        if (await isMedia(query)) return await this.unknownMedia(query);
+      }
+      return await this.getByQuery(query, provider);
     }
     // fetch youtube video data by id
     return await this.getById(parsed);

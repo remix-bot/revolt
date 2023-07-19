@@ -87,6 +87,7 @@ class Remix {
       }, 20000)})
       if (reconnects.length > 3) {
         console.log("Too many reconnects. Restarting.");
+        reconnects = [];
         this.client.events.disconnect();
         return setTimeout(() => {
           console.log("Reconnecting.");

@@ -6,6 +6,7 @@ const path = require("path");
 const fs = require("fs");
 const { SettingsManager } = require("./settings/Settings.js");
 if (!process.execArgv.includes("--inspect")) require('console-stamp')(console, 'HH:MM:ss.l');
+const YTDlpWrap = require("yt-dlp-wrap-extended").default;
 
 const Genius = require("genius-lyrics");
 const Spotify = require('spotifydl-core').default;
@@ -209,7 +210,17 @@ class Remix {
     this.revoice = new Revoice(config.token || config.login, config["revolt-api"]);
     this.observedVoiceUsers = new Map();
 
-    //this.ytdlp = new YTDlpWrap("") // TODO: finish ytdlp setup
+    if (!fs.existsSync("./bin")) fs.mkdirSync("./bin");
+    const ytdlPath = path.join(__dirname, "./bin/ytdlp.bin");
+    if (!fs.existsSync(ytdlPath)) {
+      console.log("Downloading yt-dlp binaries.");
+      YTDlpWrap.downloadFromGithub(ytdlPath).then(() => {
+        console.log("Finished downloading yt-dlp binaries.");
+        this.ytdlp = new YTDlpWrap(ytdlPath);
+      });
+    } else {
+      this.ytdlp = new YTDlpWrap(ytdlPath);
+    }
 
     try {
       this.comHash = require('child_process')

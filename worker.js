@@ -184,8 +184,11 @@ class YTUtils extends EventEmitter {
   }
   unknownMedia(url) {
     return new Promise(async res => {
+      const fileName = new URL(url).pathname.split('/').pop();
+      this.emit("message", "Fetching meta data...");
+
       const data = await meta(url);
-      data.title ||= "Unknown";
+      data.title ||= (fileName.length > 0) ? fileName : "Unknown";
       data.album ||= "Unknown";
       data.artist ||= "Unknown Artist";
 
@@ -196,6 +199,8 @@ class YTUtils extends EventEmitter {
         name: data.artist,
         url: "#"
       }
+
+      this.emit("message", `Added [${data.title}](${data.url}) to the queue.`);
       res({ type: "video", data: data });
     });
   }
@@ -216,7 +221,7 @@ class YTUtils extends EventEmitter {
 
       if (query.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g)) {
         // unknown valid url; use yt-dlp to stream it
-        if (await isMedia(query)) return await this.unknownMedia(query);
+        if (await this.isMedia(query)) return await this.unknownMedia(query);
       }
       return await this.getByQuery(query, provider);
     }

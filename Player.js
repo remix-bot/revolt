@@ -6,6 +6,7 @@ const Uploader = require("revolt-uploader");
 const https = require('https');
 const Spotify = require('spotifydl-core').default;
 const scdl = require('soundcloud-downloader').default;
+const ffmpeg = require("ffmpeg-static");
 
 class RevoltPlayer extends EventEmitter {
   constructor(token, opts) {
@@ -320,11 +321,12 @@ class RevoltPlayer extends EventEmitter {
 
     this.data.current = songData;
     const connection = this.voice.getVoiceConnection(this.connection.channelId);
+    //this.ytdlp.exec(("--ffmpeg-location " + ffmpeg + " -x --audio-format mp3 " + songData.url + " -o output.mp3").split(" "));
     const stream = (songData.type == "soundcloud") ?
       await scdl.download(songData.url)
       :
-      (songData.type == "external") ?
-      this.ytdlp.execStream((songData.url + " -f ba").split(" "))
+      ((songData.type == "external") ?
+      this.ytdlp.execStream(("--ffmpeg-location " + ffmpeg + " -x --audio-format mp3 " + songData.url).split(" "))
       :
       ytdl("https://www.youtube.com/watch?v=" + songData.videoId, {
         filter: "audioonly",
@@ -337,7 +339,7 @@ class RevoltPlayer extends EventEmitter {
             //"x-youtube-identity-token": this.YT_API_KEY
           }
         }
-      }, { highWaterMark: 1048576 / 4 });
+      }, { highWaterMark: 1048576 / 4 }));
     connection.media.playStream(stream);
     stream.once("data", () => this.startedPlaying = Date.now());
     if (this.connection.preferredVolume) connection.media.setVolume(this.connection.preferredVolume);
@@ -412,7 +414,7 @@ class RevoltPlayer extends EventEmitter {
   preparePlay() {
     if (this.connection.state == Revoice.State.OFFLINE) return "Please let me join first.";
     if (!this.connection.media) {
-      let p = new MediaPlayer(false, this.port);
+      let p = new MediaPlayer(true, this.port);
       this.player = p;
       this.connection.play(p);
     }

@@ -1,7 +1,7 @@
 const ffmpeg = require("ffmpeg-static");
 const { Transform } = require("node:stream");
 
-class StreamMerger extends Transform { // mains tream should be piped into it
+class StreamMerger extends Transform { // main stream should be piped into it
   ffmpegPath = ffmpeg;
   ffmpeg = null;
   streamTree = [];
@@ -10,9 +10,13 @@ class StreamMerger extends Transform { // mains tream should be piped into it
     super(streamOptions);
   }
   _transform(chunk, _enc, cb) {
-    if (!this.ffmpeg) return this.push(chunk), cb();
+    if (!this.ffmpeg) { this.push(chunk); return cb(); }
     this.ffmpeg.stdio[3].write(chunk);
     cb();
+  }
+  pipe(stream) {
+    // TODO: implement removal on main stream exit
+    return super.pipe(stream);
   }
 
   setupBaseFfmpeg() {
@@ -22,8 +26,9 @@ class StreamMerger extends Transform { // mains tream should be piped into it
     });
   }
   spawnFfmpeg() {
-    const args = "-i pipe:3 -i pipe:4 -c copy -vn -o pipe:1".split(" ");
+    const args = "-i pipe:3 -i pipe:4 -c copy -vn -filter_complex amix=inputs=2:duration=longest pipe:1".split(" ");
     return require("node:child_process").spawn(this.ffmpegPath, args, {
+      windowsHide: true,
       stdio: [
         "inherit", "inherit", "inherit", "pipe", "pipe"
       ]
@@ -57,22 +62,22 @@ class StreamMerger extends Transform { // mains tream should be piped into it
     const open = this.findOpenNode();
     if (!open) throw "Impossible case detected. No free merge node found.";
 
-    const process = this.spawnFfmpeg();
+    const p = this.spawnFfmpeg();
     const node = {
-      process,
+      process: p,
       pipes: [4],
       available: true,
       parent: open,
       children: []
     };
     open.children.push(node);
-    s.pipe(process.stdio[3]);
-    process.pipe(open.process.stdio[open.pipes[0]]);
+    s.pipe(p.stdio[3]);
+    p.stdout.pipe(open.process.stdio[open.pipes[0]]);
+    const pipeNumber = open.pipes[0].valueOf(); // copy number; prevent referencing
     open.pipes.splice(0, 1); // remove available pipe;
     if (open.pipes.length == 0) open.available = false;
 
-    const pipeNumber = open.pipes[0].valueOf(); // copy number; prevent referencing
-    process.on("exit", () => { // this only happens when all input streams close
+    p.on("exit", () => { // this only happens when all input streams close
       open.pipes.push(pipeNumber);
       open.available = true;
       // node unused; remove;

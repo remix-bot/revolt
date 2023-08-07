@@ -176,7 +176,7 @@
     const n = mt.cloneNode(true);
     n.id = "song#" + video.videoId;
     n.querySelector("span[title]").innerText = video.title;
-    n.querySelector("span[artist]").innerText = video.author.name;
+    n.querySelector("span[artist]").innerText = (!video.artists) ? video.author.name : video.artists.map(a => `${a.name}`).join(" & ");
     n.querySelector("p[duration]").innerText = video.duration.timestamp;
     n.querySelector("img[cover]").src = video.thumbnail;
     n.style.display = "flex";
@@ -753,7 +753,7 @@
 
   function update(vid) {
     bgrdImg.src = "/api/imageProxy?url=" + encodeURIComponent(vid.thumbnail);
-    artist.innerText = vid.author.name;
+    artist.innerText = (!vid.artists) ? vid.author.name : vid.artists.map(a => `${a.name}`).join(" & ");
     song.innerText = vid.title;
   }
   function resetPlayer() {

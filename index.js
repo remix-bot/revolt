@@ -31,6 +31,7 @@ class Remix {
     this.presenceInterval = config.presenceInterval || 7000;
 
     this.memberMap = new Map();
+    this.userCache = []
 
     this.observedUsers = new Map();
     this.observedReactions = new Map();
@@ -280,10 +281,16 @@ class Remix {
         data = data.map(v => v.value);
         data.forEach(members => {
           if (!members) return;
+          console.log(members.members);
+          const users = members.users;
           members = members.members;
-          const server = members[0].server.id;
-          members = members.map(m => m.id.user);
+          const server = members[0]._id.server; // _id because this is using a raw api object
+          members = members.map(m => m._id.user);
           this.memberMap.set(server, members);
+          users.forEach(user => {
+            if (this.userCache.findIndex(e => e.id === user._id) !== -1) return;
+            this.userCache.push({ id: user._id, name: user.username, discrim: user.discriminator})
+          });
         });
       }
 
@@ -297,7 +304,8 @@ class Remix {
           promises.length = 0;
           await Remix.sleep(1200);
         }
-        promises.push(servers[i].fetchMembers());
+        promises.push(this.client.api.get("/servers/" + servers[i].id + "/members"));
+        //promises.push(servers[i].fetchMembers());
       }
       if (promises.length !== 0) evaluate(await Promise.allSettled(promises));
       console.log("Finished mapping server members!");

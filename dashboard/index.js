@@ -99,8 +99,29 @@ class Dashboard {
       res.render("commands/help.ejs", { ...req.data, commands: this.commandsRaw, prefix: remix.config.prefix });
     });
 
+    const getUserId = async (d) => {
+      if (d.includes("#")) { // username with disciriminator
+        const name = d.slice(0, d.indexOf("#"));
+        const discriminator = d.slice(d.indexOf("#") + 1, d.length);
+        const user = this.remix.userCache.find(u => u.name == name && u.discrim == discriminator);
+        if (!user || user === -1) return null;
+        return user.id;
+      }
+      if (d.length !== 26) return null; // too short
+      if (!d.match(/[0-9A-Z]{26}/g)) return null;
+      try {
+        if (!(this.remix.client.users.get(d) || await this.remix.client.users.fetch(d))) return null;
+      } catch(e) {
+        if (e.response.status !== 404) console.log(e);
+        return null;
+      }
+      return d;
+    }
     app.post("/api/login", async (req, res) => {
-      const user = req.body.userId;
+      const user = await getUserId(req.body.user);
+      if (!user) {
+        return res.status(400).send({ message: "Invalid user data" });
+      }
       const r = await this.createLogin(user, req);
       req.session.user = user;
       req.session.token = r.token;

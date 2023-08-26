@@ -281,15 +281,14 @@ class Remix {
         data = data.map(v => v.value);
         data.forEach(members => {
           if (!members) return;
-          console.log(members.members);
           const users = members.users;
           members = members.members;
-          const server = members[0]._id.server; // _id because this is using a raw api object
-          members = members.map(m => m._id.user);
+          const server = members[0].server.id;
+          members = members.map(m => m.id.user);
           this.memberMap.set(server, members);
           users.forEach(user => {
-            if (this.userCache.findIndex(e => e.id === user._id) !== -1) return;
-            this.userCache.push({ id: user._id, name: user.username, discrim: user.discriminator})
+            if (this.userCache.findIndex(e => e.id === user.id) !== -1) return;
+            this.userCache.push({ id: user.id, name: user.username, discrim: user.discriminator})
           });
         });
       }
@@ -304,11 +303,35 @@ class Remix {
           promises.length = 0;
           await Remix.sleep(1200);
         }
-        promises.push(this.client.api.get("/servers/" + servers[i].id + "/members"));
-        //promises.push(servers[i].fetchMembers());
+        promises.push(servers[i].fetchMembers());
       }
       if (promises.length !== 0) evaluate(await Promise.allSettled(promises));
       console.log("Finished mapping server members!");
+      /*await Remix.sleep(5000);
+      console.log("Started mapping discriminators");
+      promises.length = 0; // clear array
+      const mapUsers = async (p) => { // run in async scope
+        p = p.map(v => v.value);
+        if (!p) return;
+        p.forEach(u => {
+          const idx = this.userCache.findIndex(e => e.id == u._id);
+          if (idx === -1) throw "Impossible case detected";
+          this.userCache[idx].discrim = u.discriminator;
+          this.userCache[idx].displayName = u.display_name;
+        });
+      }
+      for (let i = 0; i < this.userCache.length; i++) {
+        if (i % 18 === 0 && i !== 0) {
+          mapUsers(await Promise.allSettled(promises));
+          console.log("Mapped " + Math.round((i / this.userCache.length * 100)) + "%");
+          promises.length = 0;
+          await Remix.sleep(10000);
+        }
+        if (this.userCache[i].discrim) continue;
+        promises.push(this.client.api.get("/users/" + this.userCache[i].id))
+      }
+      if (promises.length !== 0) mapUsers(await Promise.allSettled(promises));
+      console.log("Finished discriminator mapping");*/
       res();
     });
   }

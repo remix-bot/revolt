@@ -18,7 +18,10 @@
       <section>
         <h1>Login</h1>
         <div style="display: <%= (locals.id) ? "none" : "block" %>">
-          <input type="text" placeholder="Revold user ID"></input>
+          <input type="text" placeholder="Username#XXXX or Revolt user ID"></input>
+          <p style="color: red" id="error">
+
+          </p>
           <label>
             <input type="checkbox">
             <span style="margin-left: 145px;">Stay signed in.</span>
@@ -39,6 +42,9 @@
             Do <b>NOT</b> close this browser window, as this login is only valid in the current browser session.<br />
             If you chose to stay logged in, there will be a login cookie created as soon as you verify the login through
             the button below.
+          </p>
+          <p style="color: red" id="verError">
+
           </p>
           <button onclick="check(this)" type="button" class="text-white bg-pink-700 hover:bg-pink-800 focus:outline-none focus:ring-4 focus:ring-pink-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800">
             <i class="fas fa-check mr-2"></i>Check for verification
@@ -72,6 +78,7 @@
         if (res) {
           window.location.href = "/dashboard";
         } else {
+          document.getElementById("verError").innerText = "Login not verified yet. Please follow the instructions above."
           btn.disabled = false;
         }
       });
@@ -89,10 +96,14 @@
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ userId: uid })
+        body: JSON.stringify({ user: uid })
       }).then(async res => {
         btn.disabled = false;
         const r = await res.json();
+        if (res.status !== 200) {
+          document.getElementById("error").innerText = r.message;
+          return;
+        }
         container.style.display = "none";
         document.getElementById("command").innerText = "<%= prefix %>login " + r.id + ";" + r.token;
         document.getElementById("success").style.display = "block";

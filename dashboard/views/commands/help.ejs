@@ -16,11 +16,13 @@
     text: "inherit",
     choice: ""
   }
+  // TODO: include command parser and sandbox
   %>
 
   <div>
     <%= commands.map(c => c.name).join(" ") %>
-    <% const command = commands[17]; %>
+    <% const command = commands[17]; %><br />
+    <%= command.options.map(o => o.name) %>
     <h2><%= command.name %></h2>
     <div>
       <code style="display: flex; flex-direction: row; gap: 0.6rem; align-items: center">

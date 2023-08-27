@@ -367,7 +367,9 @@ class Dashboard {
         description: song.description,
         thumbnail: song.thumbnail,
         duration: player.getDuration(song.duration),
-        author: song.author
+        author: song.author,
+        artists: song.artists,
+        artist: song.artist
       }
     };
     const getPlayerData = (player) => {

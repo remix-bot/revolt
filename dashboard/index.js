@@ -60,8 +60,12 @@ class Dashboard {
       secure: !!remix.config.ssl.useSSL,
       saveUninitialized: false
     }));
-    app.use((req, _res, next) => {
-      if (!req.session.user || !req.session.verified) { req.data = {}; return next(); }
+    app.use(async (req, _res, next) => {
+      if (!req.session.user || !req.session.verified) {
+        if (!(await this.verifySession(req.session, req.cookies))){
+          req.data = {}; return next();
+        }
+      }
       req.data = {
         user: remix.client.users.get(req.session.user),
       }

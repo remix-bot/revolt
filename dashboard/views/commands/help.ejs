@@ -5,6 +5,9 @@
     border-radius: 5px;
     padding: 0.7rem;
   }
+  .error {
+    text-decoration: underline red;
+  }
   </style>
   <%
   const colorMapping = {
@@ -19,33 +22,99 @@
   // TODO: include command parser and sandbox
   %>
 
+  <div id="sandbox" onkeyup="update(this)" contenteditable="true" style="border: 1px solid white; min-height: 3rem">
+  </div>
+  <script>
+  const PREFIX = "<%= prefix %>";
+  const COMMANDS = JSON.parse('<%- JSON.stringify(commands.map(c => ({ aliases: c.aliases, name: c.name, id: c.uid }))) %>');
+
+  var previous = "";
+  var coolDownTimeout = null;
+  const update = (area) => {
+    if (coolDownTimeout) clearTimeout(coolDownTimeout);
+    coolDownTimeout = setTimeout(() => {
+      console.log(area.innerHTML);
+      if (area.innerText === previous) return;
+      var content = area.innerText;
+      previous = content;
+      if (content.startsWith(PREFIX)) content = content.slice(1, content.length);
+
+      const args = content.split(" ");
+      if (!COMMANDS.map(c => c.aliases).flat(1).includes(args[0].toLowerCase())) return;
+
+      const cmd = COMMANDS.find(c => c.aliases.includes(args[0]));
+
+      const reset = () => {
+        area.innerHTML = area.innerText;
+      }
+      post("/api/cmd/eval", {
+        args: args,
+        id: cmd.id
+      }).then(r => r.json()).then((res) => {
+        console.log(res);
+
+        if (res.success) return reset(); // no issues
+        const start = res.message.lastIndexOf("`", res.message.length - 4);
+        const end = res.message.lastIndexOf("`");
+        const syntax = res.message.slice(start + 1, end);
+        console.log(syntax);
+
+        const wordPos = syntax.split(" ").length - 1;
+        console.log(wordPos);
+
+        var words = area.innerText.split(" ");
+        words = words.map((e, i) => {
+          if (i === wordPos) return "<span class='error'>" + e + "</span>";
+          return e;
+        });
+        area.innerHTML = words.join(" ");
+        console.log(area.innerHTML)
+      });
+      console.log(args, cmd.name);
+    }, 2000);
+  }
+
+  window.post = (url, payload) => {
+    return fetch(url, {
+      method: "post",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+  }
+  </script>
+
   <div>
-    <%= commands.map(c => c.name).join(" ") %>
-    <% const command = commands[17]; %><br />
-    <%= command.options.map(o => o.name) %>
-    <h2><%= command.name %></h2>
-    <div>
-      <code style="display: flex; flex-direction: row; gap: 0.6rem; align-items: center">
-        <%= prefix + command.name %>
-        <% command.options.forEach(option => { %>
-          <% if (option.type == "choice") { %>
-            <!--<div style="display: flex; flex-direction: column; gap: 0.2rem">
-              <div>
-                <% option.choices.forEach(c => { %>
-                  <span><%= c %></span>
-                <% }); %>
+    <% for (let i = 0; i < commands.length; i++) {%>
+      <% const command = commands[i]//commands[17]; %>
+    <div style="width: fit-content; display: inline">
+      <h2><%= command.name %></h2>
+      <div>
+        <code style="display: flex; flex-direction: row; gap: 0.6rem; align-items: center; width: fit-content">
+          <%= prefix + command.name %>
+          <% command.options.forEach(option => { %>
+            <% if (option.type == "choice") { %>
+              <!--<div style="display: flex; flex-direction: column; gap: 0.2rem">
+                <div>
+                  <% option.choices.forEach(c => { %>
+                    <span><%= c %></span>
+                  <% }); %>
+                </div>
+                <span style="font-size: 70%"><%= option.name %></span>
+              </div>-->
+              <div style="display: block">
+                <span><%= option.choices.join("/") %></span>
+                <sup style="font-size: 60%"><%= option.name %></sup>
               </div>
-              <span style="font-size: 70%"><%= option.name %></span>
-            </div>-->
-            <div style="display: block">
-              <span><%= option.choices.join("/") %></span>
-              <sup style="font-size: 60%"><%= option.name %></sup>
-            </div>
-          <% } %>
-          <span style="color: <%= colorMapping[option.type] %>"><%= option.name %></span>
-        <% }) %>
-      </code>
+            <% } %>
+            <span style="color: <%= colorMapping[option.type] %>"><%= option.name %></span>
+          <% }) %>
+        </code>
+      </div>
     </div>
+    <% } %>
 
   </div>
 </body>

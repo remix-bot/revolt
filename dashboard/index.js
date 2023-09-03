@@ -102,6 +102,19 @@ class Dashboard {
       this.commandsRaw ||= remix.handler.commands;
       res.render("commands/help.ejs", { ...req.data, commands: this.commandsRaw, prefix: remix.config.prefix });
     });
+    app.post("/api/cmd/eval", (req, res) => {
+      const args = req.body.args;
+      const command = this.remix.handler.commands.find(c => c.uid == req.body.id);
+      const msg = {
+        channel: {
+          serverId: "01FZ62C8WFS3HBEN5QTN8RZRQG"
+        }
+      }
+
+      console.log(args, command);
+      const cmd = this.remix.handler.processCommand(command, args, msg, false, true);
+      res.send({ success: typeof cmd === "object", message: (typeof cmd === "string") ? cmd : "ok" });
+    });
 
     const getUserId = async (d) => {
       if (d.includes("#")) { // username with disciriminator

@@ -537,8 +537,8 @@ class CommandHandler extends EventEmitter {
     text = text.replace(/\$helpCmd/gi, this.helpCommand);
     return text;
   }
-  processCommand(cmd, args, msg, previous=false) {
-    if (cmd.requirements.length > 0) {
+  processCommand(cmd, args, msg, previous=false, external=false) { // external: called by something outside of command handler
+    if (cmd.requirements.length > 0 && !external) {
       const server = msg.member.server;
       for (let i = 0; i < cmd.requirements.length; i++) {
         let req = cmd.requirements[i];
@@ -552,7 +552,7 @@ class CommandHandler extends EventEmitter {
     }
     if (previous === false) previous = this.f("$prefix" + cmd.name, msg.channel.serverId);
     if (!cmd) return console.warn("Something sus is going on... [CommandHandler.processCommand]");
-    this.emit("command", { command: cmd, message: msg });
+    if (!external) this.emit("command", { command: cmd, message: msg });
     if (cmd.subcommands.length != 0) {
       // If there are any subcommands, ignore options
       let idx = cmd.subcommands.findIndex(el => {
@@ -562,9 +562,9 @@ class CommandHandler extends EventEmitter {
       if (idx === -1) {
         let list = cmd.subcommands.map(s => s.name).join(" | ");
         let e = this.t(cmd.subcommandError, "cmdHandler.subcommand.invalid", msg).replace(/\$cmdlist/gi, list).replace(/\$previousCmd/gi, previous);
-        return this.replyHandler(e, msg);
+        return (!external) ? this.replyHandler(e, msg) : e;
       }
-      return this.processCommand(cmd.subcommands[idx], args.slice(1), msg, previous + this.f(" " + cmd.subcommands[idx].name));
+      return this.processCommand(cmd.subcommands[idx], args.slice(1), msg, previous + this.f(" " + cmd.subcommands[idx].name), external);
     }
     // validate options
     let opts = [];
@@ -588,7 +588,7 @@ class CommandHandler extends EventEmitter {
       if ((args[argIndex] || "").startsWith("-")) { // flags
         const flagName = args[argIndex].slice(1);
         const op = cmd.options.find(e => e.aliases.includes(flagName));
-        if (!op) return this.replyHandler(this.invalidFlagError.replace(/\$previousCmd/gi, previous).replace(/\$invalidFlag/gi, "-" + flagName), msg);
+        if (!op) return (!external) ? this.replyHandler(this.invalidFlagError.replace(/\$previousCmd/gi, previous).replace(/\$invalidFlag/gi, "-" + flagName), msg) : this.invalidFlagError.replace(/\$previousCmd/gi, previous).replace(/\$invalidFlag/gi, "-" + flagName);
         previous += " " + args[argIndex];
         var value = args[++argIndex];
         // text quote wrapping
@@ -603,7 +603,7 @@ class CommandHandler extends EventEmitter {
         let valid = op.validateInput(value, this.client, msg);
         if (!valid && (op.required || !op.empty(value))) {
           let e = op.typeError.replace(/\$optionType/gi, op.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, value).replace(/\$optionName/gi, op.name);
-          return this.replyHandler(e, msg);
+          return (!external) ? this.replyHandler(e, msg) : e;
         }
         usedArgumentCount += 2;
         previous += " " + value;
@@ -629,7 +629,7 @@ class CommandHandler extends EventEmitter {
       let valid = o.validateInput(value, this.client, msg);
       if (!valid && (o.required || !o.empty(value))) { // TODO: improve checking on optional options
         let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, value).replace(/\$optionName/gi, o.name);
-        return this.replyHandler(e, msg);
+        return (!external) ? this.replyHandler(e, msg) : e;
       }
       if (o.empty(value)) value = o.defaultValue;
 
@@ -649,7 +649,7 @@ class CommandHandler extends EventEmitter {
       let text = args.slice(usedArgumentCount + 1).join(" ");
       if (o.required && !o.validateInput(text, this.client, msg)) {
         let e = o.typeError.replace(/\$optionType/gi, o.type).replace(/\$previousCmd/gi, previous).replace(/\$currValue/gi, text).replace(/\$optionName/gi, o.name);
-        return this.replyHandler(e, msg);
+        return (!external) ? this.replyHandler(e, msg) : e;
       }
       const quote = (['"', "'"].includes(text.charAt(0))) ? text.charAt(0) : null;
       if (quote && text.charAt(text.length - 1) == quote) {
@@ -672,7 +672,7 @@ class CommandHandler extends EventEmitter {
         uid: o.uid,
       });
     });
-    this.emit("run", {
+    const commandRunData = {
       command: cmd,
       commandId: cmd.id,
       options: opts,
@@ -683,7 +683,9 @@ class CommandHandler extends EventEmitter {
       getById: function(id) {
         return this.options.find(o => o.id == id);
       }
-    });
+    };
+    if (!external) this.emit("run", commandRunData);
+    return commandRunData;
   }
   addCommand(builder) {
     this.commandNames.push(...builder.aliases);

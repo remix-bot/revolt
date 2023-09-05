@@ -827,7 +827,7 @@ class CommandHandler extends EventEmitter {
         options += pre + ((o.type == "choice") ? " <" + o.choices.join(" | ") + ">" : " '" + o.name + ": " + o.type + "'");
       });
       let o = cmd.options.find(e=>e.type=="text");
-      if (o) options += pre + o.name + ": " + o.type + "'";
+      if (o) options += pre + "'" + o.name + ": " + o.type + "'";
       return options.trim();
     }
   }

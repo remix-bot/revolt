@@ -24,6 +24,9 @@
 
   <div id="sandbox" onkeyup="update(this)" contenteditable="true" style="border: 1px solid white; min-height: 3rem">
   </div>
+  <p style="color: red" id="error">
+
+  </p>
   <script>
   const PREFIX = "<%= prefix %>";
   const COMMANDS = JSON.parse('<%- JSON.stringify(commands.map(c => ({ aliases: c.aliases, name: c.name, id: c.uid }))) %>');
@@ -69,6 +72,8 @@
         });
         area.innerHTML = words.join(" ");
         console.log(area.innerHTML)
+
+        document.getElementById("error").innerHTML = res.message.replaceAll("  ", "<br />");
       });
       console.log(args, cmd.name);
     }, 2000);

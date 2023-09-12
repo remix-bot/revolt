@@ -254,7 +254,7 @@ class Dashboard {
           type: c.type
         }
       });
-      res.status(200).send({ data: channels, success: true });
+      res.status(200).send({ data: { channels: channels, categories: server.categories }, success: true });
     });
     secured.post("/api/voice/:channel/join", async (req, res) => {
       const channel = this.remix.client.channels.get(req.params.channel);

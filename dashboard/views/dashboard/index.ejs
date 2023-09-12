@@ -87,7 +87,7 @@
     cursor: pointer;
   }
   #channels { /* TODO: Redesign scrollbar */
-    list-style-type: disc;
+    /*list-style-type: disc;*/
     margin-left: 1.3rem;
     max-height: 60vh;
     overflow: auto;
@@ -109,6 +109,18 @@
       flex-direction: column;
       align-items: center;
     }
+  }
+
+  .category {
+    display: flex;
+    align-items: center;
+  }
+  .category::after {
+    content: "";
+    flex: 1;
+    margin-left: 1rem;
+    height: 1px;
+    background-color: white;
   }
   </style>
 </head>
@@ -319,11 +331,31 @@
       tSelect.style.display = "flex";
       tChannels.innerHTML = "";
       tConfirm.disabled = true;
-      channels.data.filter(c => c.type == "TextChannel").forEach((c) => {
+      const channelsWCat = channels.data.categories.map(c => c.channels).flat(1);
+      channels.data.channels.filter(c => c.type == "TextChannel" && !channelsWCat.includes(c.id)).forEach((c) => {
         const i = createListItem(c, false);
         i.onclick = function() { s(this); this.classList.add("selected"); };
         tChannels.appendChild(i);
       });
+      channels.data.categories.forEach(cat => {
+        if (cat.channels.length == 0) return;
+        const catEl = document.createElement("li");
+        const title = document.createElement("div");
+        title.innerText = cat.title;
+        title.display = "inline";
+        title.classList.add("category");
+        catEl.append(title);
+        const l = document.createElement("ul");
+        l.style.listStyle = "disc";
+        l.append(...channels.data.channels.filter(c => c.type === "TextChannel" && cat.channels.includes(c.id)).map((c) => {
+          const i = createListItem(c, false);
+          i.style.paddingLeft = "0.4rem";
+          i.onclick = function() { s(this); this.classList.add("selected"); };
+          return i;
+        }));
+        catEl.appendChild(l);
+        tChannels.appendChild(catEl);
+      })
       var selected = null;
       const s = (li) => {
         if (selected) selected.classList.remove("selected");

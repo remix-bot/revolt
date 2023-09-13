@@ -13,11 +13,15 @@ module.exports = {
         .setDefault("01G9MCW5KZFKT2CRAD3G3B9JN5")
         .setId("testOption")
     , true).addStringOption(o =>
+      o.setName("test")
+        .setDescription("test string")
+        .setRequired(true)
+    ).addTextOption(o =>
       o.setName("string")
         .setDescription("A cool string")
         .setRequired(true)),
   run: async function(msg, data) {
     console.log(data.options);
-    msg.reply(this.em("Ref String: " + data.get("string").value + " Option received: " + data.getById("testOption")?.value, msg), false)
+    msg.reply(this.em("Ref String: " + data.get("string").value + "; " + data.get("test").value + "; Option received: " + data.getById("testOption")?.value, msg), false)
   }
 }

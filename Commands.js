@@ -578,7 +578,11 @@ class CommandHandler extends EventEmitter {
       as.push(a);
       return collectArguments(index, a, as);
     }
-    const options = cmd.options.slice(); // TODO: fix problems with flags after the last argument (!test string -u <@01G9MCW5KZFKT2CRAD3G3B9JN5>)
+    const options = cmd.options.slice().sort((a, b) => {
+      const aText = (a.type === "text") ? 1 : 2;
+      const bText = (b.type === "text") ? 1 : 2;
+      return aText - bText;
+    }); // TODO: fix problems with flags after the last argument (!test string -u <@01G9MCW5KZFKT2CRAD3G3B9JN5>)
     const usedOptions = [];
     var usedArgumentCount = 0;
     for (let i = 0, argIndex = 1; i < options.length; i++) { // argIndex starts at 1 to exclude command itself

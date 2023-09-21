@@ -746,8 +746,8 @@ class CommandHandler extends EventEmitter {
     if (this.paginateHelp && message && paginate) {
       var form = "Available Commands (page $currPage/$maxPage): \n\n$content";
       form += "\n\nRun `$prefix$helpCmd <command>` to learn more about it. You can also include subcommands.\n";
-      form += "For example: `$prefix$helpCmd command subcommandName`\n\n";
-      form += "Tip: Use the arrows beneath this message to turn pages, or specify the required page by using `$prefixhelp <page number>`";
+      form += "For example: `$prefix$helpCmd settings get`\n\n";
+      form += "Tip: Use the arrows beneath this message to turn pages, or specify the required page by using `$prefix$helpCmd <page number>`";
 
       const contents = cmds.map((cmd, i) => {
         return (i + 1) + ". **" + cmd.name + "**: " + this.getDescription(cmd, message);
@@ -770,7 +770,7 @@ class CommandHandler extends EventEmitter {
 
     content += "\nRun `$prefix$helpCmd <command>` to learn more about it. You can also include subcommands.\n";
     content += "For example: `$prefix$helpCmd command subcommandName`";
-    if (page) content += "\n\nTip: Turn pages by using `$prefixhelp <page number>`"
+    if (page) content += "\n\nTip: Turn pages by using `$prefix$helpCmd <page number>`"
 
     return content;
   }

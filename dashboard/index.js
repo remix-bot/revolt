@@ -120,7 +120,7 @@ class Dashboard {
       if (d.includes("#")) { // username with disciriminator
         const name = d.slice(0, d.indexOf("#"));
         const discriminator = d.slice(d.indexOf("#") + 1, d.length);
-        const user = this.remix.userCache.find(u => u.name == name && u.discrim == discriminator);
+        const user = this.remix.userCache.find(u => u.name == name && u.discrim == discriminator) || this.remix.client.users.find(u => u.username == name && u.discriminator == discriminator);
         if (!user || user === -1) return null;
         return user.id;
       }

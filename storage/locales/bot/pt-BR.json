@@ -1,0 +1,18 @@
+{
+  "cmdBuilder" : {
+    "requirement" : {
+      "permission" : "Você não tem as permissões necessárias para executar este comando!"
+    }
+  },
+  "cmdHandler" : {
+    "command" : {
+      "invalid" : "Comando desconhecido {{command}}!"
+    },
+    "page" : {
+      "invalid" : "{{number}} não é um n"
+    }
+  },
+  "commands" : {
+    "clear" : "Remover todas m"
+  }
+}

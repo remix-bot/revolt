@@ -142,6 +142,10 @@ class Remix {
       if (!data) return;
       data.push(member.id.user);
       this.memberMap.set(member.server.id, data);
+
+      const user = member.user;
+      if (this.userCache.findIndex(e => e.id === user.id) !== -1) return;
+      this.userCache.push({ id: user.id, name: user.username, discrim: user.discriminator})
     });
     this.client.on("serverMemberLeave", (member) => {
       const data = this.memberMap.get(member.id.server);

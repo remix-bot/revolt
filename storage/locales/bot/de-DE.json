@@ -13,7 +13,7 @@
       "suggestion" : "Meintest du {{command}}? (Nutze {{acceptCommand}}, um dies auszuführen)"
     },
     "help" : {
-      "pageStructure" : "Verfügbare Kommandos (page $currPage/$maxPage): $content Nutze das Kommando `$prefix$helpCmd <command>` um mehr zu erfahren. Du kannst auch zusätzliche Unterbefehle nutzen, wie zum Beispiel: `$prefix$helpCmd command subcommandName` Noch ein Tip: Nutze die Pfeile unter dieser Nachricht, um Seiten umzublättern, oder gib eine gewünschte Seitenzahl mit `$prefixhelp <page number>` an!"
+      "pageStructure" : "Verfügbare Kommandos (page $currPage/$maxPage): $content Nutze das Kommando `$prefix$helpCmd <command>` um mehr zu erfahren. Du kannst auch zusätzliche Unterbefehle nutzen, wie zum Beispiel: `$prefix$helpCmd command subcommandName` Noch ein Tip: Nutze die Pfeile unter dieser Nachricht, um Seiten umzublättern, oder gib eine gewünschte Seitenzahl mit `$prefix$helpCmd <page number>` an!"
     },
     "invalidFlag" : "Ungültige Flag `$invalidFlag`. Sie stimmt mit keiner der Optionen im Kommando überein. `$previousCmd $invalidFlag`",
     "page" : {

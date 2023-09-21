@@ -1,5 +1,32 @@
 {
+  "cmdBuilder" : {
+    "requirement" : {
+      "permission" : "ليس لديك الصلاحية لكي تأمر هذا الأمر!"
+    },
+    "subcommand" : {
+      "invalid" : "أمر فرعي لا يوجد. جرب أحد من الأمور الآتية: `$previousCmd <$cmdlist>`"
+    }
+  },
+  "cmdHandler" : {
+    "command" : {
+      "invalid" : "أمر مجهول {{command}}!",
+      "suggestion" : "هل كنت تقصد {{command}}؟ (أكتب {{acceptCommand}} لكي تأمر بهذا الأمر)"
+    },
+    "help" : {
+      "pageStructure" : "الأوامر المتوفرة (صفحة $currPage/$maxPage): $content أَصدر أمر `$prefix$helpCmd <أمر>` لكي تستعلم عن الأمر. لديك أيضاً القدرة أن تستعلم عن الأمور الفرعية. علي سبيل المثال: `$prefix$helpCmd settings get` نصيحة: استخدم الأسهم أسفل هذه الرسالة لتقليب الصفحات، أو اختر الصفحة المطلوبة باستخدام `$prefix$helpCmd <رقم الصفحة>`"
+    },
+    "invalidFlag" : "خيار غير صالح `$invalidFlag`. إنه لا يطابق أي خيارات لهذا الأمر. `$previousCmd $invalidFlag`",
+    "page" : {
+      "invalid" : "{{number}} ليس رقم لصفحة صحيح!"
+    },
+    "permissions" : {
+      "message" : "الرجاء الإعطاء لي إذن {{permission}} في قناة {{channel}} أو اتصل بمسؤول السيرفر. أنا ليس لدي القدرة أن أعمل من غير هذا الإذن."
+    }
+  },
   "commands" : {
+    "clear" : "أزل جميع الأغاني من قائمة الانتظار.",
+    "join" : "اجعل البوت يدخل لقناة صوتية محددة.",
+    "leave" : "اجعل البوت يغادر القناة الصوتية الحالية لك",
     "ping" : "بادئتي في هذا الخادم هي: {{prefix}}"
   },
   "pagination" : {

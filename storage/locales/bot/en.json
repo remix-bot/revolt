@@ -13,7 +13,7 @@
       "suggestion" : "Did you mean {{command}}? (Type {{acceptCommand}} to run this)"
     },
     "help" : {
-      "pageStructure" : "Available Commands (page $currPage/$maxPage): \n\n$content\n\nRun `$prefix$helpCmd <command>` to learn more about it. You can also include subcommands.\nFor example: `$prefix$helpCmd command subcommandName`\n\nTip: Use the arrows beneath this message to turn pages, or specify the required page by using `$prefixhelp <page number>`"
+      "pageStructure" : "Available Commands (page $currPage/$maxPage): \n\n$content\n\nRun `$prefix$helpCmd <command>` to learn more about it. You can also include subcommands.\nFor example: `$prefix$helpCmd settings get`\n\nTip: Use the arrows beneath this message to turn pages, or specify the required page by using `$prefix$helpCmd <page number>`"
     },
     "invalidFlag" : "Invalid flag `$invalidFlag`. It doesn't match any options on this command.\n`$previousCmd $invalidFlag`",
     "page" : {

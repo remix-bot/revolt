@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-class ServerSettings {
+class ServerSettings { // TODO: switch to better db system
   id;
   manager;
   data = {};

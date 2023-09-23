@@ -13,6 +13,7 @@ module.exports = {
     const n = message.reply(this.em("Fetching lyrics from genius...", message), false);
 
     var messages = await p.lyrics();
+    if (!messages) return (await n).edit(this.em("Couldn't find the lyrics for this song on genius!", message), false);
     if (messages.length == 0) return message.reply(this.em("There's nothing playing at the moment.", message), false);
     messages = messages.split("\n");
     (await n).delete();

@@ -223,7 +223,7 @@ class RevoltPlayer extends EventEmitter {
   async lyrics() {
     if (!this.data.current) return [];
     const results = await this.gClient.songs.search(this.data.current.title);
-    return await results[0].lyrics();
+    return (!results[0]) ? null : await results[0].lyrics();
   }
   loop(choice) {
     if (!["song", "queue"].includes(choice)) return "'" + choice + "' is not a valid option. Valid are: `song`, `queue`";

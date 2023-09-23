@@ -201,7 +201,21 @@ class Remix {
     });
     this.handler.on("run", (data) => {
       if (this.runnables.has(data.command.uid)) {
-        this.runnables.get(data.command.uid).call(this, data.message, data);
+        const runFc = this.runnables.get(data.command.uid);
+        if (typeof runFc.then == "function") { // runFc is async
+          return runFc.call(this, data.message, data).catch(e => {
+            const id = this.guid();
+            console.log("Error running command; error id #" + id, e);
+            data.message.reply({ content: null, embeds: [this.embedify("An error occured. If this happens frequently, please contact ShadowLp174#0667 (<@01G9MCW5KZFKT2CRAD3G3B9JN5>)!\n\nError id: `#" + id + "`", "red")]});
+          });
+        }
+        try {
+          runFc.call(this, data.message, data);
+        } catch(e) {
+          const id = this.guid();
+          console.log("Error running command; error id #" + id, e);
+          data.message.reply({ content: null, embeds: [this.embedify("An error occured. If this happens frequently, please contact ShadowLp174#0667 (<@01G9MCW5KZFKT2CRAD3G3B9JN5>)!\n\nError id: `#" + id + "`", "red")]});
+        }
       }
     });
     console.log("Done!\n");

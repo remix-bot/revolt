@@ -15,22 +15,27 @@ class StreamMerger extends Transform { // main stream should be piped into it
     cb();
   }
   pipe(stream) {
-    // TODO: implement removal on main stream exit
+    // TODO: implement removal on main ffmpeg exit
     return super.pipe(stream);
   }
 
   setupBaseFfmpeg() {
     this.ffmpeg = this.spawnFfmpeg();
+    this.ffmpeg.stderr.on("data", (chunk) => {
+      console.log(chunk.toString());
+    })
     this.ffmpeg.stdout.on("data", (chunk) => {
+      console.log("data");
       this.push(chunk);
     });
   }
   spawnFfmpeg() {
-    const args = "-i pipe:3 -i pipe:4 -c copy -vn -filter_complex amix=inputs=2:duration=longest pipe:1".split(" ");
+    const args = "-i pipe:3 -re -i pipe:4 -vn -fflags nobuffer -filter_complex amix=inputs=2:duration=longest pipe:1".split(" ");
     return require("node:child_process").spawn(this.ffmpegPath, args, {
       windowsHide: true,
       stdio: [
-        "inherit", "inherit", "inherit", "pipe", "pipe"
+        "pipe", "pipe", "pipe",
+        "pipe", "pipe"
       ]
     });
   }
@@ -72,10 +77,18 @@ class StreamMerger extends Transform { // main stream should be piped into it
     };
     open.children.push(node);
     s.pipe(p.stdio[3]);
+    p.stderr.on("data", (c) => {
+      console.log(c.toString());
+    })
+    p.stdio[4].write(Buffer.alloc(1024, 0));
     p.stdout.pipe(open.process.stdio[open.pipes[0]]);
     const pipeNumber = open.pipes[0].valueOf(); // copy number; prevent referencing
     open.pipes.splice(0, 1); // remove available pipe;
     if (open.pipes.length == 0) open.available = false;
+
+    s.on("data", () => {
+      console.log("in2");
+    });
 
     p.on("exit", () => { // this only happens when all input streams close
       open.pipes.push(pipeNumber);

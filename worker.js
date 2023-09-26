@@ -1,4 +1,4 @@
-const { workerData, parentPort } = require('worker_threads');
+var { workerData, parentPort } = require('worker_threads');
 const EventEmitter = require("events");
 const yts = require('yt-search');
 const Spotify = require("spotifydl-core").default;
@@ -6,9 +6,60 @@ const scdl = require("soundcloud-downloader").default;
 const YoutubeMusicApi = require('youtube-music-api-fix')
 const meta = require("./src/probe.js");
 
-if (!workerData) {
+if (!workerData && process.argv[2] !== "dev") {
   console.log("Worker data shouldn't be empty!");
   process.exit(0);
+}
+workerData ||= { jobId: "dev", data: {} };
+
+class CompoundSearchEngine {
+  ytm = null;
+  yt = yts;
+
+  constructor() {}
+  init(ytm) {
+    this.ytm = ytm;
+  }
+
+  calcScore(data, query) {
+    const tokenized = query.split(" ");
+
+    const findMatchStart = (tokens, currPos=0) => {
+      if (currPos === tokens.length) return null;
+      const idx = tokenized.findIndex(t => t == tokens[currPos]);
+      if (idx === -1) return findMatchStart(tokens, ++currPos);
+      return [currPos, idx];
+    }
+
+    const [start, token] = findMatchStart(data.title.split(" "));
+
+    console.log(start, token);
+  }
+
+  search(query) {
+    return new Promise(async (res, rej) => {
+      query = query.toLowerCase();
+
+      const yt = (await this.yt(query)).videos?.map(v => {
+        return { // TODO: include description in calculations
+          title: v.title.toLowerCase(),
+          views: v.views,
+          id: v.videoId,
+          raw: v
+        }
+      });
+      const ytm = (await this.ytm.search(query)).content?.filter(c => c.type === "video" || c.type === "song")?.map(v => {
+        return {
+          type: v.type,
+          title: v.name.toLowerCase(),
+          views: null,
+          raw: v
+        }
+      });
+      console.log(ytm[0]);
+      this.calcScore(ytm[0], query);
+    });
+  }
 }
 
 class YTUtils extends EventEmitter {
@@ -18,6 +69,7 @@ class YTUtils extends EventEmitter {
     this.spotifyClient = null
     this.spotifyConfig = spotify;
     this.ytApi = null;
+    this.cEngine = new CompoundSearchEngine();
 
     return this;
   }
@@ -51,6 +103,12 @@ class YTUtils extends EventEmitter {
       return f(nt, curr);
     }
     return f(mins) + ":" + p(secs);
+  }
+
+  async compoundSearch(query) {
+    await this.init();
+    this.cEngine.init(this.api);
+    this.cEngine.search(query);
   }
   youtubeParser(url) {
     var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
@@ -285,6 +343,7 @@ class YTUtils extends EventEmitter {
 const jobId = workerData.jobId;
 const data = workerData.data;
 const utils = new YTUtils(data.spotify);
+//utils.compoundSearch("thefatrat escaping gravity")
 utils.on("message", (content) => {
   post("message", content);
 });
@@ -297,6 +356,8 @@ const post = (event, data) => {
 }
 
 (async () => {
+  if (jobId === "dev") return;
+
   var r = null;
   switch(jobId) {
     case "search":

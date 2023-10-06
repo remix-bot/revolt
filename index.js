@@ -139,7 +139,7 @@ class Remix {
     this.client.on("messageReactionRemove", reactionUpdate);
     this.client.on("serverMemberJoin", (member) => { // TODO: test
       const data = this.memberMap.get(member.server.id);
-      if (!data) return;
+      if (data) return;
       data.push(member.id.user);
       this.memberMap.set(member.server.id, data);
 
@@ -264,7 +264,7 @@ class Remix {
     if (config.token) {
       this.client.loginBot(config.token);
     } else {
-      this.client.login(config.login);
+      this.client.login(config.login)
     }
 
     Object.defineProperty(this.client, "allServers", {

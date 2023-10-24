@@ -213,7 +213,7 @@ class YTUtils extends EventEmitter {
   async getById(parsedId, live) {
     this.emit("message", "Loading video data...");
     let video = await this.search(parsedId, true);
-    if (video) { this.emit("message", "Successfully added to the queue."); } else { this.emit("message", "**There was an error loading the youtube video with the id '" + parsedId + "'!**" ) };
+    if (video) { this.emit("message", `Successfully added [${video.title}](${video.url}) to the queue.`); } else { this.emit("message", "**There was an error loading the youtube video with the id '" + parsedId + "'!**" ) };
     if (!video) return false;
     if (live) {
       video.duration.timestamp = "live";
@@ -224,7 +224,7 @@ class YTUtils extends EventEmitter {
   async getBySpotifyId(id){
     this.emit("message", "Loading video data...");
     let song = await this.spotify.getTrack("https://open.spotify.com/track/" + id);
-    this.emit("message", "Successfully added to the queue.");
+    this.emit("message", "Resolving Spotify track in Youtube.");
     /*let d = {
       title: song.name,
       url: "https://open.spotify.com/track/" + id,

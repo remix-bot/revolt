@@ -235,7 +235,7 @@ class Option {
       case "user":
         return this.userRegex.test(i) || this.idRegex.test(i);
       case "channel":
-        return this.channelRegex.test(i) || this.idRegex.test(i) || client.channels.some(c => c.name == i);
+        return this.channelRegex.test(i) || this.idRegex.test(i) || client.channels.filter(c => c.name == i).length > 0;
       case "voiceChannel":
         if (msg.channel.type === "Group") return true;
 
@@ -596,7 +596,7 @@ class CommandHandler extends EventEmitter {
         previous += " " + args[argIndex];
         var value = args[++argIndex];
         // text quote wrapping
-        if ((value || "").startsWith('"') && (["string", "text", "channel"].includes(op.type))) {
+        if ((value || "").startsWith('"') && (["string", "text", "channel", "voiceChannel"].includes(op.type))) {
           const data = collectArguments(argIndex, value, [value]);
           if (!data) return this.textWrapError; // TODO: this
           argIndex += data.index - argIndex;
@@ -623,7 +623,7 @@ class CommandHandler extends EventEmitter {
       if (!o) continue; // continue after flag processing is done
       if (opts.findIndex(op => op.uid == o.uid) !== -1) continue; // options has been processed already
       var value = args[argIndex];
-      if ((args[argIndex] || "").startsWith('"') && (["string", "text", "channel"].includes(o.type))) {
+      if ((args[argIndex] || "").startsWith('"') && (["string", "text", "channel", "voiceChannel"].includes(o.type))) {
         const data = collectArguments(argIndex, args[argIndex], [args[argIndex]]);
         if (!data) return this.textWrapError;
         argIndex += data.index - argIndex;

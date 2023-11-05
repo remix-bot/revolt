@@ -418,14 +418,14 @@ class CommandHandler extends EventEmitter {
         for (let i = 0; i < args.slice(1).length; i++) {
           let a = args.slice(1)[i];
           let curr = (currCmd) ? currCmd.subcommands : this.commands;
-          let idx = curr.findIndex(e => e.name.toLowerCase() == a.toLowerCase());
+          let idx = curr.findIndex(e => e.aliases.filter(al => al.toLowerCase() == a.toLowerCase()).length > 0);
           if (idx === -1) return this.replyHandler(this.f("Unknown command `$prefix" + prefix + a + "`!", msg.channel.serverId), msg);
           currCmd = curr[idx];
           prefix += a + " ";
         }
         return this.replyHandler(this.genCommandHelp(currCmd, msg), msg);
       } else {
-        let idx = this.commands.findIndex(e => e.name.toLowerCase() == args[1].toLowerCase());
+        let idx = this.commands.findIndex(e => e.aliases.filter(al => al.toLowerCase() == args[1].toLowerCase()).length > 0);
         if (idx === -1) return this.replyHandler(this.f(this.t("Unknown command `$prefix" + args[1] + "`!", "cmdHandler.command.invalid", msg, {command: "`$prefix" + args[1] + "`"}), msg.channel.serverId), msg);
         return this.replyHandler(this.genCommandHelp(this.commands[idx], msg), msg);
       }

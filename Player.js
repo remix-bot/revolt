@@ -115,31 +115,12 @@ class RevoltPlayer extends EventEmitter {
     return this.data.queue.unshift(data);
   }
   prettifyMS(milliseconds) {
-    const roundTowardsZero = milliseconds > 0 ? Math.floor : Math.ceil;
-
-  	const parsed = {
-  		days: roundTowardsZero(milliseconds / 86400000),
-  		hours: roundTowardsZero(milliseconds / 3600000) % 24,
-  		minutes: roundTowardsZero(milliseconds / 60000) % 60,
-  		seconds: roundTowardsZero(milliseconds / 1000) % 60,
-  		milliseconds: roundTowardsZero(milliseconds) % 1000,
-  		microseconds: roundTowardsZero(milliseconds * 1000) % 1000,
-  		nanoseconds: roundTowardsZero(milliseconds * 1e6) % 1000
-  	};
-
-    const units = {
-      days: "d",
-      hours: "h",
-      minutes: "m",
-      seconds: "s"
-    }
-
-    var result = "";
-    for (let k in parsed) {
-      if (!parsed[k] || !units[k]) continue;
-      result += parsed[k] + ":";
-    }
-    return result.slice(0, result.length - 1).trim();
+    return new Date(milliseconds).toISOString().slice(
+      // if 1 hour passed, show the hour component,
+      // if 1 hour hasn't passed, don't show the hour component
+      milliseconds > 3600000 ? 11 : 14,
+      19
+    );
   }
 
   // music controls
@@ -263,11 +244,14 @@ class RevoltPlayer extends EventEmitter {
   getCurrentDuration() {
     return this.getDuration(this.data.current.duration);
   }
+  getCurrentElapsedDuration() {
+    return this.getDuration(this.player.seconds * 1000);
+  }
   async nowPlaying() {
     if (!this.data.current) return "There's nothing playing at the moment.";
     let loopqueue = (this.data.loop) ? "**enabled**" : "**disabled**";
     let songloop = (this.data.loopSong) ? "**enabled**" : "**disabled**";
-    return { msg: "Playing: **[" + this.data.current.title + "](" + this.data.current.url + ")** (" + this.getCurrentDuration() + ")" + "\n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop, image: await this.uploadThumbnail() };
+    return { msg: "Playing: **[" + this.data.current.title + "](" + this.data.current.url + ")** (" + this.getCurrentElapsedDuration() + "/" + this.getCurrentDuration() + ")" + "\n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop, image: await this.uploadThumbnail() };
   }
   uploadThumbnail() {
     return new Promise((res) => {

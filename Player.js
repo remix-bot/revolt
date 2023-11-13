@@ -108,15 +108,7 @@ class RevoltPlayer extends EventEmitter {
       type: "add",
       data: {
         append: !top,
-        data: {
-          ...data,
-          durationTimestamp: (data.duration) === "object" ? data.duration.timestamp : new Date(data.duration).toISOString().slice(
-            // if 1 hour passed, show the hour component,
-            // if 1 hour hasn't passed, don't show the hour component
-            this.duration > 3600000 ? 11 : 14,
-            19
-          )
-        }
+        data
       }
     });
     if (!top) return this.data.queue.push(data);

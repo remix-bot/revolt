@@ -15,7 +15,7 @@
   "helpPagination": true,
   "mapMembers": true,
   "mysql": {
-    "host": "https:your-mysql-host.com",
+    "host": "your-mysql-host.com",
     "port": 3306,
     "user": "youruser",
     "password": "password of your user",

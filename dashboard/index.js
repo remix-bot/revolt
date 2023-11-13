@@ -410,7 +410,9 @@ class Dashboard {
         socket.emit("user" + type, this.except(u, "api"));
       }
       const playbackHandler = (playing) => {
-        socket.emit((playing) ? "resume" : "pause");
+        socket.emit((playing) ? "resume" : "pause", {
+          elapsedTime: player.player.seconds * 1000
+        });
       }
       const queueHandler = (event) => {
         socket.emit("queue", event);

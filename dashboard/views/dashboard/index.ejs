@@ -206,8 +206,14 @@
     updatePlaybackStatus(data.currData);
     enablePlayer();
   });
-  socket.on("resume", () => updatePlaybackStatus({ paused: false }));
-  socket.on("pause", () => updatePlaybackStatus({ paused: true }));
+  socket.on("resume", (d) => {
+    startTime(d.elapsedTime);
+    updatePlaybackStatus({ paused: false });
+  });
+  socket.on("pause", (d) => {
+    pauseTime(d.elapsedTime);
+    updatePlaybackStatus({ paused: true })
+  });
   socket.on("userjoin", (user) => {
     console.log("join", user);
   })
@@ -216,6 +222,7 @@
   })
   socket.on("left", () => { resetPlayer(); updateCDisplay({ channel: { name: "-" }, server: { name: "-" } }) });
   socket.on("startplay", (vid) => {
+    startTime(0);
     update(vid);
   });
   socket.on("stopplay", () => resetPlayer());

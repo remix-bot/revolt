@@ -21,6 +21,9 @@
   <div style="display: flex; justify-content: center; height: 100%; flex-grow: 2; grid-row: 1; grid-column-start: 2; grid-column-end: 4;" class="player-info">
     <h1 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">Currently Playing</h1>
     <p style="font-size: 1rem; margin-bottom: 1rem;"><span id="song"></span> - <span id="artist"></span></p>
+    <span>
+      <span id="elapsedTime">00:00</span>/<span id="duration">00:00</span>
+    </span>
     <div style="display: flex; flex-direction: row; justify-content: center; opacity: 0.5">
       <button class="btn btn-play btn-pbt hidden" style="margin-right: 0.5rem;" onclick="togglePlay(this)" action="resume" disabled>
         <i class="fa-solid fa-play" style="color: #e9196c"></i>
@@ -437,6 +440,9 @@
   const song = document.getElementById("song");
   const artist = document.getElementById("artist");
 
+  const duration = document.getElementById("duration");
+  const elapsedTime = document.getElementById("elapsedTime");
+
   window.post = (url, payload) => {
     return fetch(url, {
       method: "post",
@@ -778,10 +784,56 @@
     ];
   };
 
+  const formatTime = (milliseconds) => {
+    return new Date(milliseconds).toISOString().slice(
+      // if 1 hour passed, show the hour component,
+      // if 1 hour hasn't passed, don't show the hour component
+      milliseconds > 3600000 ? 11 : 14,
+      19
+    );
+  }
+
+  Number.isInteger = Number.isInteger || function(value) {
+    return typeof value === 'number' &&
+      isFinite(value) &&
+      Math.floor(value) === value;
+  };
+
+  var timeElapsed = 0;
+  var timeInterval = null;
+
+  const startTime = async (startValue) => {
+    timeElapsed = startValue;
+    elapsedTime.innerText = formatTime(startValue);
+
+    const countUp = () => {
+      timeElapsed += 1000;
+      elapsedTime.innerText = formatTime(timeElapsed);
+    }
+
+    if (!Number.isInteger(timeElapsed / 1000)) {
+      const diff = ((Math.floor(timeElapsed / 1000) + 1) - (timeElapsed / 1000)) * 1000;
+      timeElapsed = timeElapsed + diff;
+      await (new Promise(res => setTimeout(res, diff)));
+      countUp();
+    }
+    timeInterval = setInterval(countUp, 1000);
+  }
+  const pauseTime = (time) => {
+    if (timeInterval) clearInterval(timeInterval);
+    timeElapsed = time;
+    elapsedTime.innerText = formatTime(timeElapsed);
+  }
+  const resetTime = () => {
+    elapsedTime.innerText = "00:00";
+  }
+
   function update(vid) {
     bgrdImg.src = "/api/imageProxy?url=" + encodeURIComponent(vid.thumbnail);
     artist.innerText = (!vid.artists) ? vid.author.name : vid.artists.map(a => `${a.name}`).join(" & ");
     song.innerText = vid.title;
+
+    duration.innerText = vid.duration;
   }
   function resetPlayer() {
     bgrdImg.src = "/assets/icon.png";

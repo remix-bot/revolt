@@ -194,7 +194,10 @@
       renderQueue(info.currData.queue);
     }
     if (info.channel) updateCDisplay(info);
-    if (info.currSong) update(info.currSong);
+    if (info.currSong) {
+      update(info.currSong);
+      if (info.currSong.elapsedTime > 0) startTime(info.currSong.elapsedTime);
+    }
     if (info.channel) enablePlayer();
   });
   socket.on("joined", (data) => {
@@ -222,10 +225,16 @@
   })
   socket.on("left", () => { resetPlayer(); updateCDisplay({ channel: { name: "-" }, server: { name: "-" } }) });
   socket.on("startplay", (vid) => {
-    startTime(0);
-    update(vid);
+    pauseTime(0);
+    resetTime();
+    update(vid)
   });
-  socket.on("stopplay", () => resetPlayer());
+  socket.on("streamStartPlay", () => startTime(0))
+  socket.on("stopplay", () => {
+    pauseTime(0);
+    resetTime();
+    resetPlayer();
+  });
   socket.on("volume", (v) => setVolume(v * 100));
   socket.on("queue", (d) => updateQueue(d));
 

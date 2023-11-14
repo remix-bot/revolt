@@ -400,6 +400,9 @@ class Dashboard {
       const startPlayHandler = song => {
         socket.emit("startplay", getSongData(song, player));
       }
+      const streamStartPlayHandler = () => {
+        socket.emit("streamStartPlay");
+      }
       const stopPlayHandler = () => {
         socket.emit("stopplay");
       }
@@ -418,6 +421,7 @@ class Dashboard {
         socket.emit("queue", event);
       }
       player.on("startplay", startPlayHandler);
+      player.on("streamStartPlay", streamStartPlayHandler);
       player.on("stopplay", stopPlayHandler);
       player.on("volume", volumeHandler);
       player.on("userupdate", userHandler);
@@ -425,6 +429,7 @@ class Dashboard {
       player.on("queue", queueHandler);
       socket.on("disconnect", () => {
         player.removeListener("startplay", startPlayHandler);
+        player.removeListener("streamStartPlay", streamStartPlayHandler);
         player.removeListener("stopplay", stopPlayHandler);
         player.removeListener("volume", volumeHandler);
         player.removeListener("userupdate", userHandler);
@@ -438,7 +443,7 @@ class Dashboard {
       socket.emit("info", {
         connected: !!d.voice,
         ...currInfo(this.remix.client.channels.get(con.channelId)),
-        currSong: (!!d.voice) ? getSongData(d.player.data.current, d.player) : null,
+        currSong: (!!d.voice) ? {...getSongData(d.player.data.current, d.player), elapsedTime: d.player.player.seconds * 1000} : null,
         currData: (!!d.voice) ? getPlayerData(d.player) : null
       });
       if (!!d.voice) subscribePlayer(d.player, socket);

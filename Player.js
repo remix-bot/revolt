@@ -332,6 +332,7 @@ class RevoltPlayer extends EventEmitter {
             }
           }
         }, { highWaterMark: 1048576 / 4 });
+    connection.media.once("startPlay", () => this.emit("streamStartPlay"));
     connection.media.playStream(stream);
     stream.once("data", () => this.startedPlaying = Date.now());
     if (this.connection.preferredVolume) connection.media.setVolume(this.connection.preferredVolume);

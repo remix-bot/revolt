@@ -1,11 +1,176 @@
+import "/js/SearchInput.js";
+import "/js/Queue.js";
+
 class Player extends HTMLElement {
+  static observedAttributes = ["queue", "songInfo"];
+
   constructor() {
     super();
+
+    this.songInfo = {
+      duration: 0,
+      elapsedTime: 0,
+      artist: null,
+      title: null,
+      thumbnail: null
+    };
   }
 
   connectedCallback() {
+    const shadow = this.attachShadow({ mode: "open" });
 
+    const styles = document.createElement("link");
+    styles.rel = "stylesheet";
+    styles.href = "/css/Player.css";
+    shadow.appendChild(styles)
+
+    const fa = document.createElement("link");
+    fa.rel = "stylesheet";
+    fa.href = "/assets/fontawesome/css/fontawesome.css";
+
+    const faAll = document.createElement("link");
+    faAll.rel = "stylesheet";
+    faAll.href = "/assets/fontawesome/css/all.min.css";
+    shadow.append(fa, faAll);
+
+    const c = document.createElement("div"); // container div
+    c.style = `
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    row-gap: 1rem;
+    grid-rows: 2;
+    align-items: center;
+    padding: 1.5rem;
+    border-radius: 5px;
+    background-color: rgb(31, 41, 55);
+    /*border: 1px solid #282828;*/
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+    color: #fff;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 1rem;`;
+    c.classList.add("remix-player");
+    shadow.appendChild(c);
+
+    const imgCon = document.createElement("div");
+    imgCon.style = "aspect-ratio: 1/1; margin-right: 2rem; grid-row: 1; grid-column: 1;";
+    imgCon.classList.add("thumbnail");
+    c.appendChild(imgCon);
+
+    const img = document.createElement("img");
+    img.id = "thumbnail";
+    img.setAttribute("cbgrdc", "nochange");
+    img.style = "border-radius: 5px; object-fit: cover; height: 100%; width: 100%;";
+    img.src = "/assets/icon.png";
+    img.alt = "Thumbnail of the current song";
+    imgCon.append(img);
+
+    const cCon = document.createElement("div"); // control container
+    cCon.style = "display: flex; flex-direction: column; justify-content: center; height: 100%; flex-grow: 2; grid-row: 1; grid-column-start: 2; grid-column-end: 4; text-align: center; gap: 0.2rem";
+    cCon.class = "player-info";
+    c.append(cCon);
+
+    const h1 = document.createElement("h1");
+    h1.style = "font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;";
+    h1.innerText = "Currently Playing";
+    cCon.append(h1);
+
+    const songName = document.createElement("p");
+    songName.style = "font-size: 1rem; margin-bottom: 1rem;";
+    cCon.append(songName);
+
+    const song = document.createElement("span");
+    song.id = "song";
+
+    const artist = document.createElement("span");
+    artist.id = "artist";
+    songName.append(song, " - ", artist);
+
+    const time = document.createElement("span");
+    cCon.append(time);
+
+    const elapsed = document.createElement("span");
+    elapsed.id = "elapsedTime";
+    elapsed.innerText = "00:00";
+
+    const duration = document.createElement("span");
+    duration.id = "duration";
+    duration.innerText = "00:00";
+    time.append(elapsed, "/", duration);
+
+    const controls = document.createElement("div");
+    controls.style = "display: flex; flex-direction: row; justify-content: center; opacity: 0.5";
+    cCon.append(controls);
+
+    const playBtn = document.createElement("button");
+    playBtn.classList.add("btn", "btn-play", "btn-pbt", "hidden");
+    playBtn.style = "margin-right: 0.5rem";
+    playBtn.addEventListener("click", function() {
+      // TODO: click events
+    });
+    playBtn.setAttribute("action", "resume");
+    playBtn.disabled = true;
+    playBtn.append(this.#createFaI("fa-solid fa-pause", "color: #e9196c; margin-right: 0.5rem;"));
+    controls.append(playBtn);
+
+    const pauseBtn = document.createElement("button");
+    pauseBtn.classList.add("btn", "btn-pause", "btn-pbt");
+    pauseBtn.addEventListener("click", function() {
+      // TODO: click events
+    });
+    pauseBtn.setAttribute("action", "pause");
+    pauseBtn.disabled = true;
+    pauseBtn.append(this.#createFaI("fa-solid fa-pause", "color: #e9196c; margin-right: 0.5rem;"));
+    controls.append(pauseBtn);
+
+    const skipBtn = document.createElement("button");
+    skipBtn.classList.add("btn", "btn-skip", "btn-pbt");
+    skipBtn.setAttribute("action", "skip");
+    skipBtn.addEventListener("click", function() {
+      // TODO: pushAction(this);
+    });
+    skipBtn.disabled = true;
+    skipBtn.append(this.#createFaI("fa-solid fa-forward", "color: #e9196c"));
+    controls.append(skipBtn);
+
+    const slContainer = document.createElement("div");
+    slContainer.classList.add("slidecontainer");
+    slContainer.style = "margin-left: 0.5rem; display: flex; flex-direction: row; align-items: center; gap: 0.2rem";
+    slContainer.title = "100%";
+    controls.append(slContainer);
+
+    const slider = document.createElement("input");
+    slider.type = "range";
+    slider.style = "accent-color: #e9196c; background: #e9196c";
+    slider.classList.add("slider");
+    slider.id = "volumeSlider";
+    slider.value = 100;
+    slider.min = 0;
+    slider.max = 100;
+    slider.addEventListener("mouseup", function() {
+      // TODO: changeVolume
+    });
+    slider.addEventListener("oninput", function() {
+      // TODO: updateSlider();
+    });
+    slContainer.append(slider);
+    const vI = this.#createFaI("fa-solid fa-volume-high", "float:left;color: #e9196c");
+    vI.id = "volumeIcon";
+    slContainer.append(vI);
+
+    const search = document.createElement("search-input");
+    cCon.append(search);
+
+    const queue = document.createElement("remix-queue");
+    c.append(queue);
+  }
+
+  #createFaI(classNames, style) {
+    const i = document.createElement("i");
+    i.classList.add(...classNames.split(" "));
+    i.style = style;
+    return i;
   }
 }
 
-module.exports = Player;
+customElements.define("remix-player", Player);

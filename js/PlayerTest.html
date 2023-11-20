@@ -1,5 +1,3 @@
-<script type="module" src="/js/Player.js"></script>
-
 <body style="padding: 0; margin: 0">
   <link rel="stylesheet" href="/css/Player.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -105,6 +103,17 @@
 
 <br />
 
-<remix-player></remix-player>
+<remix-player id="wcplayer"></remix-player>
 
+<script type="module">
+  import "/js/Player.js";
+
+  const p = document.getElementById("wcplayer");
+  console.log(p);
+  console.log(p.getAttribute("artist"));
+  console.log(p.disabled);
+  p.disabled = true;
+  console.log(p.disabled);
+  window.p = p;
+</script>
 </body>

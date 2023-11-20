@@ -2,7 +2,17 @@ import "/js/SearchInput.js";
 import "/js/Queue.js";
 
 class Player extends HTMLElement {
-  static observedAttributes = ["queue", "songInfo"];
+  static get observedAttributes() {
+    return ["disabled", "queue"];
+  }
+  artist = null;
+  song = null;
+  img = null;
+  controls = null;
+
+  queue = null;
+
+  _disabled = false;
 
   constructor() {
     super();
@@ -63,6 +73,7 @@ class Player extends HTMLElement {
     img.style = "border-radius: 5px; object-fit: cover; height: 100%; width: 100%;";
     img.src = "/assets/icon.png";
     img.alt = "Thumbnail of the current song";
+    this.img = img;
     imgCon.append(img);
 
     const cCon = document.createElement("div"); // control container
@@ -80,10 +91,12 @@ class Player extends HTMLElement {
     cCon.append(songName);
 
     const song = document.createElement("span");
+    this.song = song;
     song.id = "song";
 
     const artist = document.createElement("span");
     artist.id = "artist";
+    this.artist = artist;
     songName.append(song, " - ", artist);
 
     const time = document.createElement("span");
@@ -100,6 +113,7 @@ class Player extends HTMLElement {
 
     const controls = document.createElement("div");
     controls.style = "display: flex; flex-direction: row; justify-content: center; opacity: 0.5";
+    this.controls = controls;
     cCon.append(controls);
 
     const playBtn = document.createElement("button");
@@ -162,7 +176,47 @@ class Player extends HTMLElement {
     cCon.append(search);
 
     const queue = document.createElement("remix-queue");
+    queue.style = "grid-row: 2; grid-column-start: 1; grid-column-end: 4";
+    this.queue = queue;
     c.append(queue);
+  }
+  attributeChangedCallback(name, oldVal, newVal) {
+    if (name !== "disabled") return;
+    if (oldVal == newVal) return;
+
+  }
+
+  get queue() { return this.queue; }
+
+  get disabled() {
+    return this._disabled;
+  }
+  set disabled(bool) {
+    bool = !!bool;
+    this._disabled = bool;
+    if (bool) return this.#disable();
+    return this.#enable();
+  }
+
+  #disable() {
+    this.img.src = "/assets/icon.png";
+    this.img.setAttribute("cbgrdc", "nochange"); // TODO: remove once the other logic is done
+    this.artist.innerText = "";
+    this.song.innerText = "";
+
+    // TODO: reset queue
+    const btns = this.controls.children;
+    this.controls.style.opacity = 0.5;
+    for (let i = 0; i < btns.length; i++) {
+      btns[i].disabled = true;
+    }
+  }
+  #enable() {
+    const btns = this.controls.children;
+    this.controls.style.opacity = 1;
+    for (let i = 0; i < btns.length; i++) {
+      btns[i].disabled = false;
+    }
   }
 
   #createFaI(classNames, style) {

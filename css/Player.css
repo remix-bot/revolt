@@ -9,7 +9,14 @@
   box-sizing: border-box;
   scroll-behavior: smooth;
 }
-
+.queue-container.minimised {
+  display: none;
+}
+.queue:empty:after {
+  content: "Empty";
+  /*color: rgb(19, 25, 39);*/
+  font-size: 70%;
+}
 .slider {
   -webkit-appearance: none;
   appearance: none;

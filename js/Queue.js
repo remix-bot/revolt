@@ -107,6 +107,9 @@ class Queue extends HTMLElement {
   artist = null;
   title = null;
 
+  _loop = false;
+  _songloop = false;
+
   constructor() {
     super();
   }
@@ -136,6 +139,12 @@ class Queue extends HTMLElement {
     c.append(listCon);
   }
 
+  get loop() { return this._loop; }
+  set loop(bool) { this._loop = !!bool; }
+
+  get songLoop() { return this._songloop; }
+  set songLoop(bool) { this._songloop = !!bool; }
+
   push(song) { // push a song into the queue
     const s = document.createElement("song-item");
     s.style = "width: 100%; height: 4rem; padding: 0.3rem; display: flex; flex-direction: row; gap: 0.5rem; align-items: center; border-bottom: 1px solid rgb(19, 25, 39)";
@@ -145,6 +154,14 @@ class Queue extends HTMLElement {
     s.artist = (!song.artists) ? song.author.name : song.artists.map(a => `${a.name}`).join(" & ");
     (song.duration.timestamp) ? s.timestamp = song.duration.timestamp : s.duration = song.duration;
     s.cover = song.thumbnail;
+
+    this.songItems.push(s);
+  }
+
+  next() {
+    if (this.songLoop) return;
+    //const next = this.songItems.shift();
+
   }
 
   // TODO: other queue actions

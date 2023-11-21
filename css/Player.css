@@ -10,10 +10,6 @@
   scroll-behavior: smooth;
 }
 
-
-.suggestion-li {
-  cursor: pointer;
-}
 .slider {
   -webkit-appearance: none;
   appearance: none;
@@ -79,14 +75,6 @@
   margin-right: 0.5rem;
   flex-grow: 2;
   text-align: left;
-}
-.queue-container.minimised {
-  display: none;
-}
-.queue:empty:after {
-  content: "Empty";
-  /*color: rgb(19, 25, 39);*/
-  font-size: 70%;
 }
 /*.queue > * {
   transition: 1s all;

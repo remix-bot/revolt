@@ -173,7 +173,7 @@ class Player extends HTMLElement {
     slContainer.append(vI);
 
     const search = document.createElement("search-input");
-    search.addEventListener("result", console.log)
+    search.addEventListener("result", (e) => console.log(e.detail))
     // TODO: implement full window search
     cCon.append(search);
 

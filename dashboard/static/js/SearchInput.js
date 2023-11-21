@@ -26,6 +26,10 @@ class SearchInput extends HTMLElement {
     input.placeholder = "Search or paste a link";
     input.autocomplete = "off";
     input.addEventListener("keyup", (e) => { this.#keyUp(e) });
+    input.addEventListener("blur", (e) => {
+      // TODO: register clicks outside of input --> blurring
+      //this.#reset(); doesn't work because blocks accepting suggestions
+    });
     this.inputElem = input;
     c.append(input);
 
@@ -36,13 +40,6 @@ class SearchInput extends HTMLElement {
     const completions = document.createElement("ul");
     this.completionsElem = completions;
     completionCon.appendChild(completions);
-
-    // TODO: register clicks outside of input --> blurring
-
-    window.addEventListener("click", (e) => {
-      //if (!e.target.matches(".search-container > *")) return this.#reset();
-      // TODO: fix this
-    });
   }
 
   #isValidUrl(str) {
@@ -55,10 +52,10 @@ class SearchInput extends HTMLElement {
     return !!pattern.test(str);
   }
 
-  #dispatchSearch(string) {
+  #dispatchSearch(string, isUrl) {
     const data = {
       raw: string,
-      url: this.#isValidUrl(string)
+      url: (isUrl === undefined) ? this.#isValidUrl(string) : isUrl
     }
 
     const event = new CustomEvent("result", {
@@ -69,9 +66,9 @@ class SearchInput extends HTMLElement {
   }
   #reset() {
     this.completionsElem.style.display = "none";
-    this.inputElem.blur();
     // TODO: consider the following:
     //this.inputElem.value = "";
+    //this.inputElem.blur();
   }
 
   #getSuggestions(query) {
@@ -96,7 +93,7 @@ class SearchInput extends HTMLElement {
     li.setAttribute("suggestion", content);
     li.classList.add("suggestion-li");
     li.addEventListener("click", () => {
-      // TODO: dispatch result
+      this.#dispatchSearch(content, false);
     });
     return li;
   }
@@ -115,7 +112,7 @@ class SearchInput extends HTMLElement {
 
     const data = await this.#getSuggestions(i.value);
     this.completionsElem.innerHTML = "";
-    this.completionsElem.style.display = "block";
+    if (data.length > 0) this.completionsElem.style.display = "block";
     data.forEach(suggestion => {
       this.completionsElem.append(this.#createSuggestionItem(suggestion));
     });

@@ -173,12 +173,16 @@ class Player extends HTMLElement {
     slContainer.append(vI);
 
     const search = document.createElement("search-input");
+    search.addEventListener("result", console.log)
+    // TODO: implement full window search
     cCon.append(search);
 
     const queue = document.createElement("remix-queue");
     queue.style = "grid-row: 2; grid-column-start: 1; grid-column-end: 4";
     this.queue = queue;
     c.append(queue);
+
+    // TODO: maximising/minimising player (together with lazy loading)
   }
   attributeChangedCallback(name, oldVal, newVal) {
     if (name !== "disabled") return;

@@ -115,5 +115,11 @@
   p.disabled = true;
   console.log(p.disabled);
   window.p = p;
+
+  p.queue.setCurrent({ title: "A song0", videoId: "1", author: { name: "ShadowLp174" }, duration: 60000, thumbnail: "https://autumn.revolt.chat/avatars/Ej0UkdPD6b_QSUdNwgTWidN2k5X4x1UXeCadpQA374?max_side=256" })
+  p.queue.push({ title: "A song1", videoId: "1", author: { name: "ShadowLp174" }, duration: 60000, thumbnail: "https://autumn.revolt.chat/avatars/Ej0UkdPD6b_QSUdNwgTWidN2k5X4x1UXeCadpQA374?max_side=256" });
+  p.queue.push({ title: "A song2", videoId: "2", author: { name: "ShadowLp174" }, duration: 60000, thumbnail: "https://autumn.revolt.chat/avatars/Ej0UkdPD6b_QSUdNwgTWidN2k5X4x1UXeCadpQA374?max_side=256" });
+  p.queue.push({ title: "A song3", videoId: "3", author: { name: "ShadowLp174" }, duration: 60000, thumbnail: "https://autumn.revolt.chat/avatars/Ej0UkdPD6b_QSUdNwgTWidN2k5X4x1UXeCadpQA374?max_side=256" });
+  p.queue.loop = true;
 </script>
 </body>

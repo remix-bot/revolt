@@ -3,7 +3,7 @@ import "/js/Queue.js";
 
 class Player extends HTMLElement {
   static get observedAttributes() {
-    return ["disabled", "queue"];
+    return ["disabled"];
   }
   artist = null;
   song = null;
@@ -13,6 +13,13 @@ class Player extends HTMLElement {
   queue = null;
 
   _disabled = false;
+  elapsedTime = 0;
+  timeInterval = 0;
+  timerRunning = false;
+  _duration = 0;
+
+  elapsedTimeElem = null;
+  durationElem = null;
 
   constructor() {
     super();
@@ -105,10 +112,12 @@ class Player extends HTMLElement {
     const elapsed = document.createElement("span");
     elapsed.id = "elapsedTime";
     elapsed.innerText = "00:00";
+    this.elapsedTimeElem = elapsed;
 
     const duration = document.createElement("span");
     duration.id = "duration";
     duration.innerText = "00:00";
+    this.durationElem = duration;
     time.append(elapsed, "/", duration);
 
     const controls = document.createElement("div");
@@ -187,10 +196,64 @@ class Player extends HTMLElement {
   attributeChangedCallback(name, oldVal, newVal) {
     if (name !== "disabled") return;
     if (oldVal == newVal) return;
-
+    if (newVal == "true") return this.disabled = true; // run setter
+    if (newVal == "false") return this.disabled = false;
   }
 
-  get queue() { return this.queue; }
+  formatTime(milliseconds) {
+    return new Date(milliseconds).toISOString().slice(
+      // if 1 hour passed, show the hour component,
+      // if 1 hour hasn't passed, don't show the hour component
+      milliseconds > 3600000 ? 11 : 14,
+      19
+    );
+  }
+
+  isInteger = Number.isInteger || function(value) {
+    return typeof value === 'number' &&
+      isFinite(value) &&
+      Math.floor(value) === value;
+  };
+
+  async startTimer(startVal) {
+    if (startVal || startVal === 0) this.elapsedTime = startVal;
+    this.elapsedTimeElem.innerText = this.formatTime(this.elapsedTime);
+    this.timerRunning = true;
+
+    const countUp = () => {
+      this.elapsedTime += 1000;
+      this.elapsedTimeElem.innerText = this.formatTime(this.elapsedTime);
+    }
+
+    if (!this.isInteger(this.elapsedTime / 1000)) {
+      const diff = ((Math.floor(this.elapsedTime / 1000) + 1) - (this.elapsedTime / 1000)) * 1000;
+      this.elapsedTime = this.elapsedTime + diff;
+      await (new Promise(res => setTimeout(res, diff)));
+      countUp();
+    }
+    this.timeInterval = setInterval(countUp, 1000);
+  }
+  stopTimer(time) {
+    if (this.timeInterval) clearInterval(this.timeInterval);
+    if (time && time !== 0) this.elapsedTime = time;
+    this.timerRunning = false;
+    this.elapsedTimeElem.innerText = this.formatTime(this.elapsedTime);
+  }
+
+  get time() { return this.elapsedTime; };
+  set time(num) {
+    if (this.timerRunning) {
+      this.stopTimer();
+      return this.startTimer(num);
+    }
+    this.elapsedTime = num;
+    this.elapsedTimeElem.innerText = this.formatTime(num);
+  }
+  get duration() { return this._duration; };
+  set duration(num) {
+    this._duration = num;
+    this.durationElem.innerText = this.formatTime(num);
+  }
 
   get disabled() {
     return this._disabled;

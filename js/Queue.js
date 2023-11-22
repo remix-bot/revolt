@@ -9,6 +9,7 @@ class SongItem extends HTMLElement {
   _title = "Song name";
   _duration = 0;
   _timestamp = "00:00";
+  _id = null;
 
   static get observedAttributes() {
     return ["cover", "artist", "title", "duration", "timestamp"];
@@ -18,8 +19,8 @@ class SongItem extends HTMLElement {
     super();
   }
 
-  connectedCallback() {
-    const shadow = this.attachShadow({ mode: "open" });
+  #render() {
+    const shadow = this.shadowRoot;
 
     const c = document.createElement("div");
     c.style = "width: 100%; height: 4rem; padding: 0.3rem; display: flex; flex-direction: row; gap: 0.5rem; align-items: center; border-bottom: 1px solid rgb(19, 25, 39)";
@@ -38,21 +39,35 @@ class SongItem extends HTMLElement {
 
     const title = document.createElement("span");
     title.style = "font-size: 1.1rem";
-    title.innerText = "Song name";
+    title.innerText = this._title;
     this.titleElem = title;
     iCon.append(title);
 
     const artist = document.createElement("span");
     artist.style = "font-size: 0.8rem";
-    artist.innerText = "Artist name";
+    artist.innerText = this._artist;
     this.artistElem = artist;
     iCon.append(artist);
 
     const duration = document.createElement("p");
     duration.style = "align-self: center";
-    duration.innerText = "00:00";
+    duration.innerText = this._timestamp;
     this.durElem = duration;
     c.append(duration);
+  }
+
+  connectedCallback() {
+    if (!this.shadowRoot) this.attachShadow({ mode: "open" });
+
+    this.#render();
+  }
+
+  adoptedCallback() {
+    console.log("moved");
+  }
+
+  disconnectedCallback() {
+    this.shadowRoot.replaceChildren();
   }
 
   get cover() { return this._cover; }
@@ -94,12 +109,16 @@ class SongItem extends HTMLElement {
     // covnert timestamp to seconds, then cast it to an int and then convert it to milliseconds
     this.duration = (+(t.split(':').reduce((acc,time) => (60 * acc) + +time))) * 1000;
   }
+
+  get id() { return this._id };
+  set id(i) { this._id = i };
 }
 
 customElements.define("song-item", SongItem);
 
 class Queue extends HTMLElement {
   songItems = [];
+  currentSong = null;
 
   songTemplate = null;
   listCon = null;
@@ -145,23 +164,72 @@ class Queue extends HTMLElement {
   get songLoop() { return this._songloop; }
   set songLoop(bool) { this._songloop = !!bool; }
 
-  push(song) { // push a song into the queue
+  setCurrent(song) {
     const s = document.createElement("song-item");
-    s.style = "width: 100%; height: 4rem; padding: 0.3rem; display: flex; flex-direction: row; gap: 0.5rem; align-items: center; border-bottom: 1px solid rgb(19, 25, 39)";
-    this.listCon.append(s);
-
+    s.style = "width: 100%; height: 4rem; padding: 0.3rem; display: none; flex-direction: row; gap: 0.5rem; align-items: center;";// border-bottom: 1px solid rgb(19, 25, 39)";
+    this.listCon.prepend(s);
+    
+    s.id = song.videoId;
     s.title = song.title;
     s.artist = (!song.artists) ? song.author.name : song.artists.map(a => `${a.name}`).join(" & ");
     (song.duration.timestamp) ? s.timestamp = song.duration.timestamp : s.duration = song.duration;
     s.cover = song.thumbnail;
 
-    this.songItems.push(s);
+    this.currentSong = s;
   }
 
+  push(song, pre=false) { // push a song into the queue
+    const s = document.createElement("song-item");
+    s.style = "width: 100%; height: 4rem; padding: 0.3rem; display: flex; flex-direction: row; gap: 0.5rem; align-items: center;";// border-bottom: 1px solid rgb(19, 25, 39)";
+    if (!pre) {this.listCon.append(s);} else {this.listCon.prepend(s)};
+
+    s.id = song.videoId;
+    s.title = song.title;
+    s.artist = (!song.artists) ? song.author.name : song.artists.map(a => `${a.name}`).join(" & ");
+    (song.duration.timestamp) ? s.timestamp = song.duration.timestamp : s.duration = song.duration;
+    s.cover = song.thumbnail;
+
+    if (!pre) {this.songItems.push(s);} else {this.songItems.unshift(s)};
+  }
+  prepend(song) {
+    return this.push(song, true);
+  }
   next() {
     if (this.songLoop) return;
-    //const next = this.songItems.shift();
+    const next = this.songItems.shift();
+    const current = this.currentSong;
+    if (this._loop && current) {
+      current.style.display = "flex";
+      this.songItems.push(current);
+    }
+    next.style.display = "none";
+    this.currentSong = next;
 
+    this.#renderQueue();
+
+    return next;
+  }
+  remove(index) {
+    if (index >= this.songItems.length) return false;
+    const song = this.songItems[index];
+    song.remove();
+    return true;
+  }
+  rearrange(ids) { // Array of ids in the specified order
+    ids = ids.map(e => ({ id: e }));
+    this.songItems.forEach(song => {
+      const idx = ids.findIndex(e => e.id === song.id && !e.consumed);
+      song.queueIndex = idx;
+      ids[idx].consumed = true;
+    });
+    this.songItems = this.songItems.sort((a, b) => a.queueIndex - b.queueIndex);
+    this.#renderQueue();
+  }
+
+  #renderQueue() {
+    this.songItems.forEach(i => { // reorder items correctly
+      this.listCon.append(i);
+    });
   }
 
   // TODO: other queue actions

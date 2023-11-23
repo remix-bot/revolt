@@ -255,6 +255,10 @@ class Player extends HTMLElement {
     this.durationElem.innerText = this.formatTime(num);
   }
 
+  reset() {
+    
+  }
+
   get disabled() {
     return this._disabled;
   }

@@ -168,7 +168,7 @@ class Queue extends HTMLElement {
     const s = document.createElement("song-item");
     s.style = "width: 100%; height: 4rem; padding: 0.3rem; display: none; flex-direction: row; gap: 0.5rem; align-items: center;";// border-bottom: 1px solid rgb(19, 25, 39)";
     this.listCon.prepend(s);
-    
+
     s.id = song.videoId;
     s.title = song.title;
     s.artist = (!song.artists) ? song.author.name : song.artists.map(a => `${a.name}`).join(" & ");
@@ -178,7 +178,7 @@ class Queue extends HTMLElement {
     this.currentSong = s;
   }
 
-  push(song, pre=false) { // push a song into the queue
+  #createSongItem(song, pre) {
     const s = document.createElement("song-item");
     s.style = "width: 100%; height: 4rem; padding: 0.3rem; display: flex; flex-direction: row; gap: 0.5rem; align-items: center;";// border-bottom: 1px solid rgb(19, 25, 39)";
     if (!pre) {this.listCon.append(s);} else {this.listCon.prepend(s)};
@@ -188,6 +188,11 @@ class Queue extends HTMLElement {
     s.artist = (!song.artists) ? song.author.name : song.artists.map(a => `${a.name}`).join(" & ");
     (song.duration.timestamp) ? s.timestamp = song.duration.timestamp : s.duration = song.duration;
     s.cover = song.thumbnail;
+    return s;
+  }
+
+  push(song, pre=false) { // push a song into the queue
+    const s = this.#createSongItem(song, pre);
 
     if (!pre) {this.songItems.push(s);} else {this.songItems.unshift(s)};
   }
@@ -223,6 +228,13 @@ class Queue extends HTMLElement {
       ids[idx].consumed = true;
     });
     this.songItems = this.songItems.sort((a, b) => a.queueIndex - b.queueIndex);
+    this.#renderQueue();
+  }
+
+  get items() { return this.songItems; }
+  set items(arr) {
+    this.listCon.replaceChildren();
+    this.songItems = arr.map(e => this.#createSongItem(e));
     this.#renderQueue();
   }
 

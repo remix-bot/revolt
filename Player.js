@@ -168,8 +168,8 @@ class RevoltPlayer extends EventEmitter {
 
   // utility commands
   getVidName(vid, code=false) {
-    if (code) return vid.title + " (" + this.getDuration(vid.duration) + ")" + ((vid.url) ? " - " + vid.url : "");
-    return "[" + vid.title + " (" + this.getDuration(vid.duration) + ")" + "]" + ((vid.url) ? "(" + vid.url + ")" : "");
+    if (code) return vid.title + " (" + this.getCurrentElapsedDuration() + "/" + this.getDuration(vid.duration) + ")" + ((vid.url) ? " - " + vid.url : "");
+    return "[" + vid.title + " (" + this.getCurrentElapsedDuration() + "/" + this.getDuration(vid.duration) + ")" + "]" + ((vid.url) ? "(" + vid.url + ")" : "");
   }
   msgChunking(msg) {
     let msgs = [[""]];

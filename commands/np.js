@@ -8,9 +8,11 @@ module.exports = {
   run: async function(msg) {
     const p = await this.getPlayer(msg);
     if (!p) return;
-    let data = await p.nowPlaying();
-    let m = this.em(data.msg, msg);
-    if (data.image) m.embeds[0].media = data.image;
-    msg.channel.sendMessage(m);
+    msg.reply(this.em("Loading...", msg)).then(async m => {
+      let data = await p.nowPlaying();
+      let embed = this.em(data.msg, m);
+      if (data.image) embed.embeds[0].media = data.image;
+      m.edit(embed);
+    });
   }
 }

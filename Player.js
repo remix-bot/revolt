@@ -248,7 +248,7 @@ class RevoltPlayer extends EventEmitter {
     return this.getDuration(this.player.seconds * 1000);
   }
   async nowPlaying() {
-    if (!this.data.current) return "There's nothing playing at the moment.";
+    if (!this.data.current) return { msg: "There's nothing playing at the moment." };
     let loopqueue = (this.data.loop) ? "**enabled**" : "**disabled**";
     let songloop = (this.data.loopSong) ? "**enabled**" : "**disabled**";
     return { msg: "Playing: **[" + this.data.current.title + "](" + this.data.current.url + ")** (" + this.getCurrentElapsedDuration() + "/" + this.getCurrentDuration() + ")" + "\n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop, image: await this.uploadThumbnail() };

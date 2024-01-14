@@ -1,5 +1,6 @@
 import "/js/SearchInput.js";
 import "/js/Queue.js";
+import API from "/js/API.js";
 
 class Player extends HTMLElement {
   static get observedAttributes() {
@@ -20,6 +21,8 @@ class Player extends HTMLElement {
 
   elapsedTimeElem = null;
   durationElem = null;
+
+  api = new API();
 
   constructor() {
     super();
@@ -126,20 +129,30 @@ class Player extends HTMLElement {
     cCon.append(controls);
 
     const playBtn = document.createElement("button");
-    playBtn.classList.add("btn", "btn-play", "btn-pbt", "hidden");
+    playBtn.classList.add("btn", "btn-play", "btn-pbt", "hidden"); // TODO: remove unnecessary classes
     playBtn.style = "margin-right: 0.5rem";
-    playBtn.addEventListener("click", function() {
+    playBtn.addEventListener("click", async () => {
       // TODO: click events
+      const success = await this.api.resume();
+      if (!success) return;
+
+      pauseBtn.classList.remove("hidden");
+      playBtn.classList.add("hidden");
     });
     playBtn.setAttribute("action", "resume");
     playBtn.disabled = true;
-    playBtn.append(this.#createFaI("fa-solid fa-pause", "color: #e9196c; margin-right: 0.5rem;"));
+    playBtn.append(this.#createFaI("fa-solid fa-play", "color: #e9196c;"));
     controls.append(playBtn);
 
     const pauseBtn = document.createElement("button");
     pauseBtn.classList.add("btn", "btn-pause", "btn-pbt");
-    pauseBtn.addEventListener("click", function() {
+    pauseBtn.addEventListener("click", async () => {
       // TODO: click events
+      const success = await this.api.pause();
+      if (!success) return;
+
+      playBtn.classList.remove("hidden");
+      pauseBtn.classList.add("hidden");
     });
     pauseBtn.setAttribute("action", "pause");
     pauseBtn.disabled = true;
@@ -256,7 +269,7 @@ class Player extends HTMLElement {
   }
 
   reset() {
-    
+
   }
 
   get disabled() {

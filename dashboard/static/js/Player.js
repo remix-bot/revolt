@@ -1,6 +1,7 @@
+import ColourUtil from "/js/ColourUtil.js";
+import API from "/js/API.js";
 import "/js/SearchInput.js";
 import "/js/Queue.js";
-import API from "/js/API.js";
 
 class Player extends HTMLElement {
   static get observedAttributes() {
@@ -23,6 +24,7 @@ class Player extends HTMLElement {
   durationElem = null;
 
   api = new API();
+  colour = new ColourUtil(); // TODO: implement colour changes
 
   constructor() {
     super();

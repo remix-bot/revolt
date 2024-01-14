@@ -1,6 +1,6 @@
 export default class API {
   url = "/api/";
-  constructor() {
+  constructor() { // TODO: websocket
 
   }
   join(...paths) {

@@ -80,7 +80,19 @@ export default class API {
       });
     });
   }
-  setVolume() {
-
+  setVolume(vol) {
+    if (typeof (vol || "nil") !== "number") throw new Error("Invalid volume. Number expected");
+    return new Promise(res => {
+      this.post("/dashboard/control", {
+        action: "volume",
+        data: Math.round(vol)
+      }).then(d => {
+        res(d.success);
+      }).catch(e => {
+        // error occured
+        // notifications.error(e.message)
+        res(false);
+      });
+    });
   }
 }

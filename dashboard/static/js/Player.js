@@ -185,10 +185,13 @@ class Player extends HTMLElement {
     slider.value = 100;
     slider.min = 0;
     slider.max = 100;
-    slider.addEventListener("mouseup", function() {
+    slider.addEventListener("mouseup", async (e) => { // post volume to server
+      const success = await this.api.setVolume(e.target.value);
+      if (!success) return;
       // TODO: changeVolume
     });
-    slider.addEventListener("oninput", function() {
+    // for reference check player.ejs
+    slider.addEventListener("oninput", function() { // update slider range according to changes
       // TODO: updateSlider();
     });
     slContainer.append(slider);

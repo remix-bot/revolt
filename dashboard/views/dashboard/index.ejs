@@ -194,7 +194,7 @@
       renderQueue(info.currData.queue);
     }
     if (info.channel) updateCDisplay(info);
-    if (info.currSong) {
+    if (Object.keys(info.currSong || {}).length > 1) {
       update(info.currSong);
       if (info.currSong.elapsedTime > 0) startTime(info.currSong.elapsedTime);
     }

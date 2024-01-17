@@ -105,14 +105,17 @@
 
 <remix-player id="wcplayer"></remix-player>
 
+<script src="/socket.io/socket.io.js"></script>
+
 <script type="module">
   import "/js/Player.js";
 
   import NotificationManager from "/js/Notifications.js";
 
-  const mgr = new NotificationManager();
-  mgr.addInfo("infotest", "this is an info notification test", 10000)
-  mgr.addError("errortest", "this is an error notification test", 10000)
+  //const mgr = new NotificationManager(); // TODO: pass notification manager to player
+  const mgr = window.remix.notifications;
+  mgr.addInfo("infotest", "this is an info notification test", 10000);
+  mgr.addError("errortest", "this is an error notification test", 10000);
 
   const p = document.getElementById("wcplayer");
   console.log(p);
@@ -120,6 +123,7 @@
   console.log(p.disabled);
   p.disabled = true;
   console.log(p.disabled);
+  p.disabled = false;
   window.p = p;
 
   p.queue.setCurrent({ title: "A song0", videoId: "1", author: { name: "ShadowLp174" }, duration: 60000, thumbnail: "https://autumn.revolt.chat/avatars/Ej0UkdPD6b_QSUdNwgTWidN2k5X4x1UXeCadpQA374?max_side=256" })

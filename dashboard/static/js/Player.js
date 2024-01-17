@@ -1,3 +1,4 @@
+import NotificationManager from "/js/Notifications.js";
 import ColourUtil from "/js/ColourUtil.js";
 import API from "/js/API.js";
 import "/js/SearchInput.js";
@@ -23,11 +24,16 @@ class Player extends HTMLElement {
   elapsedTimeElem = null;
   durationElem = null;
 
-  api = new API();
+  api = null;
   colour = new ColourUtil(); // TODO: implement colour changes
 
   constructor() {
     super();
+
+    if (!window.remix) window.remix = { notifications: new NotificationManager() };
+    if (!window.remix.notifications) window.remix.notifications = new NotificationManager();
+
+    this.api = new API(); // initiate after notification manager initiated
 
     this.songInfo = {
       duration: 0,
@@ -164,8 +170,10 @@ class Player extends HTMLElement {
     const skipBtn = document.createElement("button");
     skipBtn.classList.add("btn", "btn-skip", "btn-pbt");
     skipBtn.setAttribute("action", "skip");
-    skipBtn.addEventListener("click", function() {
+    skipBtn.addEventListener("click", async () => {
       // TODO: pushAction(this);
+      const success = await this.api.skip();
+      if (!success) return;
     });
     skipBtn.disabled = true;
     skipBtn.append(this.#createFaI("fa-solid fa-forward", "color: #e9196c"));
@@ -186,7 +194,7 @@ class Player extends HTMLElement {
     slider.min = 0;
     slider.max = 100;
     slider.addEventListener("mouseup", async (e) => { // post volume to server
-      const success = await this.api.setVolume(e.target.value);
+      const success = await this.api.setVolume(+e.target.value);
       if (!success) return;
       // TODO: changeVolume
     });

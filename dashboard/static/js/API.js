@@ -1,7 +1,20 @@
+import NotificationManager from "/js/Notifications.js";
+
 export default class API {
   url = "/api/";
-  constructor() { // TODO: websocket
 
+  notifications = window.remix?.notifications || new NotificationManager();
+  constructor() { // TODO: websocket
+    if (!io) { // socket io not included yet
+      const sio = document.createElement("script");
+      sio.src = "/socket.io/socket.io.js";
+      sio.id = "remix-player-sio";
+      document.head.append(sio);
+      sio.onload = () => {
+        this.connect();
+      }
+    }
+    this.connect();
   }
   join(...paths) {
     return paths.map((part, i) => {
@@ -11,6 +24,13 @@ export default class API {
         return part.trim().replace(/(^[\/]*|[\/]*$)/g, '')
       }
     }).filter(x=>x.length).join('/');
+  }
+
+  connect() {
+    // connect to socket io
+    this.socket = io();
+    this.socket.emit("info") // user id not necessary anymore
+    this.socket.on("info", console.log);
   }
 
   async post(path, body) { // TODO: improve request handling
@@ -49,7 +69,7 @@ export default class API {
         res(d.success);
       }).catch(e => {
         // error occured
-        // notifications.error(e.message)
+        this.notifications.addError("Error pausing", e.message)
         res(false);
       });
     });
@@ -62,7 +82,7 @@ export default class API {
         res(d.success);
       }).catch(e => {
         // error occured
-        // notifications.error(e.message)
+        this.notifications.addError("Error resuming", e.message)
         res(false);
       });
     });
@@ -75,7 +95,7 @@ export default class API {
         res(d.success);
       }).catch(e => {
         // error occured
-        // notifications.error(e.message)
+        this.notifications.addError("Error skipping song", e.message)
         res(false);
       });
     });
@@ -90,7 +110,7 @@ export default class API {
         res(d.success);
       }).catch(e => {
         // error occured
-        // notifications.error(e.message)
+        this.notifications.addError("Error setting volume", e.message);
         res(false);
       });
     });

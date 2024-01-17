@@ -23,6 +23,10 @@ class Player extends HTMLElement {
 
   elapsedTimeElem = null;
   durationElem = null;
+  volSlider = null;
+  volIcon = null;
+
+  currVol = 100;
 
   api = null;
   colour = new ColourUtil(); // TODO: implement colour changes
@@ -195,18 +199,27 @@ class Player extends HTMLElement {
     slider.value = 100;
     slider.min = 0;
     slider.max = 100;
+    this.volSlider = slider;
+    this.currVol = +slider.value;
     slider.addEventListener("mouseup", async (e) => { // post volume to server
-      const success = await this.api.setVolume(+e.target.value);
-      if (!success) return;
-      // TODO: changeVolume
+      this.updateSlider();
+      this.updateVolIcon();
+      const d = await this.api.setVolume(+e.target.value);
+      const volume = this.currVol;
+      if (d) return this.currVol = +e.target.value;
+
+      // reset volume slider on error
+      this.setVolD(volume);
     });
     // for reference check player.ejs
-    slider.addEventListener("oninput", function() { // update slider range according to changes
-      // TODO: updateSlider();
+    slider.addEventListener("oninput", (e) => { // update slider range according to changes
+      this.updateSlider(e);
+      this.updateVolIcon(value);
     });
     slContainer.append(slider);
     const vI = this.#createFaI("fa-solid fa-volume-high", "float:left;color: #e9196c");
     vI.id = "volumeIcon";
+    this.volIcon = vI;
     slContainer.append(vI);
 
     const search = document.createElement("search-input");
@@ -234,7 +247,7 @@ class Player extends HTMLElement {
     socket.on("info", (info) => {
       console.log(info);
       if (info.currData) {
-        //setVolume(info.currData.volume * 100);
+        this.setVolD(info.currData.volume * 100);
         //updatePlaybackStatus(info.currData);
         //renderQueue(info.currData.queue);
       }
@@ -243,16 +256,16 @@ class Player extends HTMLElement {
         //update(info.currSong);
         if (info.currSong.elapsedTime > 0) this.startTimer(info.currSong.elapsedTime);
       }
-      //if (info.channel) enablePlayer();
+      if (info.channel) this.disabled = false;
     });
     socket.on("joined", (data) => {
       console.log(data);
+      this.disabled = false;
       //renderQueue(data.currData.queue);
-      //setVolume(data.currData.volume * 100);
+      this.setVolD(data.currData.volume * 100);
       //updateCDisplay(data)
       //if (data.currSong) update(data.currSong);
       //updatePlaybackStatus(data.currData);
-      //enablePlayer();
     });
     socket.on("resume", (d) => {
       this.startTimer(d.elapsedTime);
@@ -267,8 +280,14 @@ class Player extends HTMLElement {
     })
     socket.on("userleave", (user) => {
       console.log("leave", user);
-    })
-    //socket.on("left", () => { resetPlayer(); updateCDisplay({ channel: { name: "-" }, server: { name: "-" } }) });
+    });
+    socket.on("left", () => {
+      this.stopTimer(0);
+      this.resetTimeDisplay();
+      this.reset();
+      // TODO: implement the following line outside of the player class:
+      //updateCDisplay({ channel: { name: "-" }, server: { name: "-" } })
+    });
     socket.on("startplay", (vid) => {
       this.stopTimer(0);
       this.resetTimeDisplay();
@@ -278,10 +297,28 @@ class Player extends HTMLElement {
     socket.on("stopplay", () => {
       this.stopTimer(0);
       this.resetTimeDisplay();
-      //resetPlayer();
+      this.reset();
     });
-    //socket.on("volume", (v) => setVolume(v * 100));
-    //socket.on("queue", (d) => updateQueue(d));
+    socket.on("volume", (v) => this.setVolD(v * 100));
+    socket.on("queue", (data) => {
+      switch (data.type) {
+        case "add": // something is added to the queue
+          const video = data.data.data;
+          this.queue.push(video, !data.data.append);
+        break;
+        case "remove": // something is removed from the queue
+          const index = data.data.index;
+          this.queue.remove(index);
+        break;
+        case "update": // queue has changed due to a new song playing
+          this.queue.next();
+        break;
+        case "shuffle":
+          const newArr = data.data;
+          this.queue.rearrange(newArr.map(s => s.videoId));
+        break;
+      }
+    });
   }
 
   formatTime(milliseconds) {
@@ -298,6 +335,30 @@ class Player extends HTMLElement {
       isFinite(value) &&
       Math.floor(value) === value;
   };
+
+  updateSlider() {
+    this.volSlider.style.background = `linear-gradient(to right, #e9196c ${this.volSlider.value}%, rgb(19, 25, 39) ${this.volSlider.value}%)`;
+    const value = Math.round(this.volSlider.value);
+    this.volSlider.parentElement.title = value + "%";
+  }
+  setVolD(vol) {
+    this.currVol = vol;
+    this.volSlider.value = vol;
+    this.updateSlider();
+    this.updateVolIcon(vol);
+  }
+  updateVolIcon(value) {
+    const volumeIcon = this.volIcon;
+    if (value < 50) {
+      if (volumeIcon.classList.contains("fa-volume-low")) return;
+      volumeIcon.classList.remove("fa-volume-high");
+      volumeIcon.classList.add("fa-volume-low");
+    } else {
+      if (volumeIcon.classList.contains("fa-volume-high")) return;
+      volumeIcon.classList.add("fa-volume-high");
+      volumeIcon.classList.remove("fa-volume-low");
+    }
+  }
 
   async startTimer(startVal) {
     if (startVal || startVal === 0) this.elapsedTime = startVal;
@@ -344,7 +405,14 @@ class Player extends HTMLElement {
   }
 
   reset() {
-
+    this.disabled = true;
+    // TODO: somehow implement the following line:
+    // document.body.style.backgroundColor = "rgb(19, 25, 39)";
+    this.img.src = "/assets/icon.png";
+    this.img.setAttribute("cbgrdc", "nochange") // TODO: remove once the actual system is in place
+    this.artist.innerText = "";
+    this.song.innerText = "";
+    this.queue.clear();
   }
 
   get disabled() {

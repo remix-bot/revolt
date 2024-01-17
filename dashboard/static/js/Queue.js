@@ -238,6 +238,15 @@ class Queue extends HTMLElement {
     this.#renderQueue();
   }
 
+  clear() {
+    while (this.songItems.length > 0) {
+      const i = this.songItems.shift();
+      i.remove();
+    }
+    this.currentSong?.remove();
+    this.currentSong = null;
+  }
+
   #renderQueue() {
     this.songItems.forEach(i => { // reorder items correctly
       this.listCon.append(i);

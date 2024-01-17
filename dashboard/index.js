@@ -307,12 +307,12 @@ class Dashboard {
           if (!message) this.sendMessage(d.player.messageChannel, req, "[Web] " + (message || "Skipped Successfully"));
           break;
         case "volume":
-          message = d.player.setVolume(req.body.data / 100);
+          message = d.player.setVolume(Math.round(req.body.data + Number.EPSILON) / 100);
           res.status(200).send({ message: message, success: true });
           this.sendMessage(d.player.messageChannel, req, "[Web] " + message);
           break;
         default:
-          res.status(400).send({ message: "Invalid aciton", success: false });
+          res.status(400).send({ message: "Invalid action", success: false });
           break;
       }
     });

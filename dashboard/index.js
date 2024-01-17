@@ -204,6 +204,9 @@ class Dashboard {
     secured.get("/dashboard", (req, res) => {
       res.render("dashboard/index.ejs", req.data);
     });
+    secured.get("/playerTest", (_req, res) => {
+      res.sendFile(path.join(__dirname, "./static/js/PlayerTest.html"));
+    });
     secured.get("/search", async (req, res) => {
       const query = (Object.keys(req.query).length == 0) ? null : req.query.q;
       var data = (await this.getSearchResults(query));
@@ -443,8 +446,8 @@ class Dashboard {
       });
     }
     socket.on("info", (uid) => {
-      if (uid !== session.user) return socket.disconnect(true);
       uid = uid || session.user;
+      if (uid !== session.user) return socket.disconnect(true);
       const d = this.getUserData(uid);
       const con = d.voice || {};
       socket.emit("info", {

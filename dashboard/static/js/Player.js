@@ -33,7 +33,9 @@ class Player extends HTMLElement {
     if (!window.remix) window.remix = { notifications: new NotificationManager() };
     if (!window.remix.notifications) window.remix.notifications = new NotificationManager();
 
+    // TODO: switch to custom event emitter
     this.api = new API(); // initiate after notification manager initiated
+    this.#setupEvents();
 
     this.songInfo = {
       duration: 0,
@@ -226,6 +228,62 @@ class Player extends HTMLElement {
     if (newVal == "false") return this.disabled = false;
   }
 
+  #setupEvents() { // TODO: implement events
+    const socket = this.api.socket;
+
+    socket.on("info", (info) => {
+      console.log(info);
+      if (info.currData) {
+        //setVolume(info.currData.volume * 100);
+        //updatePlaybackStatus(info.currData);
+        //renderQueue(info.currData.queue);
+      }
+      //if (info.channel) updateCDisplay(info);
+      if (Object.keys(info.currSong || {}).length > 1) {
+        //update(info.currSong);
+        if (info.currSong.elapsedTime > 0) this.startTimer(info.currSong.elapsedTime);
+      }
+      //if (info.channel) enablePlayer();
+    });
+    socket.on("joined", (data) => {
+      console.log(data);
+      //renderQueue(data.currData.queue);
+      //setVolume(data.currData.volume * 100);
+      //updateCDisplay(data)
+      //if (data.currSong) update(data.currSong);
+      //updatePlaybackStatus(data.currData);
+      //enablePlayer();
+    });
+    socket.on("resume", (d) => {
+      this.startTimer(d.elapsedTime);
+      //updatePlaybackStatus({ paused: false });
+    });
+    socket.on("pause", (d) => {
+      this.stopTimer(d.elapsedTime);
+      //updatePlaybackStatus({ paused: true })
+    });
+    socket.on("userjoin", (user) => {
+      console.log("join", user);
+    })
+    socket.on("userleave", (user) => {
+      console.log("leave", user);
+    })
+    //socket.on("left", () => { resetPlayer(); updateCDisplay({ channel: { name: "-" }, server: { name: "-" } }) });
+    socket.on("startplay", (vid) => {
+      this.stopTimer(0);
+      this.resetTimeDisplay();
+      //update(vid)
+    });
+    socket.on("streamStartPlay", () => this.startTimer(0))
+    socket.on("stopplay", () => {
+      this.stopTimer(0);
+      this.resetTimeDisplay();
+      //resetPlayer();
+    });
+    //socket.on("volume", (v) => setVolume(v * 100));
+    //socket.on("queue", (d) => updateQueue(d));
+  }
+
   formatTime(milliseconds) {
     return new Date(milliseconds).toISOString().slice(
       // if 1 hour passed, show the hour component,
@@ -264,6 +322,10 @@ class Player extends HTMLElement {
     if (time && time !== 0) this.elapsedTime = time;
     this.timerRunning = false;
     this.elapsedTimeElem.innerText = this.formatTime(this.elapsedTime);
+  }
+  resetTimeDisplay() {
+    this.time = 0;
+    this.duration = 0;
   }
 
   get time() { return this.elapsedTime; };

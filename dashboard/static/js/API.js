@@ -26,11 +26,10 @@ export default class API {
     }).filter(x=>x.length).join('/');
   }
 
-  connect() {
+  connect() { // TODO: implement custom event emitter
     // connect to socket io
     this.socket = io();
-    this.socket.emit("info") // user id not necessary anymore
-    this.socket.on("info", console.log);
+    this.socket.emit("info"); // user id is not required anymore
   }
 
   async post(path, body) { // TODO: improve request handling

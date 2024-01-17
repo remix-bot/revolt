@@ -8,6 +8,7 @@ const bcrypt = require("bcrypt");
 const { Server } = require("socket.io");
 const yts = require("yt-search");
 const { Innertube } = require("youtubei.js");
+const ios = require('socket.io-express-session');
 
 class Dashboard {
   port;
@@ -27,8 +28,6 @@ class Dashboard {
     } else {
       server = http.createServer(app);
     }
-    const io = new Server(server);
-    io.on("connection", (socket) => this.socketHandler(socket));
 
     if (remix.config.ssl.useSSL) {
       const httpServer = express();
@@ -50,16 +49,20 @@ class Dashboard {
       ...this.remix.config.mysql
     });
 
-    app.use(express.json());
-    app.use(express.urlencoded());
-    app.use(express.static(path.join(__dirname, "/static")));
-    app.use(cookieParser());
-    app.use(session({
+    const ses = session({
       secret: remix.config.sessionSecret || this.guid(),
       resave: false,
       secure: !!remix.config.ssl.useSSL,
       saveUninitialized: false
-    }));
+    });
+    const io = new Server(server);
+    io.use(ios(ses));
+    io.on("connection", (socket) => this.socketHandler(socket));
+    app.use(express.json());
+    app.use(express.urlencoded());
+    app.use(express.static(path.join(__dirname, "/static")));
+    app.use(cookieParser());
+    app.use(ses);
     app.use(async (req, _res, next) => {
       if (!req.session.user || !req.session.verified) {
         if (!(await this.verifySession(req.session, req.cookies))){
@@ -360,6 +363,8 @@ class Dashboard {
     return newObj;
   }
   socketHandler(socket) {
+    const session = socket.handshake.session;
+    if (!session.user || !session.verified) return socket.disconnect(true);
     const currInfo = (channel) => {
       if (!channel) return { channel: undefined };
       return {
@@ -438,6 +443,8 @@ class Dashboard {
       });
     }
     socket.on("info", (uid) => {
+      if (uid !== session.user) return socket.disconnect(true);
+      uid = uid || session.user;
       const d = this.getUserData(uid);
       const con = d.voice || {};
       socket.emit("info", {

@@ -12,14 +12,18 @@ class Player extends HTMLElement {
   song = null;
   img = null;
   controls = null;
+  playBtn = null;
+  pauseBtn = null;
 
   queue = null;
 
   _disabled = false;
+  _paused = false;
   elapsedTime = 0;
   timeInterval = 0;
   timerRunning = false;
   _duration = 0;
+  updateImgColour = false;
 
   elapsedTimeElem = null;
   durationElem = null;
@@ -93,11 +97,15 @@ class Player extends HTMLElement {
 
     const img = document.createElement("img");
     img.id = "thumbnail";
-    img.setAttribute("cbgrdc", "nochange");
     img.style = "border-radius: 5px; object-fit: cover; height: 100%; width: 100%;";
     img.src = "/assets/icon.png";
     img.alt = "Thumbnail of the current song";
     this.img = img;
+    this.img.onload = () => {
+      if (!this.updateImgColour) return this.updateImgColour = true;
+      const colour = this.colour.pickColour(this.img);
+      this.dispatchEvent(new CustomEvent("imageColour", { detail: colour }));
+    }
     imgCon.append(img);
 
     const cCon = document.createElement("div"); // control container
@@ -143,6 +151,7 @@ class Player extends HTMLElement {
     cCon.append(controls);
 
     const playBtn = document.createElement("button");
+    playBtn.cursor = "pointer";
     playBtn.classList.add("btn", "btn-play", "btn-pbt", "hidden"); // TODO: remove unnecessary classes
     playBtn.style = "margin-right: 0.5rem";
     playBtn.addEventListener("click", async () => {
@@ -150,32 +159,33 @@ class Player extends HTMLElement {
       const success = await this.api.resume();
       if (!success) return;
 
+      this.paused = false;
       pauseBtn.classList.remove("hidden");
       playBtn.classList.add("hidden");
     });
-    playBtn.setAttribute("action", "resume");
     playBtn.disabled = true;
     playBtn.append(this.#createFaI("fa-solid fa-play", "color: #e9196c;"));
+    this.playBtn = playBtn;
     controls.append(playBtn);
 
     const pauseBtn = document.createElement("button");
+    pauseBtn.style.cursor = "pointer";
     pauseBtn.classList.add("btn", "btn-pause", "btn-pbt");
     pauseBtn.addEventListener("click", async () => {
       // TODO: click events
       const success = await this.api.pause();
       if (!success) return;
 
-      playBtn.classList.remove("hidden");
-      pauseBtn.classList.add("hidden");
+      this.paused = true;
     });
-    pauseBtn.setAttribute("action", "pause");
     pauseBtn.disabled = true;
     pauseBtn.append(this.#createFaI("fa-solid fa-pause", "color: #e9196c; margin-right: 0.5rem;"));
+    this.pauseBtn = pauseBtn;
     controls.append(pauseBtn);
 
     const skipBtn = document.createElement("button");
+    skipBtn.style.cursor = "pointer";
     skipBtn.classList.add("btn", "btn-skip", "btn-pbt");
-    skipBtn.setAttribute("action", "skip");
     skipBtn.addEventListener("click", async () => {
       // TODO: pushAction(this);
       const success = await this.api.skip();
@@ -221,6 +231,7 @@ class Player extends HTMLElement {
     vI.id = "volumeIcon";
     this.volIcon = vI;
     slContainer.append(vI);
+    // TODO: implement loop control
 
     const search = document.createElement("search-input");
     search.addEventListener("result", (e) => console.log(e.detail))
@@ -244,16 +255,19 @@ class Player extends HTMLElement {
   #setupEvents() { // TODO: implement events
     const socket = this.api.socket;
 
+    // TODO: implement implement proper loop feature (not just rearrangement like it is right now)
     socket.on("info", (info) => {
       console.log(info);
       if (info.currData) {
         this.setVolD(info.currData.volume * 100);
-        //updatePlaybackStatus(info.currData);
-        //renderQueue(info.currData.queue);
+        this.paused = info.currData.paused;
+        this.queue.items = info.currData.queue;
       }
+      if (info.channel) this.dispatchEvent(new CustomEvent("join", { detail: info }))
       //if (info.channel) updateCDisplay(info);
       if (Object.keys(info.currSong || {}).length > 1) {
-        //update(info.currSong);
+        this.updateActiveVid(info.currSong);
+        this.queue.setCurrent(info.currSong);
         if (info.currSong.elapsedTime > 0) this.startTimer(info.currSong.elapsedTime);
       }
       if (info.channel) this.disabled = false;
@@ -261,19 +275,20 @@ class Player extends HTMLElement {
     socket.on("joined", (data) => {
       console.log(data);
       this.disabled = false;
-      //renderQueue(data.currData.queue);
+      this.queue.items = data.currData.queue;
       this.setVolD(data.currData.volume * 100);
+      this.dispatchEvent(new CustomEvent("join", { detail: data }))
       //updateCDisplay(data)
-      //if (data.currSong) update(data.currSong);
-      //updatePlaybackStatus(data.currData);
+      if (data.currSong) this.updateActiveVid(data.currSong);
+      this.paused = data.currData.paused;
     });
     socket.on("resume", (d) => {
       this.startTimer(d.elapsedTime);
-      //updatePlaybackStatus({ paused: false });
+      this.paused = false;
     });
     socket.on("pause", (d) => {
       this.stopTimer(d.elapsedTime);
-      //updatePlaybackStatus({ paused: true })
+      this.paused = true;
     });
     socket.on("userjoin", (user) => {
       console.log("join", user);
@@ -285,13 +300,14 @@ class Player extends HTMLElement {
       this.stopTimer(0);
       this.resetTimeDisplay();
       this.reset();
-      // TODO: implement the following line outside of the player class:
+      this.dispatchEvent(new CustomEvent("leave"))
+      // above line replaces following legacy code:
       //updateCDisplay({ channel: { name: "-" }, server: { name: "-" } })
     });
     socket.on("startplay", (vid) => {
       this.stopTimer(0);
       this.resetTimeDisplay();
-      //update(vid)
+      this.updateActiveVid(vid)
     });
     socket.on("streamStartPlay", () => this.startTimer(0))
     socket.on("stopplay", () => {
@@ -317,6 +333,9 @@ class Player extends HTMLElement {
           const newArr = data.data;
           this.queue.rearrange(newArr.map(s => s.videoId));
         break;
+        case "clear":
+          this.queue.clear();
+        break;
       }
     });
   }
@@ -335,6 +354,16 @@ class Player extends HTMLElement {
       isFinite(value) &&
       Math.floor(value) === value;
   };
+
+  updateActiveVid(v) {
+    console.log(v);
+    this.img.src = "/api/imageProxy?url=" + encodeURIComponent(v.thumbnail);
+    this.artist.innerText = (!v.artists) ? v.author.name : v.artists.map(a => `${a.name}`).join(" & ");
+    this.song.innerText = v.title;
+
+    const t = +(v.duration.split(':').reduce((acc,time) => (60 * acc) + +time)); // convert to seconds
+    this.duration = t * 1000;
+  }
 
   updateSlider() {
     this.volSlider.style.background = `linear-gradient(to right, #e9196c ${this.volSlider.value}%, rgb(19, 25, 39) ${this.volSlider.value}%)`;
@@ -360,7 +389,7 @@ class Player extends HTMLElement {
     }
   }
 
-  async startTimer(startVal) {
+  async startTimer(startVal) { // fix problems with intervals freezing on blur of the tab
     if (startVal || startVal === 0) this.elapsedTime = startVal;
     this.elapsedTimeElem.innerText = this.formatTime(this.elapsedTime);
     this.timerRunning = true;
@@ -403,13 +432,23 @@ class Player extends HTMLElement {
     this._duration = num;
     this.durationElem.innerText = this.formatTime(num);
   }
+  get paused() { return this._paused; }
+  set paused(bool) {
+    if (!bool) {
+      this.pauseBtn.classList.remove("hidden");
+      this.playBtn.classList.add("hidden");
+    } else {
+      this.pauseBtn.classList.add("hidden");
+      this.playBtn.classList.remove("hidden");
+    }
+    this._paused = bool;
+  }
 
   reset() {
     this.disabled = true;
-    // TODO: somehow implement the following line:
-    // document.body.style.backgroundColor = "rgb(19, 25, 39)";
+    this.dispatchEvent(new CustomEvent("imageColour"), { detail: null });
+    this.updateImgColour = false;
     this.img.src = "/assets/icon.png";
-    this.img.setAttribute("cbgrdc", "nochange") // TODO: remove once the actual system is in place
     this.artist.innerText = "";
     this.song.innerText = "";
     this.queue.clear();
@@ -426,8 +465,8 @@ class Player extends HTMLElement {
   }
 
   #disable() {
+    this.updateImgColour = false;
     this.img.src = "/assets/icon.png";
-    this.img.setAttribute("cbgrdc", "nochange"); // TODO: remove once the other logic is done
     this.artist.innerText = "";
     this.song.innerText = "";
 
@@ -436,6 +475,7 @@ class Player extends HTMLElement {
     this.controls.style.opacity = 0.5;
     for (let i = 0; i < btns.length; i++) {
       btns[i].disabled = true;
+      btns[i].style.cursor = "default";
     }
   }
   #enable() {
@@ -443,6 +483,7 @@ class Player extends HTMLElement {
     this.controls.style.opacity = 1;
     for (let i = 0; i < btns.length; i++) {
       btns[i].disabled = false;
+      btns[i].style.cursor = "pointer";
     }
   }
 

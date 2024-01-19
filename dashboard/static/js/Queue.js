@@ -96,9 +96,13 @@ class SongItem extends HTMLElement {
       19
     );
   }
+  #timestampToMS(t) {
+    return +(t.split(':').reduce((acc,time) => (60 * acc) + +time) * 1000);
+  }
 
   get duration() { return this._duration }
   set duration(ms) {
+    if (typeof ms === "string") ms = this.#timestampToMS(ms);
     this._duration = ms;
     this._timestamp = this.#formatTime(ms);
     this.durElem.innerText = this._timestamp;
@@ -172,8 +176,11 @@ class Queue extends HTMLElement {
     s.id = song.videoId;
     s.title = song.title;
     s.artist = (!song.artists) ? song.author.name : song.artists.map(a => `${a.name}`).join(" & ");
+    console.log(song.duration);
     (song.duration.timestamp) ? s.timestamp = song.duration.timestamp : s.duration = song.duration;
     s.cover = song.thumbnail;
+
+    s.remove();
 
     this.currentSong = s;
   }
@@ -200,13 +207,15 @@ class Queue extends HTMLElement {
     return this.push(song, true);
   }
   next() {
-    if (this.songLoop) return;
+    if (this.songLoop || (this._loop && this.currentSong && this.songItems.length === 0)) return;
     const next = this.songItems.shift();
     const current = this.currentSong;
     if (this._loop && current) {
       current.style.display = "flex";
       this.songItems.push(current);
     }
+    if (!next) return this.#renderQueue(), current;
+    next.remove();
     next.style.display = "none";
     this.currentSong = next;
 

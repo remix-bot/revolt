@@ -131,5 +131,21 @@
   p.queue.push({ title: "A song2", videoId: "2", author: { name: "ShadowLp174" }, duration: 60000, thumbnail: "https://autumn.revolt.chat/avatars/Ej0UkdPD6b_QSUdNwgTWidN2k5X4x1UXeCadpQA374?max_side=256" });
   p.queue.push({ title: "A song3", videoId: "3", author: { name: "ShadowLp174" }, duration: 60000, thumbnail: "https://autumn.revolt.chat/avatars/Ej0UkdPD6b_QSUdNwgTWidN2k5X4x1UXeCadpQA374?max_side=256" });
   p.queue.loop = true;
+
+  p.addEventListener("imageColour", (e) => {
+    console.log("Image colour update", e.detail);
+    const colour = e.detail;
+    // colour === null means "reset"
+    if (colour === null) return document.body.style.backgroundColor = "inherit";
+    document.body.style.backgroundColor = `rgba(${colour.r}, ${colour.g}, ${colour.b}, 1)`; // TODO: prevent very light colours
+  });
+
+  p.addEventListener("join", (data) => {
+    // TODO: updateCDisplay(data)
+  });
+  p.addEventListener("leave", () => {
+    // TODO: `implement updateCDisplay({ channel: { name: "-" }, server: { name: "-" } })`
+    console.log("left");
+  });
 </script>
 </body>

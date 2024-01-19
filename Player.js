@@ -159,7 +159,8 @@ class RevoltPlayer extends EventEmitter {
   }
   clear() {
     this.data.queue.length = 0;
-    this.emit("update", "queue");
+    this.emit("update", "queue"); // TODO: find out what this is
+    this.emit("queue", { type: "clear" });
   }
   getCurrent() {
     if (!this.data.current) return "There's nothing playing at the moment.";

@@ -101,6 +101,7 @@ class SearchInput extends HTMLElement {
   async #keyUp(e) {
     if (e.code === "Enter") {
       e.preventDefault();
+      if (e.target.value === "" && e.target.value !== "0") return;
       this.#dispatchSearch(e.target.value);
       this.#reset();
       return;

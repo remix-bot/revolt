@@ -114,4 +114,17 @@ export default class API {
       });
     });
   }
+  play(query) {
+    return new Promise((res) => {
+      const notification = this.notifications.addInfo("Playlist", "Adding to playlist. Watch the current progress in the revolt channel (WIP)", 5000)
+      this.post("/dashboard/queue", { action: "add", query: query }).then(async d => {
+        notification.description = d.message;
+        res(d.message);
+      }).catch(e => {
+        notification.removeNotif();
+        this.notifications.addError("Playlist Error", e.message, 7000);
+        res(e.message);
+      });
+    });
+  }
 }

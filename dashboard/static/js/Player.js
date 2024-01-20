@@ -234,7 +234,11 @@ class Player extends HTMLElement {
     // TODO: implement loop control
 
     const search = document.createElement("search-input");
-    search.addEventListener("result", (e) => console.log(e.detail))
+    search.addEventListener("result", ({ detail: data }) => {
+      console.log(data);
+      //if (!data.url) return;
+      this.api.play(data.raw);
+    });
     // TODO: implement full window search
     cCon.append(search);
 

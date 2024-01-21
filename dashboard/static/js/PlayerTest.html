@@ -1,4 +1,4 @@
-<body style="padding: 0; margin: 0">
+<body style="padding: 0; margin: 0; background-color: rgb(17, 24, 39)">
   <link rel="stylesheet" href="/css/Player.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -99,16 +99,41 @@
 
 <br />
 
-<h1>Web Component Rewrite: </h1>
+<h1 style="color: rgb(219, 39, 119); font-size: 200%; text-align: center; font-weight: 600">Web Component Rewrite: </h1>
 
 <br />
 
-<remix-player id="wcplayer"></remix-player>
+<div style="
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  padding: 1.5rem;
+  gap: 1.5rem;
+  color: white">
+
+  <div style="
+  flex-grow: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  justify-content: center">
+    <remix-server-list style="flex-grow: 2" id="server-list"></remix-server-list>
+  </div>
+
+  <remix-player style="flex-grow: 3" id="wcplayer"></remix-player>
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 
 <script type="module">
   import "/js/Player.js";
+  import "/js/ServerList.js";
+
+  const l = document.getElementById("server-list");
+  window.addEventListener("load", () => {
+    l.load();
+  });
 
   import NotificationManager from "/js/Notifications.js";
 
@@ -136,7 +161,7 @@
     console.log("Image colour update", e.detail);
     const colour = e.detail;
     // colour === null means "reset"
-    if (colour === null) return document.body.style.backgroundColor = "inherit";
+    if (colour === null) return document.body.style.backgroundColor = "rgb(17, 24, 39)";
     document.body.style.backgroundColor = `rgba(${colour.r}, ${colour.g}, ${colour.b}, 1)`; // TODO: prevent very light colours
   });
 

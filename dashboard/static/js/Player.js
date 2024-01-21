@@ -43,6 +43,7 @@ class Player extends HTMLElement {
 
     // TODO: switch to custom event emitter
     this.api = new API(); // initiate after notification manager initiated
+    window.remix.api = this.api; // for other components, like the server list
     this.#setupEvents();
 
     this.songInfo = {

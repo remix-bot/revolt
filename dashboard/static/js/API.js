@@ -127,4 +127,14 @@ export default class API {
       });
     });
   }
+  getServers() {
+    return new Promise(res => {
+      this.get("/servers").then(d => {
+        return res(d);
+      }).catch(e => {
+        this.notifications.addError("Server List Error", e.message, 7000);
+        return res(false);
+      });
+    });
+  }
 }

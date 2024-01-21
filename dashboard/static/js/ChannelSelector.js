@@ -91,6 +91,8 @@ export default class ChannelSelector extends Modal {
     con.append(document.createElement("br"));
 
     const list = document.createElement("ul");
+    list.style.margin = "0";
+    list.style.listStyleType = "none";
     this.list = list;
     con.append(list);
     con.append(document.createElement("br"));
@@ -120,7 +122,7 @@ export default class ChannelSelector extends Modal {
   selectChannel(server) {
     return new Promise(res => {
       this.showChannels(server);
-      
+
     });
   }
 
@@ -130,14 +132,50 @@ export default class ChannelSelector extends Modal {
     this.cBtn.disabled = true;
     this.show();
 
+    this.list.replaceChildren();
+
     const channelsWCat = server.categories.map(c => c.channels).flat(1);
-    server.channels.filter(c => c.type === "TextChannel" && !channelsWCat.includes(c.id)).forEach(c => {
+    server.channels.filter(
+      c =>
+        c.type === "TextChannel"
+        && !channelsWCat.includes(c.id)
+      ).forEach(c => {
+
       const i = this.createListItem(c);
       i.addEventListener("click", () => {
         i.classList.add("selected");
         this.select(i);
       });
       this.list.append(i);
+    });
+
+    server.categories.forEach(cat => {
+      if (cat.channels.length === 0) return;
+      const catEl = document.createElement("li");
+      const title = document.createElement("div");
+      title.innerText = cat.title;
+      title.display = "inline";
+      title.classList.add("category");
+      catEl.append(title);
+
+      const list = document.createElement("ul");
+      list.style.listStyle = "none";
+      list.style.lineHeight = "1";
+      list.append(...server.channels.filter(
+        c =>
+          c.type === "TextChannel"
+          && cat.channels.includes(c.id)
+        ).map(c => {
+          const i = this.createListItem(c);
+          i.style.paddingLeft = "0.4rem";
+          i.addEventListener("click", () => {
+            i.classList.add("selected");
+            this.select(i);
+          });
+          return i;
+        }));
+        catEl.appendChild(list);
+        this.list.append(catEl);
     });
   }
 }

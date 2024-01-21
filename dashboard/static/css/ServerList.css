@@ -28,6 +28,10 @@ ul {
   margin: 0;
 }
 
+.channelItem {
+  cursor: pointer;
+}
+
 .caret {
   cursor: pointer;
   user-select: none;

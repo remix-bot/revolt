@@ -1,6 +1,51 @@
 class ChannelItem extends HTMLElement {
+  css = null;
+
+  i = null;
+  li = null;
+
   constructor() {
     super();
+  }
+
+  connectedCallback() {
+    const shadow = this.attachShadow({ mode: "open" });
+
+    const styles = document.createElement("link");
+    styles.rel = "stylesheet";
+    styles.href = "/css/ServerList.css";
+    shadow.append(styles);
+
+    const css = document.createElement("style");
+    this.css = css;
+    shadow.append(css);
+
+    const li = document.createElement("li");
+    li.classList.add("channelItem");
+    this.li = li;
+    shadow.append(li);
+
+    if (!this.i) return;
+    this.#updateChannel();
+  }
+  #updateChannel() {
+    const i = this.i;
+    if (i.icon) {
+      this.li.style.listStyle = "none";
+      this.css.sheet.insertRule("li[itemid='" + i.id + "']::before {content:''; display: inline-block; position: relative; top: 0.4rem; background-image:url(" + i.icon + "); background-size: cover; aspect-ratio: 1/1; height: 1.5rem; margin-right: 0.2rem; margin-left: 0.2rem; padding: 0 }");
+    }
+    this.li.append(i.name);
+    this.li.onclick = () => {
+      // TODO: implement initJoin();
+    }
+    this.li.setAttribute("itemId", i.id);
+  }
+
+  get channel() { return this.i }
+  set channel(c) {
+    this.i = c;
+    if (!this.isConnected) return;
+    this.#updateChannel();
   }
 }
 
@@ -9,6 +54,9 @@ class ServerItem extends HTMLElement {
   li = null;
   css = null;
   list = null;
+  caret = null;
+
+  state = "collapsed";
 
   constructor() {
     super();
@@ -32,6 +80,7 @@ class ServerItem extends HTMLElement {
 
     const caret = document.createElement("span");
     caret.classList.add("caret");
+    this.caret = caret;
     li.append(caret);
 
     const list = document.createElement("ul");
@@ -46,13 +95,13 @@ class ServerItem extends HTMLElement {
   #updateServer() {
     if (this.i.icon) {
       this.li.style.listStyle = "none";
-      this.css.sheet.insertRule("li[itemid='" + this.i.id + "']::before {content:''; display: inline-block; position: relative; top: 0.4rem; background-image:url(" + this.i.icon + "); background-size: cover; aspect-ratio: 1/1; height: 1.5rem; margin-right: 0.2rem; margin-left: 0.2rem; padding: 0;}"); //" + bs + "}");
+      this.css.sheet.insertRule("li[itemid='" + this.i.id + "']::before {content:''; display: inline-block; position: relative; top: 0.4rem; background-image:url(" + this.i.icon + "); background-size: cover; aspect-ratio: 1/1; height: 1.5rem; margin-right: 0.2rem; margin-left: 0.2rem; padding: 0;}");
     }
-    this.li.append(this.i.name);
+    this.li.insertBefore(document.createTextNode(this.i.name), this.list);
     this.li.setAttribute("itemId", this.i.id);
 
-    this.li.onclick = () => {
-      this.expand();
+    this.caret.onclick = () => {
+      this.toggleChannels();
     }
 
     if (this.i.voiceChannels.length === 0) return;
@@ -67,8 +116,16 @@ class ServerItem extends HTMLElement {
     });
   }
 
-  expand() {
+  toggleChannels() {
+    const state = this.state;
+    this.list.classList.toggle("active");
+    this.caret.classList.toggle("caret-down");
+    if (state === "collapsed") this.fetchVoice();
+    this.state = (state === "collapsed") ? "expanded" : "collapsed";
+  }
 
+  fetchVoice() {
+    // TODO:
   }
 
   set server(s) {

@@ -137,4 +137,14 @@ export default class API {
       });
     });
   }
+  getTextChannels(server) {
+    return new Promise(res => {
+      this.get("/server/" + server + "/channels").then(d => {
+        res(d.data);
+      }).catch(e => {
+        this.notifications.addError("Server List Error", e.message, 7000);
+        return res(false);
+      });
+    });
+  }
 }

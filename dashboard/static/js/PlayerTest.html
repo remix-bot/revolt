@@ -124,16 +124,22 @@
   <remix-player style="flex-grow: 3" id="wcplayer"></remix-player>
 </div>
 
+<remix-channel-selector id="channelSelector"></remix-channel-selector>
+
 <script src="/socket.io/socket.io.js"></script>
 
 <script type="module">
   import "/js/Player.js";
   import "/js/ServerList.js";
+  import "/js/ChannelSelector.js";
 
   const l = document.getElementById("server-list");
   window.addEventListener("load", () => {
     l.load();
   });
+
+  const m = document.getElementById("channelSelector");
+  window.m = m;
 
   import NotificationManager from "/js/Notifications.js";
 

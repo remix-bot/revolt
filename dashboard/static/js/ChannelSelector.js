@@ -15,7 +15,7 @@ class TextChannel extends HTMLElement {
 
     const styles = document.createElement("link");
     styles.rel = "stylesheet";
-    styles.href = "/css/ServerList.css";
+    styles.href = "/css/ChannelSelector.css";
     shadow.append(styles);
 
     const css = document.createElement("style");
@@ -49,13 +49,21 @@ class TextChannel extends HTMLElement {
     if (!this.isConnected) return;
     this.#updateChannel();
   }
+
+  setSelected(bool) {
+    return (bool) ?
+        this.li.classList.add("selected")
+      : this.li.classList.remove("selected");
+  }
 }
 
-customElements.define("remix-text-channel", TextChannel)
+customElements.define("remix-text-channel", TextChannel);
 
 export default class ChannelSelector extends Modal {
   list = null;
   cBtn = null;
+
+  selected = null;
 
   constructor() {
     super();
@@ -92,6 +100,8 @@ export default class ChannelSelector extends Modal {
 
     const list = document.createElement("ul");
     list.style.margin = "0";
+    list.style.marginLeft = "1.3rem";
+
     list.style.listStyleType = "none";
     this.list = list;
     con.append(list);
@@ -116,6 +126,9 @@ export default class ChannelSelector extends Modal {
   }
 
   select(c) {
+    this.selected?.setSelected(false);
+    this.selected = c;
+    c.setSelected(true);
     console.log(c);
   }
 
@@ -143,7 +156,6 @@ export default class ChannelSelector extends Modal {
 
       const i = this.createListItem(c);
       i.addEventListener("click", () => {
-        i.classList.add("selected");
         this.select(i);
       });
       this.list.append(i);
@@ -169,7 +181,6 @@ export default class ChannelSelector extends Modal {
           const i = this.createListItem(c);
           i.style.paddingLeft = "0.4rem";
           i.addEventListener("click", () => {
-            i.classList.add("selected");
             this.select(i);
           });
           return i;

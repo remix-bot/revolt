@@ -2,6 +2,7 @@
 
 * {
   font-family: Cairo, sans-serif;
+  line-height: 1.5;
 }
 
 h1 {
@@ -63,6 +64,7 @@ a:active {
 .category {
   display: flex;
   align-items: center;
+  line-height: normal;
 }
 .category::after {
   content: "";
@@ -70,4 +72,13 @@ a:active {
   margin-left: 1rem;
   height: 1px;
   background-color: white;
+}
+.channelItem {
+  cursor: pointer;
+  padding: 0.1rem;
+  padding-left: 0.35rem;
+}
+
+ul {
+  padding: 0;
 }

@@ -139,7 +139,7 @@ class Remix {
     this.client.on("messageReactionRemove", reactionUpdate);
     this.client.on("serverMemberJoin", (member) => { // TODO: test
       const data = this.memberMap.get(member.server.id);
-      if (data) return;
+      if (!data) return;
       data.push(member.id.user);
       this.memberMap.set(member.server.id, data);
 
@@ -147,6 +147,17 @@ class Remix {
       if (this.userCache.findIndex(e => e.id === user.id) !== -1) return;
       this.userCache.push({ id: user.id, name: user.username, discrim: user.discriminator})
     });
+    this.client.on("serverCreate", (server) => {
+      console.log("Mapping " + server.id);
+      server.fetchMembers().then(members => {
+        this.#mapServer(members);
+      });
+    });
+    this.client.on("serverDelete", (server) => { // TODO: update to serverLeave and serverDelete once rjs implements it
+      if (!this.memberMap.has(server.id)) return;
+      console.log("Deleting " + server.id);
+      this.memberMap.delete(server.id);
+    })
     this.client.on("serverMemberLeave", (member) => {
       const data = this.memberMap.get(member.id.server);
       if (!data) return;
@@ -292,22 +303,25 @@ class Remix {
     await Promise.allSettled(promises);
     console.log(this.client.users.size);
   }
+  #mapServer(members) {
+    if (!members) return;
+    const users = members.users;
+    members = members.members;
+    const server = members[0].server.id;
+    members = members.map(m => m.id.user);
+    this.memberMap.set(server, members);
+    users.forEach(user => {
+      if (this.userCache.findIndex(e => e.id === user.id) !== -1) return;
+      this.userCache.push({ id: user.id, name: user.username, discrim: user.discriminator})
+    });
+  }
   mapMembers() {
     return new Promise(async res => {
       if (!this.config.mapMembers) return res();
       const evaluate = (data) => {
         data = data.map(v => v.value);
         data.forEach(members => {
-          if (!members) return;
-          const users = members.users;
-          members = members.members;
-          const server = members[0].server.id;
-          members = members.map(m => m.id.user);
-          this.memberMap.set(server, members);
-          users.forEach(user => {
-            if (this.userCache.findIndex(e => e.id === user.id) !== -1) return;
-            this.userCache.push({ id: user.id, name: user.username, discrim: user.discriminator})
-          });
+          this.#mapServer(members);
         });
       }
 

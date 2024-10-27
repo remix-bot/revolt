@@ -110,12 +110,13 @@ class Dashboard {
       const command = this.remix.handler.commands.find(c => c.uid == req.body.id);
       const msg = {
         channel: {
-          serverId: "01FZ62C8WFS3HBEN5QTN8RZRQG"
+          serverId: "eval"
         }
       }
 
-      console.log(args, command);
+      console.log(command);
       const cmd = this.remix.handler.processCommand(command, args, msg, false, true);
+      console.log(cmd);
       res.send({ success: typeof cmd === "object", message: (typeof cmd === "string") ? cmd : "ok" });
     });
 

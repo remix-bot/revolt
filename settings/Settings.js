@@ -1,4 +1,5 @@
 const fs = require("fs");
+const mysql = require("mysql")
 
 class ServerSettings { // TODO: switch to better db system
   id;
@@ -36,7 +37,7 @@ class ServerSettings { // TODO: switch to better db system
     }
   }
   checkDefaults(d) {
-    for (key in d) {
+    for (let key in d) {
       if (!this.data[key]) this.data[key] = d[key];
     }
   }
@@ -155,4 +156,103 @@ class SettingsManager {
   }
 }
 
-module.exports = { SettingsManager, ServerSettings };
+class RemoteSettingsManager { // mysql based manager
+  guilds = new Map();
+  descriptions = {};
+  defaults = {};
+
+  serverConfig = null;
+
+  db = null;
+
+  constructor(config, defaultsPath) {
+    this.db = mysql.createPool({
+      connectionLimit : 15,
+      ...config
+    });
+
+    this.loadDefaultsSync(defaultsPath);
+
+    this.load();
+
+    return this;
+  }
+
+  query(query) {
+    return new Promise(res => {
+      this.db.query(query, (error, results, fields) => { res({ error, results, fields })});
+    });
+  }
+
+  async load() {
+    const res = await this.query("SELECT * FROM settings");
+    if (res.error) {
+      console.error("settings init error; ", res.error);
+      console.error("retrying in 2 seconds");
+      return setTimeout(() => {
+        this.load();
+      }, 2000);
+    }
+
+    const results = res.results;
+    results.forEach((r) => {
+      let server = new ServerSettings(r.id, this);
+      server.deserialize(JSON.parse(r.data));
+      server.checkDefaults(this.defaults);
+      this.guilds.set(server.id, server);
+    });
+  }
+  async remoteUpdate(server, key) {
+    const r = await this.query("UPDATE settings SET 'data' = JSON_SET('data', $." + key + ", '" + server.data[key] + "')")
+    if (r.error) console.error("settings update error; ", r.error);
+  }
+  async remoteSave(server) {
+    const r = await this.query("UPDATE settings SET 'data' = '" + JSON.stringify(server.data) + "' WHERE id='" + server.id + "'");
+    if (r.error) console.error("settings server save error; ", r.error);
+  }
+
+  loadDefaultsSync(filePath) {
+    const d = fs.readFileSync(filePath, "utf8");
+    let parsed = JSON.parse(d);
+    this.descriptions = parsed.descriptions;
+    this.defaults = parsed.values;
+  }
+
+  saveAsync() {
+    return new Promise(async (res) => {
+      const p = []; // promises
+      this.guilds.forEach((val, _k) => {
+        p.push(this.remoteSave(val));
+      });
+
+      await Promise.all(p);
+      res();
+    });
+  }
+  async create(id, server) {
+    const r = await this.query("INSERT INTO settings (id, data) VALUES ('" + id + "', '" + JSON.stringify(server.data) +  "')");
+    if (r.error) console.error("settings create server error; ", r.error);
+  }
+
+  update(server, key) {
+    if (!this.guilds.has(server.id)) {
+      this.guilds.set(server.id, server);
+      this.create(server.id, server);
+    }
+    const s = this.guilds.get(server.id);
+    s.data[key] = server.data[key];
+    this.remoteUpdate(server, key);
+  }
+  isOption(key) {
+    return key in this.defaults;
+  }
+
+  hasServer(id) {
+    return this.guilds.has(id);
+  }
+  getServer(id) {
+    return (!this.guilds.has(id)) ? new ServerSettings(id, this) : this.guilds.get(id);
+  }
+}
+
+module.exports = { SettingsManager, RemoteSettingsManager, ServerSettings };

@@ -45,7 +45,6 @@ module.exports = {
         if (failed) return message.reply(this.em(failed, message), false);
         set.set(data.get("setting").value, data.get("value").value);
         message.reply(this.em("Settings changed!", message), false);
-        this.settingsMgr.saveAsync();
       break;
       case "getSettings":
         const setting = data.get("setting").value;

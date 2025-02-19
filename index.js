@@ -4,7 +4,7 @@ const { Revoice } = require("revoice.js");
 const { Client } = require("revolt.js");
 const path = require("path");
 const fs = require("fs");
-const { SettingsManager } = require("./settings/Settings.js");
+const { SettingsManager, RemoteSettingsManager } = require("./settings/Settings.js");
 if (!process.execArgv.includes("--inspect")) require('console-stamp')(console, 'HH:MM:ss.l');
 const YTDlpWrap = require("yt-dlp-wrap-extended").default;
 
@@ -38,6 +38,9 @@ class Remix {
 
     this.settingsMgr = new SettingsManager();
     this.settingsMgr.loadDefaultsSync("./storage/defaults.json");
+    // updated settings manager based on a mysql database:
+    // TODO: add self-hosting instr
+    this.rSettingsMgr = new RemoteSettingsManager(this.config.mysql, "./storage/defaults.json");
 
     this.uploader = new Uploader(this.client);
 
@@ -120,6 +123,7 @@ class Remix {
 
       if (!this.config.fetchUsers) return;
       this.fetchUsers(); // TODO: find out why I did this, there is a reason (Mabye caching?) but I have no clue and am scared to remove this
+      // future me here: most likely caching. This shouldn't be the reason for rate limits.
       setInterval(() => this.fetchUsers, 60 * 1000 * 30);
     });
     this.client.on("messageCreate", (m) => {
@@ -549,7 +553,7 @@ class Remix {
   }
   getSettings(message) {
     const serverId = message.channel.serverId;
-    return this.settingsMgr.getServer(serverId);
+    return this.rSettingsMgr.getServer(serverId);
   }
   observeUser(id, channel, cb) {
     this.observedUsers.set(id + ";" + channel, cb);

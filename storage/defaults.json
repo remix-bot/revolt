@@ -3,12 +3,14 @@
     "songAnnouncements": false,
     "prefix": "%",
     "pfp": "default",
-    "locale": "en"
+    "locale": "en",
+    "restrictVolume": false
   },
   "descriptions": {
     "songAnnouncements": "Wether the bot should announce every song when it starts playing it.",
     "prefix": "The prefix that is used to trigger commands. Alternatively, you can use a ping with a space after it.",
     "pfp": "What profile picture the bot should use. `default | dark | light | mono | <custom url>`",
-    "locale": "The preferred language of your server. For valid language codes please see the github repository."
+    "locale": "The preferred language of your server. For valid language codes please see the github repository.",
+    "restrictVolume": "If this is set to anything else than `false`, every user in the server will be able to change the volume. Otherwise only users with the `ManageChannel` permission can."
   }
 }

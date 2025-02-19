@@ -42,7 +42,7 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
     });
   })
   p.on("message", (m) => {
-    if ((this.settingsMgr.getServer(message.channel.serverId).get("songAnnouncements")) == "false") return;
+    if ((this.getSettings(message).get("songAnnouncements")) == "false") return;
     message.channel.sendMessage(this.em(m, message))
   });
   p.on("roomfetched", () => {

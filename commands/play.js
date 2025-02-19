@@ -3,7 +3,7 @@ module.exports = {
   command: new CommandBuilder()
     .setName("play")
     .setId("play")
-    .setDescription("Play a youtube video from url/query or a playlist by url. Other services are supported as well.", "commands.play")
+    .setDescription("Play a youtube video from url/query or a playlist by url. Other services are supported as well.\nSearches will be done on `Youtube Music` by default.\nIf you want to search on `YouTube` you will have to specify that with `-u yt` explicitly.", "commands.play")
     .addExamples("$prefixplay take over league of legends", "$prefixplay -provider yt 'take over league of legends'", "$prefixp take over league of legends")
     .addTextOption((option) =>
       option.setName("query")

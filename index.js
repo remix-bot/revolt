@@ -119,7 +119,7 @@ class Remix {
       });
 
       if (!this.config.fetchUsers) return;
-      this.fetchUsers();
+      this.fetchUsers(); // TODO: find out why I did this, there is a reason (Mabye caching?) but I have no clue and am scared to remove this
       setInterval(() => this.fetchUsers, 60 * 1000 * 30);
     });
     this.client.on("messageCreate", (m) => {
@@ -315,6 +315,23 @@ class Remix {
       this.userCache.push({ id: user.id, name: user.username, discrim: user.discriminator})
     });
   }
+
+  util = { // required as a property to be copied into the context in the eval command by object.assign
+    mapToArray(map) {
+      const iterator = map.entries();
+
+      const arr = []
+      for (const value of iterator) {
+        arr.push(value);
+      }
+
+      return arr;
+    },
+    connectionsByType: function(connections) {
+      this.mapToArray(connections).map(e => e[1] = e[1][0]);
+    }
+  }
+
   mapMembers() {
     return new Promise(async res => {
       if (!this.config.mapMembers) return res();

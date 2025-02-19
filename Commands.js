@@ -817,10 +817,11 @@ class CommandHandler extends EventEmitter {
         const optional = ((o.required) ? "" : "?");
         const flag = (o instanceof Flag) ? "-" : "";
         if (o.type == "choice") {
-          content += "- **" + flag + o.name + "**" + optional + ": " + this.getDescription(o, msg) + "; Allowed values: `" + o.choices.join("`, `") + "`\n";
+          content += "- **" + flag + o.name + "**" + optional + ": " + this.getDescription(o, msg) + ";\n  - Allowed values: `" + o.choices.join("`, `") + "`\n  - Aliases: `" + o.aliases.join("`, `") + "`\n";
         } else {
-          content += "- **" + flag + o.name + "**" + optional + ": " + this.getDescription(o, msg) + "\n";
+          content += "- **" + flag + o.name + "**" + optional + ": " + this.getDescription(o, msg) + "\n  - Aliases: `" + o.aliases.join("`, `") + "`\n";
         }
+        content += "\n";
       });
       content += "\n";
     }

@@ -119,12 +119,12 @@ class Remix {
           });
           if (state == texts.length - 1) {state = 0} else {state++}
         }, this.presenceInterval);
-      });
 
-      if (!this.config.fetchUsers) return;
-      this.fetchUsers(); // TODO: find out why I did this, there is a reason (Mabye caching?) but I have no clue and am scared to remove this
-      // future me here: most likely caching. This shouldn't be the reason for rate limits.
-      setInterval(() => this.fetchUsers, 60 * 1000 * 30);
+        if (!this.config.fetchUsers) return;
+        this.fetchUsers(); // TODO: find out why I did this, there is a reason (Mabye caching?) but I have no clue and am scared to remove this
+        // future me here: most likely caching. This shouldn't be the reason for rate limits.
+        setInterval(() => this.fetchUsers, 60 * 1000 * 30);
+      });
     });
     this.client.on("messageCreate", (m) => {
       if (!this.observedUsers.has(m.authorId + ";" + m.channelId)) return;

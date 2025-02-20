@@ -63,7 +63,7 @@ If you're self-hosting Remix, please make it clear that it is **not the main ins
     - Rename the `config.example.json` file and fill out the missing values. You can generate spotify credentials [here](https://developer.spotify.com/)
     - Important: since [
 6cedcb9](https://github.com/remix-bot/revolt/commit/6cedcb9425d65171b79ce73fc91a9e890afc137a), a MySQL database is required.
-      For setup instructions see [DB Setup](#setup-database)
+      For setup instructions see [DB Setup](#setup-database).
 -   Run the bot (`node index.js`)
 
 ## Setup Database

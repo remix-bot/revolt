@@ -12,7 +12,7 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
     return message.reply(this.em("Already joined <#" + cid + ">.", message), false);
   }
   this.channels.push(cid);
-  const settings = this.settingsMgr.getServer(message.channel.serverId);
+  const settings = this.getSettings(message);
   const pOff = this.freed.shift() || ++this.currPort; // reuse old ports
   const p = new RevoltPlayer(this.config.token, {
     voice: this.revoice,

@@ -55,6 +55,16 @@ class ServerSettings { // TODO: switch to better db system
   }
 }
 
+
+/**
+ * Creates a server settings manager. Stores everything in a JSON file.
+ * To save the current configs you have to call .saveAsync()
+ * Deprecated for obvious reasons. Use RemoteSettingsManager instead.
+ *
+ * @class SettingsManager
+ *
+ * @deprecated
+ */
 class SettingsManager {
   guilds = new Map();
   storagePath = "./storage/settings.json";
@@ -203,11 +213,11 @@ class RemoteSettingsManager { // mysql based manager
     });
   }
   async remoteUpdate(server, key) {
-    const r = await this.query("UPDATE settings SET 'data' = JSON_SET('data', $." + key + ", '" + server.data[key] + "')")
+    const r = await this.query("UPDATE settings SET data = JSON_SET(data, '$." + key + "', '" + server.data[key] + "') WHERE id='" + server.id + "'")
     if (r.error) console.error("settings update error; ", r.error);
   }
   async remoteSave(server) {
-    const r = await this.query("UPDATE settings SET 'data' = '" + JSON.stringify(server.data) + "' WHERE id='" + server.id + "'");
+    const r = await this.query("UPDATE settings SET data = '" + JSON.stringify(server.data) + "' WHERE id='" + server.id + "'");
     if (r.error) console.error("settings server save error; ", r.error);
   }
 

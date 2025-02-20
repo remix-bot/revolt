@@ -36,11 +36,11 @@ class Remix {
     this.observedUsers = new Map();
     this.observedReactions = new Map();
 
-    this.settingsMgr = new SettingsManager();
-    this.settingsMgr.loadDefaultsSync("./storage/defaults.json");
+    /*this.settingsMgr = new SettingsManager();
+    this.settingsMgr.loadDefaultsSync("./storage/defaults.json");*/
     // updated settings manager based on a mysql database:
     // TODO: add self-hosting instr
-    this.rSettingsMgr = new RemoteSettingsManager(this.config.mysql, "./storage/defaults.json");
+    this.settingsMgr = new RemoteSettingsManager(this.config.mysql, "./storage/defaults.json");
 
     this.uploader = new Uploader(this.client);
 
@@ -553,7 +553,7 @@ class Remix {
   }
   getSettings(message) {
     const serverId = message.channel.serverId;
-    return this.rSettingsMgr.getServer(serverId);
+    return this.settingsMgr.getServer(serverId);
   }
   observeUser(id, channel, cb) {
     this.observedUsers.set(id + ";" + channel, cb);

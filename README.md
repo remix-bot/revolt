@@ -61,7 +61,26 @@ If you're self-hosting Remix, please make it clear that it is **not the main ins
 -   Install the dependencies (`npm install`)
 -   Set up a `config.json` file
     - Rename the `config.example.json` file and fill out the missing values. You can generate spotify credentials [here](https://developer.spotify.com/)
+    - Important: since [
+6cedcb9](https://github.com/remix-bot/revolt/commit/6cedcb9425d65171b79ce73fc91a9e890afc137a), a MySQL database is required.
+      For setup instructions see [DB Setup](#setup-database)
 -   Run the bot (`node index.js`)
+
+## Setup Database
+
+1. The main thing you'll need is a MySQL database accessible to your server, either publicly or locally.
+2. Create a separate database. This way none of your other data collides with Remix.
+3. Enter the connection details into the respective fields in the `config.json` file.
+4. Run the following SQL commands, to create all the necessary tables:
+  ```SQL
+  CREATE TABLE `settings` (
+    `id` varchar(70) NOT NULL,
+    `data` json NOT NULL
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+  ```
+5. You're good to go! If you've used the old settings system and want to migrate your data,
+check the README in the `settings` folder.
+
 
 ## Connecting To A Self-Hosted Instance
 

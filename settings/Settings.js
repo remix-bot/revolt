@@ -1,5 +1,6 @@
 const fs = require("fs");
 const mysql = require("mysql")
+const EventEmitter = require("events");
 
 class ServerSettings { // TODO: switch to better db system
   id;
@@ -166,7 +167,8 @@ class SettingsManager {
   }
 }
 
-class RemoteSettingsManager { // mysql based manager
+class RemoteSettingsManager extends EventEmitter { // mysql based manager
+  // TODO: setup instructions
   guilds = new Map();
   descriptions = {};
   defaults = {};
@@ -176,12 +178,14 @@ class RemoteSettingsManager { // mysql based manager
   db = null;
 
   constructor(config, defaultsPath) {
+    super();
+
     this.db = mysql.createPool({
       connectionLimit : 15,
       ...config
     });
 
-    this.loadDefaultsSync(defaultsPath);
+    if (defaultsPath) this.loadDefaultsSync(defaultsPath);
 
     this.load();
 
@@ -211,6 +215,8 @@ class RemoteSettingsManager { // mysql based manager
       server.checkDefaults(this.defaults);
       this.guilds.set(server.id, server);
     });
+
+    this.emit("ready");
   }
   async remoteUpdate(server, key) {
     const r = await this.query("UPDATE settings SET data = JSON_SET(data, '$." + key + "', '" + server.data[key] + "') WHERE id='" + server.id + "'")
@@ -235,7 +241,7 @@ class RemoteSettingsManager { // mysql based manager
         p.push(this.remoteSave(val));
       });
 
-      await Promise.all(p);
+      await Promise.allSettled(p);
       res();
     });
   }

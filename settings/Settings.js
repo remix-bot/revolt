@@ -22,6 +22,9 @@ class ServerSettings { // TODO: switch to better db system
   get(key) {
     return this.data[key];
   }
+  reset(key) {
+    return this.set(key, this.manager.defaults[key]);
+  }
   getAll() {
     return this.data;
   }

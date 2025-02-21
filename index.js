@@ -336,6 +336,13 @@ class Remix {
     }
   }
 
+  guid() {
+    var S4 = function() {
+       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+  }
+
   mapMembers() {
     return new Promise(async res => {
       if (!this.config.mapMembers) return res();
@@ -761,7 +768,7 @@ class Remix {
     }
   }
   masquerade(msg) {
-    let a = this.settingsMgr.getServer(msg.channel.server_id).get("pfp");
+    let a = this.getSettings(msg).get("pfp");
     let avatar = null;
     if (a == "dark") {
       avatar = "https://autumn.revolt.chat/avatars/xkTqA-n4CDX6_DIwaQJSIy2B1mYpBQRH0iM2dyIscR";

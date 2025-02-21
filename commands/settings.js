@@ -50,7 +50,7 @@ module.exports = {
           .addChoiceOption(c =>
             c.addChoices(...Object.keys(this.settingsMgr.defaults))
               .setName("setting")
-              .setDescription("The setting to explain", "options.settings.help.setting")
+              .setDescription("Optional setting to explain.", "options.settings.help.setting")
               .setRequired(false)
             )
         )
@@ -78,7 +78,7 @@ module.exports = {
       break;
       case "reset":
         set.reset(setting);
-        message.reply(this.em("`" + s + "` has been reset!", message), false);
+        message.reply(this.em("`" + setting + "` has been reset to `" + set.get(setting) + "`.", message), false);
       break;
       case "help":
         if (!setting) {

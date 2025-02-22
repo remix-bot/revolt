@@ -89,13 +89,18 @@ module.exports = {
 
           You can view the current server settings by using the \`$prefixsettings get\` command.
 
-          To display more information about an individual option, use \`$prefixsettings help <option name>\``.replaceAll("$prefix", set.get("prefix"));
+          To display more information about an individual option, use \`$prefixsettings help <option name>\`
+
+          Available options are: \`${Object.keys(this.settingsMgr.defaults).join("`, `")}\``.replaceAll("$prefix", set.get("prefix"));
           message.reply(this.em(m, message), false);
           return;
         }
 
-        // TODO: explain individual settings
-        const m = `Work in progress...`;
+        const description = this.settingsMgr.descriptions[setting];
+        var m = "## Settings: " + setting + "\n\n";
+        m += description + "\n\n";
+        m += "Current value: `" + this.getSettings(message).get(setting) + "`";
+
         message.reply(this.em(m, message), false);
       break;
     }

@@ -451,7 +451,7 @@ class Dashboard {
       socket.emit("info", {
         connected: !!d.voice,
         ...currInfo(this.remix.client.channels.get(con.channelId)),
-        currSong: (!!d.voice) ? {...getSongData(d.player.data.current, d.player), elapsedTime: d.player.player.seconds * 1000} : null,
+        currSong: (!!d.voice) ? {...getSongData(d.player.data.current, d.player), elapsedTime: (d.player.player?.seconds  || 0) * 1000} : null,
         currData: (!!d.voice) ? getPlayerData(d.player) : null
       });
       if (!!d.voice) subscribePlayer(d.player, socket);

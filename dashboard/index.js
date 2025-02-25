@@ -232,9 +232,9 @@ class Dashboard {
       });
       externalReq.end();
     });
-    secured.get("/api/servers/", (req, res) => {
-      var servers = this.remix.getSharedServers(req.data.user);
-      res.status(200).send(servers);
+    secured.get("/api/servers/", async (req, res) => {
+      var servers = await this.remix.getSharedServers(req.data.user);
+      res.status(200).send(servers ? servers : []);
     });
     secured.get("/api/server/:s/voice", async (req, res) => {
       const server = req.params.s;

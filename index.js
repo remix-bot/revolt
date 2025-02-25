@@ -105,26 +105,26 @@ class Remix {
       console.log("Logged in as " + this.client.user.username);
     });
     this.client.once("ready", () => {
-      this.mapMembers().then(() => {
-        let state = 0;
-        let def = ["Ping for prefix", "By RedTech | NoLogicAlan", "Servers: $serverCount"];
-        let texts = config.presenceContents || def;
-        if (texts.length == 0) texts = def;
-        setInterval(() => {
-          this.client.user.edit({
-            status: {
-              text: texts[state].replace(/\$serverCount/g, this.client.servers.size()),
-              presence: this.presence
-            },
-          });
-          if (state == texts.length - 1) {state = 0} else {state++}
-        }, this.presenceInterval);
+      let state = 0;
+      let def = ["Ping for prefix", "By RedTech | NoLogicAlan", "Servers: $serverCount"];
+      let texts = config.presenceContents || def;
+      if (texts.length == 0) texts = def;
+      setInterval(() => {
+        this.client.user.edit({
+          status: {
+            text: texts[state].replace(/\$serverCount/g, this.client.servers.size()),
+            presence: this.presence
+          },
+        });
+        if (state == texts.length - 1) {state = 0} else {state++}
+      }, this.presenceInterval);
 
-        if (!this.config.fetchUsers) return;
-        this.fetchUsers(); // TODO: find out why I did this, there is a reason (Mabye caching?) but I have no clue and am scared to remove this
-        // future me here: most likely caching. This shouldn't be the reason for rate limits.
-        setInterval(() => this.fetchUsers, 60 * 1000 * 30);
-      });
+      if (!this.config.fetchUsers) return;
+      this.fetchUsers(); // TODO: find out why I did this, there is a reason (Mabye caching?) but I have no clue and am scared to remove this
+      // future me here: most likely caching. This shouldn't be the reason for rate limits.
+      setInterval(() => this.fetchUsers, 60 * 1000 * 30);
+
+      //this.mapMembers().then(() => {}); // not needed anymore
     });
     this.client.on("messageCreate", (m) => {
       if (!this.observedUsers.has(m.authorId + ";" + m.channelId)) return;
@@ -404,7 +404,31 @@ class Remix {
     return mutual;
   }
   getSharedServers(user) {
-    var servers = this.mutualServers(user.id).map(s => this.client.servers.get(s));
+    return new Promise(async (res, _rej) => {
+      const data = await user.fetchMutual();
+      if (!data) res(null);
+      var servers = data.servers.map(s => this.client.servers.get(s));
+
+      servers = servers.map((server) => {
+        const icon = () => {
+          try {
+            return server.animatedIconURL || server.iconURL || null
+          } catch(e) {
+            return null;
+          }
+        }
+        return {
+          name: server.name,
+          id: server.id,
+          icon: icon(),
+          voiceChannels: server.channels.filter(c => c.type == "VoiceChannel").map(c => ({ name: c.name, id: c.id, icon: c.animatedIconURL || c.iconURL || null })) // TODO: fetch users as well
+        }
+      });
+      res(servers);
+    });
+
+    // legacy code: fetchMutual wasn't available for bots back then
+    /*var servers = this.mutualServers(user.id).map(s => this.client.servers.get(s));
     servers = servers.map((server) => {
       const icon = () => {
         try {
@@ -420,7 +444,7 @@ class Remix {
         voiceChannels: server.channels.filter(c => c.type == "VoiceChannel").map(c => ({ name: c.name, id: c.id, icon: c.animatedIconURL || c.iconURL || null })) // TODO: fetch users as well
       }
     });
-    return servers;
+    return servers;*/
   }
   getVoiceData(server) {
     return new Promise(async res => {

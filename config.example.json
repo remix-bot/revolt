@@ -11,6 +11,22 @@
     "clientId": "your spotify client id",
     "clientSecret": "your spotify client secret"
   },
+  "comment-radio": {
+    "message": "If you have radio stations you'd like to connect, add them to the array below. Radio stations must be rendered like following:",
+    "station": {
+      "name": "zamrock",
+      "detailedName": "ᘔᗩᗰᘔᗩᗰᖴOᖴᒪIᖴE",
+      "url": "url to stream from",
+      "description": "Genre: Zamrock, provided by [Zamrock.net](https://zamrock.net/)",
+      "author": {
+        "name": "Zamrock",
+        "url": "https://zamrock.net"
+      }
+    }
+  },
+  "radio": [
+
+  ],
   "helpCatalog": true,
   "helpPagination": true,
   "mapMembers": true,

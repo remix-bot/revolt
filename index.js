@@ -204,6 +204,7 @@ class Remix {
       const file = path.join(dir, commandFile);
       const cData = require(file);
       const builder = (typeof cData.command == "function") ? cData.command.call(this) : cData.command;
+      if (!builder) return console.warn("No builder returned. Skipping '" + commandFile + "'");
       if (cData.export) this[cData.export.name] = cData.export.object;
       this.handler.addCommand(builder);
       this.commandFiles.set(builder.uid, file);

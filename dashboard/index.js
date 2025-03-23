@@ -386,10 +386,10 @@ class Dashboard {
       return {
         videoId: song.videoId,
         title: song.title,
-        url: song.url,
+        url: (song.type !== "radio") ? song.url : song.author.url,
         description: song.description,
         thumbnail: song.thumbnail,
-        duration: player.getDuration(song.duration),
+        duration: (song.duration) ? player.getDuration(song.duration) : { timestamp: "infinite" },
         author: song.author,
         artists: song.artists,
         artist: song.artist
@@ -423,7 +423,44 @@ class Dashboard {
           elapsedTime: player.player.seconds * 1000
         });
       }
+      const censorQueue = (data) => {
+        return data.map(e => {
+          if (e.type !== "radio") return e;
+
+          return censorSong(e);
+        });
+      }
+      const censorSong = (song) => {
+        if (song.type !== "radio") return song;
+        song.url = song.author.url;
+        song.duration = {
+          timestamp: "infinite",
+          duration: Infinity
+        }
+        return song;
+      }
       const queueHandler = (event) => {
+        switch(event.type) {
+          case "add":
+            if (event.data.data.type !== "radio") break;
+            event.data.data = censorSong(event.data.data);
+            break;
+          case "remove":
+            event.data.old = censorQueue(event.data.old);
+            event.data.new = censorQueue(event.data.new);
+
+            if (event.data.removed.type !== "radio") break;
+            event.data.removed = censorSong(event.data.removed);
+            break;
+          case "shuffle":
+            event.data = censorQueue(event.data);
+            break;
+          case "update":
+            event.data.current = censorSong(event.data.current);
+            event.data.old = censorSong(event.data.old);
+            break;
+        }
+
         socket.emit("queue", event);
       }
       player.on("startplay", startPlayHandler);

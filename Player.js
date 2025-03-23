@@ -168,6 +168,16 @@ class RevoltPlayer extends EventEmitter {
 
   // utility commands
   getVidName(vid, code=false) {
+    if (vid.type === "radio") {
+      if (code) {
+        return "[Radio]: " + vid.title + " - " + vid.author.url + "";
+      }
+      return "[Radio] [" + vid.title + " by " + vid.author.name + "](" + vid.author.url + ")";
+    }
+    if (vid.type === "external") {
+      if (code) return vid.title + " - " + vid.url;
+      return "[" + vid.title + "](" + vid.url + ")";
+    }
     if (code) return vid.title + " (" + this.getCurrentElapsedDuration() + "/" + this.getDuration(vid.duration) + ")" + ((vid.url) ? " - " + vid.url : "");
     return "[" + vid.title + " (" + this.getCurrentElapsedDuration() + "/" + this.getDuration(vid.duration) + ")" + "]" + ((vid.url) ? "(" + vid.url + ")" : "");
   }
@@ -199,7 +209,16 @@ class RevoltPlayer extends EventEmitter {
     return this.listQueue();
   }
   getQueue() {
-    return this.data.queue;
+    return this.data.queue.map(e => {
+      if (e.type !== "radio") return e;
+
+      e.url = e.author.url;
+      e.duration = {
+        timestamp: "infinite",
+        duration: Infinity
+      };
+      return e;
+    });
   }
   async lyrics() {
     if (!this.data.current) return [];
@@ -251,11 +270,18 @@ class RevoltPlayer extends EventEmitter {
     if (!this.data.current) return { msg: "There's nothing playing at the moment." };
     let loopqueue = (this.data.loop) ? "**enabled**" : "**disabled**";
     let songloop = (this.data.loopSong) ? "**enabled**" : "**disabled**";
+    if (this.data.current.type === "radio") {
+      return { msg: "Playing **[" + this.data.current.title + " by " + this.data.current.author.name + "](" + this.data.current.author.url + ")**\n\n" + this.data.current.description + " \n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop, image: await this.uploadThumbnail()}
+    }
+    if (this.data.current.type === "external") {
+      return { msg: "Playing **[" + this.data.current.title + "](" + this.data.current.url + ") by [" + this.data.current.artist + "](" + this.data.current.author.url + ")** \n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop, image: await this.uploadThumbnail()}
+    }
     return { msg: "Playing: **[" + this.data.current.title + "](" + this.data.current.url + ")** (" + this.getCurrentElapsedDuration() + "/" + this.getCurrentDuration() + ")" + "\n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop, image: await this.uploadThumbnail() };
   }
   uploadThumbnail() {
     return new Promise((res) => {
       if (!this.data.current) return res(null);
+      if (!this.data.current.thumbnail) return res(null);
       https.get(this.data.current.thumbnail, async (response) => {
         res(await this.upload.upload(response, this.data.current.title));
       });
@@ -282,6 +308,10 @@ class RevoltPlayer extends EventEmitter {
     return "Volume changed to `" + (v * 100) + "%`.";
   }
   announceSong(s) {
+    if (s.type === "radio") {
+      this.emit("message", "Now streaming _" + s.title + "_ by [" + s.author.name + "](" + s.author.url + ")");
+      return;
+    }
     var author = (!s.artists) ? "[" + s.author.name + "](" + s.author.url + ")" : s.artists.map(a => `[${a.name}](${a.url})`).join(" & ");
     this.emit("message", "Now playing [" + s.title + "](" + s.url + ") by " + author);
   }
@@ -316,7 +346,7 @@ class RevoltPlayer extends EventEmitter {
     const stream = (songData.type == "soundcloud") ?
       await scdl.download(songData.url)
       :
-      (songData.type == "external") ?
+      (songData.type == "external" || songData.type == "radio") ?
         //this.ytdlp.execStream(("--ffmpeg-location " + ffmpeg + " -x --audio-format mp3 " + songData.url).split(" "))
         await this.streamResource(songData.url)
         :
@@ -403,6 +433,30 @@ class RevoltPlayer extends EventEmitter {
         });
       });
     })
+  }
+  playRadio(radio, top=false) {
+    let prep = this.preparePlay();
+    if (prep) return prep;
+
+    const url = radio.url;
+    const name = radio.detailedName;
+    const description = radio.description;
+    const thumbnail = radio.thumbnail;
+
+    this.addToQueue({
+      type: "radio",
+
+      title: name,
+      description,
+      url,
+      author: {
+        name: radio.author.name,
+        url: radio.author.url
+      },
+      thumbnail,
+    }, top);
+
+    if (!this.data.current) this.playNext();
   }
   preparePlay() {
     if (this.connection.state == Revoice.State.OFFLINE) return "Please let me join first.";

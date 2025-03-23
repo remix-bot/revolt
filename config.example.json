@@ -16,7 +16,8 @@
     "station": {
       "name": "zamrock",
       "detailedName": "ᘔᗩᗰᘔᗩᗰᖴOᖴᒪIᖴE",
-      "url": "url to stream from",
+      "thumbnail": "https://zamrock.net/wp-content/uploads/2024/06/Zamrock_rd_logo_0004-1.gif",
+      "url": "url to stream from; this will be kept private",
       "description": "Genre: Zamrock, provided by [Zamrock.net](https://zamrock.net/)",
       "author": {
         "name": "Zamrock",

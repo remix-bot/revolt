@@ -88,6 +88,16 @@ If you don't want to connect to the official Revolt instance, you need to fill o
 
 Please refer to the [revolt.js docs](https://revolt.js.org/classes/Client.html#constructor) for `revolt.js` and to [oapi's docs](https://github.com/insertish/oapi#example) for `revolt-api`.
 
+## Updating ytdl-core
+
+Remix uses ytdl-core to download the music from YouTube. Since the original js package receives updates rarely,
+we're using a more frequently updated/fixed fork by [DistubeJs](https://github.com/distubejs/ytdl-core).
+That means if there are errors during playback, you can try to update ytdl using the following command:
+
+```js
+npm i ytdl-core@npm:@distube/ytdl-core@latest
+```
+
 ## Contact
 
 If you have any questions or would like to talk with other Remix users you can join our Revolt server <a href="https://app.revolt.chat/invite/Remix">here</a>.

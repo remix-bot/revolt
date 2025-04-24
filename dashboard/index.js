@@ -431,6 +431,7 @@ class Dashboard {
         });
       }
       const censorSong = (song) => {
+        if (!song) return song;
         if (song.type !== "radio") return song;
         song.url = song.author.url;
         song.duration = {
@@ -440,28 +441,33 @@ class Dashboard {
         return song;
       }
       const queueHandler = (event) => {
+        const event_copy = { data: {} }; // event is a reference, changes made to it will influence the Player Object
         switch(event.type) {
           case "add":
             if (event.data.data.type !== "radio") break;
-            event.data.data = censorSong(event.data.data);
+            event_copy.data.data = censorSong(event.data.data);
             break;
           case "remove":
-            event.data.old = censorQueue(event.data.old);
-            event.data.new = censorQueue(event.data.new);
+            event_copy.data.old = censorQueue(event.data.old);
+            event_copy.data.new = censorQueue(event.data.new);
 
             if (event.data.removed.type !== "radio") break;
-            event.data.removed = censorSong(event.data.removed);
+            event_copy.data.removed = censorSong(event.data.removed);
             break;
           case "shuffle":
-            event.data = censorQueue(event.data);
+            event_copy.data = censorQueue(event.data);
             break;
           case "update":
-            event.data.current = censorSong(event.data.current);
-            event.data.old = censorSong(event.data.old);
+            event_copy.data.current = censorSong(event.data.current);
+            event_copy.data.old = censorSong(event.data.old);
+            break;
+          default:
+            console.log("default");
+            event_copy = event
             break;
         }
 
-        socket.emit("queue", event);
+        socket.emit("queue", event_copy);
       }
       player.on("startplay", startPlayHandler);
       player.on("streamStartPlay", streamStartPlayHandler);

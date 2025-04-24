@@ -274,7 +274,7 @@ class RevoltPlayer extends EventEmitter {
     let songloop = (this.data.loopSong) ? "**enabled**" : "**disabled**";
     if (this.data.current.type === "radio") {
       const data = await meta(this.data.current.url);
-      return { msg: "Streaming **[" + this.data.current.title + " by " + this.data.current.author.name + "](" + this.data.current.author.url + ")**\n\n" + this.data.current.description + " \n\n### Current song: " + data.title + "\n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop, image: await this.uploadThumbnail()}
+      return { msg: "Streaming **[" + this.data.current.title + "](" + this.data.current.author.url + ")**\n\n" + this.data.current.description + " \n\n### Current song: " + data.title + "\n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop, image: await this.uploadThumbnail()}
     }
     if (this.data.current.type === "external") {
       return { msg: "Playing **[" + this.data.current.title + "](" + this.data.current.url + ") by [" + this.data.current.artist + "](" + this.data.current.author.url + ")** \n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop, image: await this.uploadThumbnail()}

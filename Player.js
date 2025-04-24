@@ -210,9 +210,10 @@ class RevoltPlayer extends EventEmitter {
     return this.listQueue();
   }
   getQueue() {
-    return this.data.queue.map(e => {
-      if (e.type !== "radio") return e;
+    return this.data.queue.map(el => {
+      if (el.type !== "radio") return el;
 
+      const e = { ...el };
       e.url = e.author.url;
       e.duration = {
         timestamp: "infinite",

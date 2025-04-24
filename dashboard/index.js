@@ -441,33 +441,31 @@ class Dashboard {
         return song;
       }
       const queueHandler = (event) => {
-        const event_copy = { data: {} }; // event is a reference, changes made to it will influence the Player Object
+        const e = structuredClone(event); // event is a reference, changes made to it will influence the Player Object
         switch(event.type) {
           case "add":
             if (event.data.data.type !== "radio") break;
-            event_copy.data.data = censorSong(event.data.data);
+            e.data.data = censorSong(e.data.data);
             break;
           case "remove":
-            event_copy.data.old = censorQueue(event.data.old);
-            event_copy.data.new = censorQueue(event.data.new);
+            e.data.old = censorQueue(e.data.old);
+            e.data.new = censorQueue(e.data.new);
 
             if (event.data.removed.type !== "radio") break;
-            event_copy.data.removed = censorSong(event.data.removed);
+            e.data.removed = censorSong(e.data.removed);
             break;
           case "shuffle":
-            event_copy.data = censorQueue(event.data);
+            e.data = censorQueue(e.data);
             break;
           case "update":
-            event_copy.data.current = censorSong(event.data.current);
-            event_copy.data.old = censorSong(event.data.old);
+            e.data.current = censorSong(e.data.current);
+            e.data.old = censorSong(e.data.old);
             break;
           default:
-            console.log("default");
-            event_copy = event
             break;
         }
 
-        socket.emit("queue", event_copy);
+        socket.emit("queue", e);
       }
       player.on("startplay", startPlayHandler);
       player.on("streamStartPlay", streamStartPlayHandler);

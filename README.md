@@ -64,7 +64,10 @@ If you're self-hosting Remix, please make it clear that it is **not the main ins
     - Important: since [
 6cedcb9](https://github.com/remix-bot/revolt/commit/6cedcb9425d65171b79ce73fc91a9e890afc137a), a MySQL database is required.
       For setup instructions see [DB Setup](#setup-database).
--   Run the bot (`node index.js`)
+-   Run the bot (`node index.js`; for node versions >21.1: `node --no-experimental-global-navigator index.js`)
+
+> [!WARNING]
+> For Node versions 21.1.X+ it is important to disable the navigator API. Unless the API is disabled, joining a voice channel will result in a "device not supported" error. It can be disabled with the `--no-experimental-global-navigator` flag when starting the node process. This is hopefully a temporary fix until the dependency is updated.
 
 ## Setup Database
 

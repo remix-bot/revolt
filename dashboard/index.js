@@ -209,13 +209,13 @@ class Dashboard {
       const query = (Object.keys(req.query).length == 0) ? null : req.query.q;
       var data = (await this.getSearchResults(query));
 
-      res.render("search/index.ejs", { ...req.data, data: data });
+      res.render("search/index.ejs", { ...req.data, data: data, query: req.query.q, radios: this.remix.config.radio });
     });
     secured.get("/search-content", async (req, res) => {
       const query = (Object.keys(req.query).length == 0) ? null : req.query.q;
       var data = (await this.getSearchResults(query));
 
-      res.render("search/content.ejs", { ...req.data, data: data });
+      res.render("search/content.ejs", { ...req.data, data: data, query: req.query.q, radios: this.remix.config.radio });
     });
     secured.get("/api/channel/icon", async (req, res) => {
       const videoId = req.query.v;
@@ -322,6 +322,18 @@ class Dashboard {
       var message;
       switch (req.body.action) {
         case "add":
+          if (req.body.query.startsWith("remix://radio/")) {
+            const name = req.body.query.slice("remix://radio/".length);
+            const radio = this.remix.config.radio.find(e => e.name === name);
+            if (!radio) {
+              return res.status(422).send({ message: "Invalid radio station." });
+            }
+            this.sendMessage(d.player.messageChannel, req, "[Web] Adding radio station to queue...").then(m => {
+              d.player.playRadio(radio);
+              m.edit(this.messageBody(d.player.messageChannel, req, "[Web] Added `" + radio.detailedName + "` to the queue."));
+            })
+            break;
+          }
           message = d.player.play(req.body.query);
           res.status(200).send({ message: "Adding to queue...", success: null })
           if (message) {

@@ -1,5 +1,5 @@
 const EventEmitter = require("events");
-const { Revoice, MediaPlayer } = require("revoice.js");
+const { LRevoice, Revoice, LMediaPlayer: MediaPlayer } = require("revoice.js");
 const { Worker } = require('worker_threads');
 const ytdl = require('ytdl-core');
 const Uploader = require("revolt-uploader");
@@ -13,7 +13,7 @@ class RevoltPlayer extends EventEmitter {
   constructor(token, opts) {
     super();
 
-    this.voice = opts.voice || new Revoice(token);
+    this.voice = opts.voice || new LRevoice(token, undefined, opts.client);
     this.connection = {
       state: Revoice.State.OFFLINE
     }
@@ -366,7 +366,8 @@ class RevoltPlayer extends EventEmitter {
             }
           }
         }, { highWaterMark: 1048576 / 4 });
-    connection.media.once("startPlay", () => this.emit("streamStartPlay"));
+		console.log(connection.media);
+    connection.media.once("startplay", () => this.emit("streamStartPlay"));
     connection.media.playStream(stream);
     stream.once("data", () => this.startedPlaying = Date.now());
     if (this.connection.preferredVolume) connection.media.setVolume(this.connection.preferredVolume);
@@ -423,6 +424,22 @@ class RevoltPlayer extends EventEmitter {
   }
   join(channel) {
     return new Promise(res => {
+      console.log("channel: ", channel)
+      this.voice.connect(channel).then((connection) => {
+        //console.log(connection);
+				this.connection = connection;
+				connection.once("join", res);
+				this.connection.on("state", (state) => {
+					console.log("state", state);
+					this.state = state;
+					if (state == Revoice.State.OFFLINE && !this.leaving) {
+						this.emit("autoleave");
+						return;
+					}
+					if (state == LRevoice.State.IDLE) this.playNext();
+				});
+      });
+      return;
       this.voice.join(channel, this.LEAVE_TIMEOUT).then(connection => {
         connection.once("join", res);
         connection.on("roomfetched", () => { this.emit("roomfetched", connection.users) });

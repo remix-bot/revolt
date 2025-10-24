@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "@distube/ytdl-core": "^4.15.8",
+    "@livekit/rtc-node": "^0.13.20",
+    "axios": "^1.12.2",
     "bcrypt": "^5.1.0",
     "console-stamp": "^3.1.1",
     "cookie-parser": "^1.4.6",
@@ -16,9 +18,9 @@
     "i18next-fs-backend": "^2.1.5",
     "mysql": "^2.18.1",
     "prism-media": "^1.3.5",
-    "revoice.js": "^0.1.7544",
+    "revoice.js": "file:../revoice.js",
     "revolt-uploader": "^1.1.6",
-    "revolt.js": "npm:revolt.js-update@^7.0.0-beta.9-fix2.0",
+    "revolt.js": "^7.2.0",
     "revoltbots.js": "^1.0.5",
     "session.socket.io": "^0.2.1",
     "socket.io": "^4.6.1",

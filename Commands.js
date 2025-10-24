@@ -250,8 +250,9 @@ class Option {
             && (msg.channel)
               ? (c.serverId == msg.channel.serverId || c.serverId == "eval") // eval is a dry-run conducted to check the syntax of a channel
               : false);
+        
         const cObj = (results) ? client.channels.get(results.groups["id"]) : (channel) ? channel : null;
-        return (cObj) ? cObj.type === "VoiceChannel" || cObj.type === "Group" : null;
+        return (cObj) ? cObj.isVoice || cObj.type === "Group" || true : null;
       // TODO: Add roles
     }
   }
@@ -284,7 +285,7 @@ class Option {
           return (r) ? r.groups["id"] : i || null;
         }
 
-        const c = client.channels.find(c => c.name == i && c.type == "VoiceChannel" && c.server.id == msg.channel.server.id);
+        const c = client.channels.find(c => c.name == i /*&& (c.type == "VoiceChannel")*/ && c.server.id == msg.channel.server.id);
         return (r) ? r.groups["id"] : (c) ? c.id : null;
     }
   }
@@ -397,14 +398,17 @@ class CommandHandler extends EventEmitter {
     }
     const prefix = this.getPrefix(msg.channel.serverId);
     const ping = `<@${this.client.user.id}> `;
-    if (!(msg.content.startsWith(prefix) || msg.content.startsWith(ping))) return;
+		if (!(msg.content.startsWith(prefix) || msg.content.replace(/\u00A0/gi, " ") .startsWith(ping))) return;
     if (!this.checkPermissions(msg)) return;
     const len = (msg.content.startsWith(prefix)) ? prefix.length : ping.length;
+		console.log(msg.content);
     const args = msg.content
+			.replace(/\u00A0/gi, " ")
       .slice(len)
       .trim()
       .split(" ")
       .map((el) => el.trim())
+		console.log(args);
     if (args[0] === this.acceptCommand && this.fixMap.has(msg.authorId)) {
       //if (!this.fixMap.has(msg.author_id)) return this.replyHandler(this.f("No command stored that can be corrected!"));
       let cmd = this.fixMap.get(msg.authorId);

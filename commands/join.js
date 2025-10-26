@@ -15,7 +15,7 @@ function joinChannel(message, cid, cb=()=>{}, ecb=()=>{}) {
   const settings = this.getSettings(message);
   const pOff = this.freed.shift() || ++this.currPort; // reuse old ports
   const p = new RevoltPlayer(this.config.token, {
-    //voice: this.revoice,
+    voice: this.revoice,
     portOffset: pOff,
     client: this.client,
     spotify: this.spotifyConfig,

@@ -1,19 +1,18 @@
 const EventEmitter = require("events");
-const { LRevoice, Revoice, LMediaPlayer: MediaPlayer } = require("revoice.js");
+const { Revoice, MediaPlayer } = require("revoice.js");
 const { Worker } = require('worker_threads');
 const ytdl = require('ytdl-core');
 const Uploader = require("revolt-uploader");
 const https = require('https');
 const Spotify = require('spotifydl-core').default;
 const scdl = require('soundcloud-downloader').default;
-const ffmpeg = require("ffmpeg-static");
 const meta = require("./src/probe.js");
 
 class RevoltPlayer extends EventEmitter {
   constructor(token, opts) {
     super();
 
-    this.voice = opts.voice || new LRevoice(token, undefined, opts.client);
+    this.voice = opts.voice || new Revoice(token, undefined, opts.client);
     this.connection = {
       state: Revoice.State.OFFLINE
     }
@@ -147,7 +146,7 @@ class RevoltPlayer extends EventEmitter {
   }
   resume() {
     if (!this.player || !this.data.current) return `:negative_squared_cross_mark: There's nothing playing at the moment!`;
-    if (!this.player.playbackPaused) return ":negative_squared_cross_mark: Not paused. To pause, use the `pause` command!";
+    if (!this.player.paused) return ":negative_squared_cross_mark: Not paused. To pause, use the `pause` command!";
     this.player.resume();
     this.emit("playback", true);
     return;
@@ -425,10 +424,11 @@ class RevoltPlayer extends EventEmitter {
   join(channel) {
     return new Promise(res => {
       console.log("channel: ", channel)
-      this.voice.connect(channel).then((connection) => {
+      this.voice.join(channel, this.LEAVE_TIMEOUT).then((connection) => {
         //console.log(connection);
 				this.connection = connection;
 				connection.once("join", res);
+				connection.on("roomfetched", () => { this.emit("roomfetched", connection.users) });
 				this.connection.on("state", (state) => {
 					console.log("state", state);
 					this.state = state;
@@ -436,22 +436,8 @@ class RevoltPlayer extends EventEmitter {
 						this.emit("autoleave");
 						return;
 					}
-					if (state == LRevoice.State.IDLE) this.playNext();
+					if (state == Revoice.State.IDLE) this.playNext();
 				});
-      });
-      return;
-      this.voice.join(channel, this.LEAVE_TIMEOUT).then(connection => {
-        connection.once("join", res);
-        connection.on("roomfetched", () => { this.emit("roomfetched", connection.users) });
-        this.connection = connection;
-        this.connection.on("state", (state) => {
-          this.state = state;
-          if (state == Revoice.State.OFFLINE && !this.leaving) {
-            this.emit("autoleave");
-            return;
-          }
-          if (state == Revoice.State.IDLE) this.playNext();
-        });
       });
     })
   }

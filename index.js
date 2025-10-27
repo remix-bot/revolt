@@ -1,6 +1,6 @@
 const { CommandHandler } = require("./Commands.js");
 const Uploader = require("revolt-uploader");
-const { Revoice, LRevoice } = require("revoice.js");
+const { Revoice } = require("revoice.js");
 const { Client } = require("revolt.js");
 const path = require("path");
 const fs = require("fs");

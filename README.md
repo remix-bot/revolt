@@ -31,11 +31,11 @@ Below is a table of all of Remix's commands.
 |leave|Make the bot leave your current voice channel|%leave|leave, l|
 |list|List the queue in your current voice channel.|%list|list, queue|
 |loop|Toggle the looping of your queue/song.|%loop <queue \| song>|loop|
-|np|Request the name and url of the currently playing song.|%np|np, current, nowplaying|
+|np|Request the name and URL of the currently playing song.|%np|np, current, nowplaying|
 |pause|Pause the playback in your voice channel|%pause|pause|
-|play|Play a YouTube video from url/query or a playlist by url.|%play 'query: text'|play, p|
+|play|Play a YouTube video from URL/query or a playlist by URL.|%play 'query: text'|play, p|
 |player|Create an emoji player control for your voice channel|%player|player|
-|playnext|Play a YouTube video from url/query or a playlist by url. The result will be added to the top of the queue.|%playnext 'query: text'|playnext, pn|
+|playnext|Play a YouTube video from url/query or a playlist by URL. The result will be added to the top of the queue.|%playnext 'query: text'|playnext, pn|
 |remove|Remove a specific song from the queue.|%remove 'index: number'|remove|
 |resume|Resume the playback in your voice channel|%resume|resume|
 |search|Display the search results for a given query|%search 'query: text'|search|
@@ -108,4 +108,5 @@ If you have any questions or would like to talk with other Remix users you can j
 ---
 
 &copy; 2025 Remix. All Rights Reserved.
+
 

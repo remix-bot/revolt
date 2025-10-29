@@ -12,7 +12,7 @@ module.exports = {
       o.setName("provider")
         .setDescription("The search result provider (YouTube or YouTube Music). Default: Youtube Music", "options.search.provider") // same as search provider flag
         .addFlagAliases("p", "u", "use")
-        .addChoices("ytm", "yt")
+        .addChoices("ytm", "yt", "scld")
         .setDefault("ytm")
     , true).addAlias("pn"),
   run: async function(message, data) {

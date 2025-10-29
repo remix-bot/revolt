@@ -3,6 +3,7 @@ const EventEmitter = require("events");
 const yts = require('yt-search');
 const Spotify = require("spotifydl-core").default;
 const scdl = require("soundcloud-downloader").default;
+const { Soundcloud } = require("soundcloud.ts");
 const YoutubeMusicApi = require('youtube-music-api-fix')
 const meta = require("./src/probe.js");
 
@@ -70,6 +71,7 @@ class YTUtils extends EventEmitter {
     this.spotifyConfig = spotify;
     this.ytApi = null;
     this.cEngine = new CompoundSearchEngine();
+    this.scld = new Soundcloud();
 
     return this;
   }
@@ -148,7 +150,32 @@ class YTUtils extends EventEmitter {
         return {
           data: results
         }
+        break;
+      case "scld":
+        var tracks = await this.scld.tracks.search({q: query });
+        tracks = tracks.collection.map(res => {
+          let r = {
+            url: res.permalink_url,
+            title: res.title,
+            thumbnail: res.artwork_url,
+            artists: [{
+              name: res.publisher_metadata?.artist || res.user.full_name,
+              url: res.user.permalink_url
+            }],
+            duration: res.duration,
+            type: "soundcloud"
+          }
+          return r;
+        }).slice(0, Math.min(limit, tracks.total_results));
+        return {
+          data: tracks
+        }
     }
+  }
+  getSoundCloudResult(query) {
+    return new Promise((res, rej) => {
+
+    });
   }
 
   async getPlaylistData(playlist, query) {
@@ -204,6 +231,8 @@ class YTUtils extends EventEmitter {
       r.artists = ((Array.isArray(song.artist)) ?Array.from(song.artist) : [song.artist]).map(a => (a.url = `https://music.youtube.com/channel/${a.browseId}`, a))
       this.emit("message",  `Successfully added [${r.title}](${r.url}) to the queue.`)
       return { type: "video", data: r };
+    } else if (provider === "scld") {
+      const song = await this.getSoundCloudResult(query);
     }
     let video = await this.search(query);
     if (video) { this.emit("message", `Successfully added [${video.title}](${video.url}) to the queue.`); } else { this.emit("message", "**There was an error loading a youtube video using the query '" + query + "'!**") };
@@ -356,7 +385,13 @@ const post = (event, data) => {
 }
 
 (async () => {
-  if (jobId === "dev") return;
+  if (jobId === "dev") {
+    const scld = new Soundcloud();
+    (async () => {
+      console.log((await scld.tracks.search({ q: "neoni notorious" })).collection[0]);
+    })()
+    return;
+  }
 
   var r = null;
   switch(jobId) {

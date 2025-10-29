@@ -283,6 +283,8 @@ class RevoltPlayer extends EventEmitter {
   }
   uploadThumbnail() {
     return new Promise((res) => {
+      return res();
+      // TODO: fix uploader
       if (!this.data.current) return res(null);
       if (!this.data.current.thumbnail) return res(null);
       https.get(this.data.current.thumbnail, async (response) => {
@@ -344,6 +346,7 @@ class RevoltPlayer extends EventEmitter {
     }
 
     this.data.current = songData;
+
     const connection = this.voice.getVoiceConnection(this.connection.channelId);
     //this.ytdlp.exec(("--ffmpeg-location " + ffmpeg + " -x --audio-format mp3 " + songData.url + " -o output.mp3").split(" "));
     const stream = (songData.type == "soundcloud") ?
@@ -365,7 +368,6 @@ class RevoltPlayer extends EventEmitter {
             }
           }
         }, { highWaterMark: 1048576 / 4 });
-		console.log(connection.media);
     connection.media.once("startplay", () => this.emit("streamStartPlay"));
     connection.media.playStream(stream);
     stream.once("data", () => this.startedPlaying = Date.now());

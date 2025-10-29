@@ -152,29 +152,35 @@ class YTUtils extends EventEmitter {
         }
         break;
       case "scld":
-        var tracks = await this.scld.tracks.search({q: query });
-        tracks = tracks.collection.map(res => {
-          let r = {
-            url: res.permalink_url,
-            title: res.title,
-            thumbnail: res.artwork_url,
-            artists: [{
-              name: res.publisher_metadata?.artist || res.user.full_name,
-              url: res.user.permalink_url
-            }],
-            duration: res.duration,
-            type: "soundcloud"
-          }
-          return r;
-        }).slice(0, Math.min(limit, tracks.total_results));
+        var tracks = (await this.getSoundCloudTracks(query));
+        tracks = tracks.slice(0, Math.min(limit, tracks.length));;
         return {
           data: tracks
         }
     }
   }
+  async getSoundCloudTracks(query) {
+    var tracks = await this.scld.tracks.search({ q: query });
+    tracks = tracks.collection.map(res => {
+      let r = {
+        url: res.permalink_url,
+        title: res.title,
+        thumbnail: res.artwork_url,
+        artists: [{
+          name: res.publisher_metadata?.artist || res.user.full_name,
+          url: res.user.permalink_url
+        }],
+        duration: res.duration,
+        type: "soundcloud"
+      }
+      return r;
+    });
+    return tracks;
+  }
   getSoundCloudResult(query) {
-    return new Promise((res, rej) => {
-
+    return new Promise(async (res, rej) => {
+      const track = (await this.getSoundCloudTracks(query))[0];
+      return res(track);
     });
   }
 
@@ -233,6 +239,9 @@ class YTUtils extends EventEmitter {
       return { type: "video", data: r };
     } else if (provider === "scld") {
       const song = await this.getSoundCloudResult(query);
+      if (!song) { this.emit("message", "**There was an error loading the soundcloud song using the query '" + query + "'!**"); return false; }
+      this.emit("message", `Successfully added [${song.title}](${song.url}) to the queue.`)
+      return { type: "video", data: song };
     }
     let video = await this.search(query);
     if (video) { this.emit("message", `Successfully added [${video.title}](${video.url}) to the queue.`); } else { this.emit("message", "**There was an error loading a youtube video using the query '" + query + "'!**") };

@@ -17,3 +17,6 @@ You can report vulnerabilities in the following ways:
 
 I should usually be able to get back to you within 3 days. I'll let you know if I've accepted or declined the report.
 
+---
+
+&copy; 2025 Remix. All Rights Reserved.

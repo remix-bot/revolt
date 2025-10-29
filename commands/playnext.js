@@ -10,7 +10,7 @@ module.exports = {
         .setRequired(true)
     ).addChoiceOption(o =>
       o.setName("provider")
-        .setDescription("The search result provider (YouTube or YouTube Music). Default: Youtube Music", "options.search.provider") // same as search provider flag
+        .setDescription("The search result provider (YouTube, YouTube Music or SoundCloud). Default: SoundCloud", "options.search.provider") // same as search provider flag
         .addFlagAliases("p", "u", "use")
         .addChoices("ytm", "yt", "scld")
         .setDefault("ytm")

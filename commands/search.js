@@ -22,7 +22,7 @@ module.exports = {
     .addExamples("$prefixsearch never gonna give you up", "$prefixsearch -provider yt 'never gonna give you up'")
     .addChoiceOption(o =>
       o.setName("provider")
-        .setDescription("The search result provider (YouTube, YouTube Music or SoundCloud). Default: Youtube Music", "options.search.provider")
+        .setDescription("The search result provider (YouTube, YouTube Music or SoundCloud). Default: SoundCloud", "options.search.provider")
         .addChoices("yt", "ytm", "scld")
         .setDefault("ytm")
         .addFlagAliases("p", "u", "use"), true)

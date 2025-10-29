@@ -91,7 +91,7 @@ If you don't want to connect to the official Revolt instance, you need to fill o
 
 Please refer to the [stoat.js docs](https://stoat.js.org/classes/Client.html#constructor) for `stoat.js` and to [oapi's docs](https://github.com/insertish/oapi#example) for `stoat-api`.
 
-## Updating ytdl-core
+## Updating YTDL-Core
 
 Remix uses ytdl-core to download the music from YouTube. Since the original js package receives updates rarely,
 we're using a more frequently updated/fixed fork by [DistubeJs](https://github.com/distubejs/ytdl-core).
@@ -108,5 +108,6 @@ If you have any questions or would like to talk with other Remix users you can j
 ---
 
 &copy; 2025 Remix. All Rights Reserved.
+
 
 

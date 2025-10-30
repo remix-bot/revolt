@@ -285,7 +285,7 @@ class Option {
           return (r) ? r.groups["id"] : i || null;
         }
 
-        const c = client.channels.find(c => c.name == i /*&& (c.type == "VoiceChannel")*/ && c.server.id == msg.channel.server.id);
+        const c = client.channels.find(c => c.name == i /*&& (c.isVoice)*/ && c.server?.id == msg.channel.server.id);
         return (r) ? r.groups["id"] : (c) ? c.id : null;
     }
   }
